@@ -12,6 +12,10 @@ Mevcut İzlek kod tabanında sadece `/program/create` onboarding ekranı minimal
 - Draft autosave yapısı korundu, eski draft’lar için versiyonlu geri uyumluluk eklendi.
 
 ## Implemented
+- Room privacy sistemi eklendi: oda oluştururken `Herkese Açık` / `Özel` seçimi yapılabiliyor; private odalarda şifre alanı yalnız gerekli olduğunda gösteriliyor.
+- Backend room sözleşmesine `room_type` ve `is_private` alanları eklendi; private odalar için şifre `bcrypt` ile hashlenerek `room_password_hash` olarak saklanıyor, API yanıtlarında expose edilmiyor.
+- Join akışı iki aşamalı hale geldi: kullanıcı önce sadece oda kodu giriyor, oda private ise aynı form içinde ikinci adımda şifre isteniyor; public odalar mevcut akışla direkt katılıyor.
+- Public room akışı, RoomPage timer/chat ve mevcut participant davranışı regresyon testleriyle doğrulandı.
 - Theme initialization mantığı minimal şekilde güncellendi: localStorage'da tema tercihi varsa aynen kullanılıyor, kayıt yoksa uygulama artık sistem temasına bakmadan `light` ile açılıyor.
 - Onboarding progress bölümünde alt segment/çizgili gösterge DOM’dan tamamen kaldırıldı; sadece ana progress bar ve `Adım x / 5` metni bırakıldı.
 - Ana progress bar minimal polish ile hafif inceltildi; dark mode contrast korunarak mevcut dolum mantığı aynen bırakıldı.
