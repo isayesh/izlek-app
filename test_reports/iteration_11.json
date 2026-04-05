@@ -1,0 +1,34 @@
+{
+  "summary": "Completed backend + frontend validation for /program/create onboarding refresh (5-step order, card UI, dark mode readability, handle validation, payload compatibility, dashboard redirect).",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_onboarding_program_create_flow.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "server.py has multiple endpoints that return {\"error\": ...} with HTTP 200 instead of raising HTTPException with proper status codes (e.g., /api/profiles name validation, /api/rooms and /api/messages validations). Not blocking this onboarding change, but should be standardized."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_onboarding_program_create_flow.py",
+    "/app/test_reports/iteration_11.json"
+  ],
+  "success_rate": {
+    "backend": "100% (4/4)",
+    "frontend": "100% (all requested onboarding checks passed)"
+  },
+  "test_credentials": "MISSING: /app/memory/test_credentials.md was not found in workspace.",
+  "seed_data_creation": "Created TEST_* prefixed profile/program documents through public API during regression run.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "On preview URL, onboarding flow works end-to-end with dev auth bypass (MOCKED auth user in preview mode). New backend regression test validates handle + Dil + hidden defaults (exam_goal=TYT, daily_hours=2-4) and program creation persistence.",
+  "rca of the issue": "No blocking issue reproduced for this scope. Minor systemic code-quality issue observed: some validation branches in backend return HTTP 200 error payloads instead of structured 4xx responses."
+}
