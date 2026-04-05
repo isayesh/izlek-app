@@ -844,10 +844,6 @@ export default function RoomPage() {
                     <RotateCcw className="h-5 w-5" />
                   </Button>
                 </div>
-
-                <p className="inline-flex items-center rounded-full border border-border/70 bg-secondary/80 px-3 py-1 text-xs text-muted-foreground" data-testid="timer-sync-note">
-                  Kronometre tüm katılımcılar için senkronize
-                </p>
                 </div>
               </CardContent>
               </Card>
@@ -949,9 +945,6 @@ export default function RoomPage() {
                                       minute: '2-digit'
                                     })}
                                   </span>
-                                  {isOwnMessage && (
-                                    <span className="text-xs text-muted-foreground" data-testid={`message-status-${message.id}`}>• görüldü</span>
-                                  )}
                                 </div>
                               )}
                             </div>
