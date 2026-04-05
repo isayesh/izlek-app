@@ -12,6 +12,9 @@ Mevcut İzlek kod tabanında sadece `/program/create` onboarding ekranı minimal
 - Draft autosave yapısı korundu, eski draft’lar için versiyonlu geri uyumluluk eklendi.
 
 ## Implemented
+- Profile sayfasında `study_goal` ve `daily_study_hours` inputları UI’dan kaldırıldı; yerine `grade_level` ve editable `study_field` alanları eklendi.
+- Profile preview güncellendi: `@handle`, `username`, `email` altında grade + alan tek satırda gösteriliyor; eksik veri durumunda satır otomatik sadeleşiyor veya tamamen gizleniyor.
+- Backend profile sözleşmesi minimal genişletildi: `grade_level` eklendi, simple profile update akışı `study_field` düzenlemeyi destekliyor ve UI artık legacy alanları göndermese de `study_goal` / `daily_study_hours` korunuyor.
 - Room create/join formlarındaki alan seçimi tamamen kaldırıldı; create ve join payload’larından study_field bağımlılığı temizlendi.
 - Room participant ve chat identity’lerinde alan bilgisi artık `profiles.study_field` üzerinden resolve ediliyor; profile’da alan yoksa UI bu metni sessizce gizliyor.
 - Leaderboard tarafında alan gösterimi olmadığı için ek UI değişikliği yapılmadı; mevcut görünüm korunarak regresyon doğrulandı.
