@@ -455,7 +455,6 @@ class RoomCreate(BaseModel):
     owner_name: str
     owner_id: Optional[str] = None
     owner_avatar_url: Optional[str] = None
-    owner_study_field: Optional[str] = None
     room_type: Optional[str] = ROOM_TYPE_PUBLIC
     room_password: Optional[str] = None
 
@@ -464,7 +463,6 @@ class RoomJoin(BaseModel):
     user_id: Optional[str] = None
     user_name: str
     user_avatar_url: Optional[str] = None
-    user_study_field: Optional[str] = None
     room_password: Optional[str] = None
 
 class RoomLeave(BaseModel):
@@ -529,6 +527,15 @@ def format_room_document(room: Optional[dict]) -> Optional[Room]:
     normalized["room_type"] = room_type
     normalized["is_private"] = room_type == ROOM_TYPE_PRIVATE or bool(normalized.get("room_password_hash"))
     return Room(**normalized)
+
+
+async def resolve_profile_study_field(firebase_uid: Optional[str]) -> Optional[str]:
+    if not firebase_uid:
+        return None
+
+    profile = await db.profiles.find_one({"firebase_uid": firebase_uid}, {"_id": 0, "study_field": 1})
+    study_field = (profile or {}).get("study_field")
+    return study_field.strip() if isinstance(study_field, str) and study_field.strip() else None
 
 
 # Message Models
@@ -1078,7 +1085,7 @@ async def create_room(input: RoomCreate):
         id=room_obj.owner_id,
         name=input.owner_name,
         avatar_url=input.owner_avatar_url,
-        study_field=input.owner_study_field
+        study_field=await resolve_profile_study_field(input.owner_id)
     )
     room_obj.participants.append(owner)
     
@@ -1117,7 +1124,7 @@ async def join_room(input: RoomJoin):
         id=participant_id,
         name=input.user_name,
         avatar_url=input.user_avatar_url,
-        study_field=input.user_study_field
+        study_field=await resolve_profile_study_field(input.user_id)
     ).model_dump()
 
     participant_added = existing_index is None
@@ -1185,8 +1192,10 @@ async def update_timer(room_id: str, timer_state: TimerState):
 async def create_message(input: MessageCreate):
     if not input.content or input.content.strip() == "":
         return {"error": "Mesaj boş olamaz"}
-    
-    message_obj = Message(**input.model_dump())
+
+    message_payload = input.model_dump()
+    message_payload["user_study_field"] = await resolve_profile_study_field(input.user_id) or input.user_study_field
+    message_obj = Message(**message_payload)
     doc = message_obj.model_dump()
     doc['timestamp'] = doc['timestamp'].isoformat()
     

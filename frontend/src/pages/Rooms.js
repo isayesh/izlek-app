@@ -19,8 +19,7 @@ export default function Rooms() {
   const [identity, setIdentity] = useState({
     name: "",
     handle: "",
-    avatar_url: "",
-    study_field: ""
+    avatar_url: ""
   });
   const [identityLoading, setIdentityLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("create");
@@ -33,7 +32,6 @@ export default function Rooms() {
 
   const [joinForm, setJoinForm] = useState({
     room_code: "",
-    user_study_field: "",
     room_password: ""
   });
 
@@ -59,18 +57,13 @@ export default function Rooms() {
           localStorage.removeItem("userAvatarUrl");
         }
 
-        setJoinForm((prev) => ({
-          ...prev,
-          user_study_field: prev.user_study_field || nextIdentity.study_field || ""
-        }));
       };
 
       if (!currentUser?.uid) {
         applyIdentity({
           name: fallbackName,
           handle: "",
-          avatar_url: "",
-          study_field: ""
+          avatar_url: ""
         });
         setIdentityLoading(false);
         return;
@@ -85,16 +78,14 @@ export default function Rooms() {
         applyIdentity({
           name: profile?.username || profile?.name || fallbackName,
           handle: profile?.handle || "",
-          avatar_url: profile?.avatar_url || "",
-          study_field: profile?.study_field || ""
+          avatar_url: profile?.avatar_url || ""
         });
       } catch (error) {
         console.error("Error loading room identity:", error);
         applyIdentity({
           name: fallbackName,
           handle: "",
-          avatar_url: "",
-          study_field: ""
+          avatar_url: ""
         });
       } finally {
         setIdentityLoading(false);
@@ -212,7 +203,6 @@ export default function Rooms() {
         user_id: stableUserId,
         user_name: identity.name,
         user_avatar_url: identity.avatar_url || null,
-        user_study_field: joinForm.user_study_field || null,
         room_password: joinRequiresPassword ? joinForm.room_password : null
       });
 
@@ -519,22 +509,6 @@ export default function Rooms() {
                       {joinError}
                     </div>
                   )}
-
-                  <div className="space-y-2">
-                    <Label htmlFor="user-field" className="text-sm font-medium text-foreground" data-testid="label-user-field">Alan (Opsiyonel)</Label>
-                    <select
-                      id="user-field"
-                      className={sharedSelectClass}
-                      value={joinForm.user_study_field}
-                      onChange={(e) => setJoinForm({ ...joinForm, user_study_field: e.target.value })}
-                      data-testid="select-user-field"
-                    >
-                      <option value="">Seçiniz</option>
-                      <option value="Sayısal">Sayısal</option>
-                      <option value="EA">Eşit Ağırlık</option>
-                      <option value="Sözel">Sözel</option>
-                    </select>
-                  </div>
 
                   <Button
                     className="h-11 w-full rounded-xl"
