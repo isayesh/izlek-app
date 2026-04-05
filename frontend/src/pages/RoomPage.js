@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import axios from "axios";
 import { API } from "@/App";
@@ -749,6 +749,9 @@ export default function RoomPage() {
                     <DialogTitle className="text-xl font-semibold text-foreground" data-testid="participants-modal-title">
                       Tüm Katılımcılar ({room.participants.length})
                     </DialogTitle>
+                    <DialogDescription className="mt-1 text-sm text-muted-foreground" data-testid="participants-modal-description">
+                      Odadaki tüm katılımcıları avatarları ve rol bilgileriyle birlikte görüntüle.
+                    </DialogDescription>
                   </div>
                   <Button
                     type="button"

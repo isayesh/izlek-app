@@ -12,6 +12,8 @@ Mevcut İzlek kod tabanında sadece `/program/create` onboarding ekranı minimal
 - Draft autosave yapısı korundu, eski draft’lar için versiyonlu geri uyumluluk eklendi.
 
 ## Implemented
+- RoomPage sol kolon layout’u dengelendi: katılımcılar kartı kontrollü desktop yüksekliğe alındı, böylece kronometre kartı aşağı itilmeden görünür ana blok olarak kaldı.
+- Room sayfası ana yerleşiminde gereksiz page scroll azaltıldı; chat paneli kendi iç scroll davranışını korurken participants modal ve timer işlevleri değişmeden kaldı.
 - RoomPage `Katılımcılar` bileşeni ölçeklenebilir hale getirildi: ilk görünümde en fazla 2 kişi gösteriliyor, fazlası için `+X kişi daha · Tümünü gör` CTA’sı ile modal açılıyor.
 - Katılımcılar kartındaki iç scroll kaldırıldı; avatar/initial, kullanıcı adı, alan bilgisi ve sahip etiketi korunarak tam liste modal içinde gösteriliyor.
 - Dashboard üst özet kartları profile’ın yeni modeline bağlandı: eski `Hedef` ve `Günlük tempo` kartları kaldırıldı, yerine `grade_level + study_field` tabanlı koşullu profil özeti kartı eklendi.
