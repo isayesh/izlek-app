@@ -3,12 +3,15 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import axios from "axios";
 import { API } from "@/App";
-import { Play, Pause, RotateCcw, Send, Users, ArrowLeft, Copy, Check, Clock, MessageCircle } from "lucide-react";
+import { Play, Pause, RotateCcw, Send, Users, ArrowLeft, Copy, Check, Clock, MessageCircle, X } from "lucide-react";
 import { startStudySession, updateStudySession, completeStudySession } from "@/lib/studySession";
 import { useAuth } from "@/contexts/AuthContext";
+
+const MAX_VISIBLE_PARTICIPANTS = 2;
 
 export default function RoomPage() {
   const { roomId } = useParams();
@@ -20,6 +23,7 @@ export default function RoomPage() {
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [showParticipantsModal, setShowParticipantsModal] = useState(false);
   const [currentProfileAvatarUrl, setCurrentProfileAvatarUrl] = useState(localStorage.getItem("userAvatarUrl") || "");
   const [failedParticipantAvatars, setFailedParticipantAvatars] = useState({});
   const [failedMessageAvatars, setFailedMessageAvatars] = useState({});
@@ -82,6 +86,46 @@ export default function RoomPage() {
   const getMessageAvatarUrl = (message) => {
     const resolvedAvatarUrl = message.user_avatar_url || (message.user_id === currentUserId ? currentProfileAvatarUrl : "");
     return failedMessageAvatars[message.id] ? "" : resolvedAvatarUrl;
+  };
+
+  const visibleParticipants = room?.participants?.slice(0, MAX_VISIBLE_PARTICIPANTS) || [];
+  const hiddenParticipantsCount = Math.max((room?.participants?.length || 0) - MAX_VISIBLE_PARTICIPANTS, 0);
+
+  const renderParticipantItem = (participant, variant = "card") => {
+    const participantAvatarUrl = getParticipantAvatarUrl(participant);
+
+    return (
+      <div
+        key={`${variant}-${participant.id}`}
+        className="flex items-center gap-4 rounded-2xl border border-transparent bg-background/70 px-4 py-3 shadow-sm transition-[background-color,box-shadow] duration-200 hover:bg-card hover:shadow-md"
+        data-testid={`${variant}-participant-${participant.id}`}
+      >
+        <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl bg-secondary text-base font-semibold text-foreground shadow-sm ring-1 ring-border/60" data-testid={`${variant}-participant-avatar-${participant.id}`}>
+          {participantAvatarUrl ? (
+            <img
+              src={participantAvatarUrl}
+              alt={`${participant.name} avatar`}
+              className="h-full w-full object-cover"
+              data-testid={`${variant}-participant-avatar-image-${participant.id}`}
+              onError={() => setFailedParticipantAvatars((prev) => ({ ...prev, [participant.id]: true }))}
+            />
+          ) : (
+            getInitial(participant.name)
+          )}
+        </div>
+        <div className="min-w-0 flex-1" data-testid={`${variant}-participant-info-${participant.id}`}>
+          <p className="truncate text-sm font-semibold text-foreground" data-testid={`${variant}-participant-name-${participant.id}`}>{participant.name}</p>
+          {participant.study_field && (
+            <p className="mt-0.5 text-xs text-muted-foreground" data-testid={`${variant}-participant-study-field-${participant.id}`}>{participant.study_field}</p>
+          )}
+        </div>
+        {participant.id === room.owner_id && (
+          <span className="rounded-full border border-border/70 bg-secondary/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground" data-testid={`${variant}-participant-owner-badge-${participant.id}`}>
+            Sahip
+          </span>
+        )}
+      </div>
+    );
   };
 
   useEffect(() => {
@@ -671,55 +715,58 @@ export default function RoomPage() {
         {/* Left: Participants + Timer */}
         <div className="space-y-6 min-h-0 lg:flex lg:h-full lg:flex-col lg:overflow-hidden" data-testid="room-left-column">
           {/* Participants */}
-          <Card className="rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] overflow-hidden lg:flex lg:min-h-0 lg:flex-col" data-testid="participants-card">
+          <Card className="overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:shrink-0" data-testid="participants-card">
             <CardHeader className="border-b border-border/60 pb-3">
               <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="participants-title">
                 <Users className="h-5 w-5 text-accent" />
                 Katılımcılar ({room.participants.length})
               </CardTitle>
             </CardHeader>
-            <CardContent className="pb-4 pt-4 lg:min-h-0 lg:flex-1">
-              <div className="max-h-[280px] space-y-3 overflow-y-auto pr-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:max-h-none lg:min-h-0 lg:h-full" data-testid="participants-list">
-                {room.participants.map(participant => (
-                  (() => {
-                    const participantAvatarUrl = getParticipantAvatarUrl(participant);
-                    return (
-                  <div
-                    key={participant.id}
-                    className="flex items-center gap-4 rounded-2xl border border-transparent bg-background/70 px-4 py-3 shadow-sm transition-[background-color,box-shadow] duration-200 hover:bg-card hover:shadow-md"
-                    data-testid={`participant-${participant.id}`}
-                  >
-                    <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl bg-secondary text-base font-semibold text-foreground shadow-sm ring-1 ring-border/60" data-testid={`participant-avatar-${participant.id}`}>
-                      {participantAvatarUrl ? (
-                        <img
-                          src={participantAvatarUrl}
-                          alt={`${participant.name} avatar`}
-                          className="h-full w-full object-cover"
-                          data-testid={`participant-avatar-image-${participant.id}`}
-                          onError={() => setFailedParticipantAvatars((prev) => ({ ...prev, [participant.id]: true }))}
-                        />
-                      ) : (
-                        getInitial(participant.name)
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0" data-testid={`participant-info-${participant.id}`}>
-                      <p className="truncate text-sm font-semibold text-foreground" data-testid={`participant-name-${participant.id}`}>{participant.name}</p>
-                      {participant.study_field && (
-                        <p className="mt-0.5 text-xs text-muted-foreground" data-testid={`participant-study-field-${participant.id}`}>{participant.study_field}</p>
-                      )}
-                    </div>
-                    {participant.id === room.owner_id && (
-                      <span className="rounded-full border border-border/70 bg-secondary/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground" data-testid={`participant-owner-badge-${participant.id}`}>
-                        Sahip
-                      </span>
-                    )}
-                  </div>
-                    );
-                  })()
-                ))}
+            <CardContent className="space-y-4 pb-4 pt-4">
+              <div className="space-y-3" data-testid="participants-list">
+                {visibleParticipants.map((participant) => renderParticipantItem(participant, "card"))}
               </div>
+
+              {hiddenParticipantsCount > 0 && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setShowParticipantsModal(true)}
+                  className="h-auto w-full justify-start rounded-2xl border border-dashed border-border/70 px-4 py-3 text-sm font-medium text-muted-foreground hover:bg-background/80"
+                  data-testid="participants-show-more-button"
+                >
+                  +{hiddenParticipantsCount} kişi daha · Tümünü gör
+                </Button>
+              )}
             </CardContent>
           </Card>
+
+          <Dialog open={showParticipantsModal} onOpenChange={setShowParticipantsModal}>
+            <DialogContent className="max-w-xl rounded-2xl border border-border/70 bg-card p-0 shadow-[0_20px_50px_-30px_rgba(15,23,42,0.45)]" data-testid="participants-modal">
+              <DialogHeader className="border-b border-border/60 px-6 py-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <DialogTitle className="text-xl font-semibold text-foreground" data-testid="participants-modal-title">
+                      Tüm Katılımcılar ({room.participants.length})
+                    </DialogTitle>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowParticipantsModal(false)}
+                    className="shrink-0 rounded-xl"
+                    data-testid="participants-modal-close-button"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </DialogHeader>
+              <div className="max-h-[70vh] space-y-3 overflow-y-auto px-6 py-5" data-testid="participants-modal-list">
+                {room.participants.map((participant) => renderParticipantItem(participant, "modal"))}
+              </div>
+            </DialogContent>
+          </Dialog>
 
           {/* Timer */}
           <Card className="rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:shrink-0" data-testid="timer-card">
