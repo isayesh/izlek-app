@@ -1,0 +1,121 @@
+{
+  "theme_and_archetype": {
+    "domain": "Student Productivity App & SaaS",
+    "theme": "LIGHT (Default) and DARK (Supported)",
+    "archetype": "3 (Pastel & Soft) mixed with 4 (Swiss & High-Contrast)",
+    "vibe": "Premium SaaS + Student Product. Clean, modern, motivating, but not childish. Neutral main surfaces.",
+    "colors": {
+      "light_mode_base": "white / soft gray (bg-white / bg-gray-50 / bg-slate-50)",
+      "dark_mode_base": "dark navy / slate (bg-slate-950 / bg-slate-900)",
+      "accents": "purple / blue tones (used strictly for main CTA buttons, small icon badges, and minor emphasis)",
+      "forbidden_colors": [
+        "Heavy use of red",
+        "Heavy use of green",
+        "Heavy use of orange",
+        "Neon colors",
+        "Full screen gradients",
+        "Bright saturated background cards"
+      ]
+    }
+  },
+  "typography": {
+    "headings": {
+      "style": "Strong, clear, and simple.",
+      "weight": "font-bold or font-semibold",
+      "colors": "text-slate-900 dark:text-white",
+      "rules": "Remove unnecessary colored word highlights. Do not use overly loud marketing language."
+    },
+    "body": {
+      "style": "Soft, clean, highly readable.",
+      "colors": "text-muted-foreground / text-slate-500",
+      "size": "text-base sm:text-lg"
+    }
+  },
+  "layout_and_spacing": {
+    "card_style": {
+      "border_radius": "rounded-2xl",
+      "border": "border border-slate-200 dark:border-slate-800 soft border",
+      "shadow": "shadow-sm or shadow-md (very light, premium feel)",
+      "background": "bg-white dark:bg-slate-900 / dark:bg-slate-800",
+      "spacing": "p-6 or p-8 for clean breathing room",
+      "rules": "Remove any solid bright colored card backgrounds. Cards should feel calm, neutral, and premium like the dashboard."
+    },
+    "gradient_usage": {
+      "allowed_areas": [
+        "Hero section (subtle)",
+        "Final CTA section (subtle and controlled)"
+      ],
+      "forbidden_areas": [
+        "Feature cards",
+        "How it works section",
+        "Backgrounds of generic sections"
+      ]
+    }
+  },
+  "sections_to_retain_and_refine": {
+    "Hero": {
+      "layout": "Left: Strong heading + short description + CTAs. Right: Product preview/mockup or dashboard-inspired screen with small floating stat cards (daily tasks, active room, weekly plan).",
+      "primary_cta": "Hemen Başla (Accent colored, e.g., purple/blue)",
+      "secondary_cta": "Giriş Yap (Ghost or outline, neutral)",
+      "rules": "Must feel premium. No heavy glow, no neon, no heavy animation. Keep it clean and balanced. Avoid making it look exactly like the dashboard, but keep the lineage."
+    },
+    "How_It_Works": {
+      "name": "Nasıl çalışır / 3 adım",
+      "structure": "3 clear steps.",
+      "style": "Simple vertical or horizontal list with numbers or clean icons. Neutral backgrounds."
+    },
+    "Online_Study_Rooms": {
+      "name": "Online Çalışma Odaları",
+      "structure": "Left: Text description / Right: Preview (or vice versa).",
+      "messaging": "Emphasize 'yalnız değilsin' (you are not alone), coworking motivation, sync timer, live chat, and focused work.",
+      "visuals": "Can reuse room UI pieces if available or use the provided generated image. Must have a clear visual hierarchy and premium layout."
+    },
+    "Feature_Grid": {
+      "count": "4 to 6 features maximum.",
+      "style": "Dashboard card style (rounded-2xl, soft border, light shadow, neutral bg). Short and clear descriptions.",
+      "rules": "Merge the old 'Solution' section into this grid. Do not use colored backgrounds."
+    },
+    "Final_CTA": {
+      "style": "Controlled light gradient. Focused conversion section."
+    },
+    "FAQ": {
+      "style": "Short, clean, accordion style at the very bottom."
+    }
+  },
+  "sections_to_remove_or_reduce": {
+    "Problem_Section": "Remove completely or condense heavily into a single short text block before the features.",
+    "Solution_Section": "Do not keep as a separate section. Integrate into the Feature Grid.",
+    "Comparison_Section": "Remove the 'Geleneksel yöntem vs İzlek' comparison completely.",
+    "Duplicate_CTAs": "Remove excessively repeating CTA blocks. Simplify to just Hero and Final CTA."
+  },
+  "image_urls": [
+    {
+      "url": "https://static.prod-images.emergentagent.com/jobs/aafd734f-cb49-45a5-a7af-83393d6e9ab7/images/b53cffefcc3b88097bb6a6bd59d962f26156e1ebf5aa9a39f5708525551afb4d.png",
+      "description": "Abstract Hero Dashboard Mockup showing daily tasks, a weekly plan, and an active study room timer. Use this in the Hero section right side if actual app screenshots are not available or as a supplementary floating asset.",
+      "category": "hero_mockup"
+    },
+    {
+      "url": "https://static.prod-images.emergentagent.com/jobs/aafd734f-cb49-45a5-a7af-83393d6e9ab7/images/28130ebe627e0dc9d77cbdb57fc015be6bc632d4811836a21e7a115d6c51be31.png",
+      "description": "Premium abstract UI illustration of a virtual online study room. Shows digital timer, live chat, focus mode. Use this in the 'Online Çalışma Odaları' section.",
+      "category": "study_room_preview"
+    }
+  ],
+  "testing_attributes": {
+    "rules": "All interactive and key informational elements MUST include a data-testid attribute (e.g., data-testid='hero-start-button', data-testid='login-button')."
+  },
+  "instructions_to_main_agent": [
+    "DO NOT redesign the app from scratch. Only refine the existing landing page in the given React frontend.",
+    "The project uses .js/.jsx files. DO NOT write or convert to .tsx or .ts. Keep it .js compatible.",
+    "DO NOT touch the FastAPI backend. DO NOT touch the Firebase auth.",
+    "DO NOT break existing routing or auth flows.",
+    "Review existing `/app` React frontend components and pages, especially landing page components.",
+    "Remove heavy color usage in background sections, switch to 'bg-white', 'bg-slate-50', 'dark:bg-slate-950', 'dark:bg-slate-900'.",
+    "Replace brightly colored cards with the defined dashboard card style (rounded-2xl, border-slate-200, shadow-sm, bg-white).",
+    "Remove redundant sections (Problem, Comparison, duplicate CTAs).",
+    "Integrate the generated images into the Hero and Study Rooms sections where appropriate if they enhance the premium feel.",
+    "Ensure the Turkish text is maintained and refined to be less 'shouty' and more premium.",
+    "Ensure the code changes are production-safe and minimal.",
+    "Do NOT add new heavy libraries or perform a major refactoring of the codebase outside the landing page UI.",
+    "Once the UI redesign is completed, tested, and verified, create a git commit containing all changes."
+  ]
+}
