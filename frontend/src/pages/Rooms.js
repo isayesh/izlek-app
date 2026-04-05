@@ -27,7 +27,6 @@ export default function Rooms() {
 
   const [createForm, setCreateForm] = useState({
     room_name: "",
-    owner_study_field: "",
     room_type: "public",
     room_password: ""
   });
@@ -60,10 +59,6 @@ export default function Rooms() {
           localStorage.removeItem("userAvatarUrl");
         }
 
-        setCreateForm((prev) => ({
-          ...prev,
-          owner_study_field: prev.owner_study_field || nextIdentity.study_field || ""
-        }));
         setJoinForm((prev) => ({
           ...prev,
           user_study_field: prev.user_study_field || nextIdentity.study_field || ""
@@ -149,7 +144,6 @@ export default function Rooms() {
         owner_name: identity.name,
         owner_id: stableUserId,
         owner_avatar_url: identity.avatar_url || null,
-        owner_study_field: createForm.owner_study_field || null,
         room_type: createForm.room_type,
         room_password: createForm.room_type === "private" ? createForm.room_password : null
       });
@@ -430,22 +424,6 @@ export default function Rooms() {
                       className={sharedInputClass}
                       data-testid="input-room-name"
                     />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="owner-field" className="text-sm font-medium text-foreground" data-testid="label-owner-field">Alan (Opsiyonel)</Label>
-                    <select
-                      id="owner-field"
-                      className={sharedSelectClass}
-                      value={createForm.owner_study_field}
-                      onChange={(e) => setCreateForm({ ...createForm, owner_study_field: e.target.value })}
-                      data-testid="select-owner-field"
-                    >
-                      <option value="">Seçiniz</option>
-                      <option value="Sayısal">Sayısal</option>
-                      <option value="EA">Eşit Ağırlık</option>
-                      <option value="Sözel">Sözel</option>
-                    </select>
                   </div>
 
                   <div className="space-y-2">

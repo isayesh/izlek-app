@@ -12,6 +12,7 @@ Mevcut İzlek kod tabanında sadece `/program/create` onboarding ekranı minimal
 - Draft autosave yapısı korundu, eski draft’lar için versiyonlu geri uyumluluk eklendi.
 
 ## Implemented
+- Rooms create formundan `Alan (Opsiyonel)` alanı tamamen kaldırıldı; ilgili create state ve backend request payload temizlendi, join tarafı olduğu gibi bırakıldı.
 - Room privacy sistemi eklendi: oda oluştururken `Herkese Açık` / `Özel` seçimi yapılabiliyor; private odalarda şifre alanı yalnız gerekli olduğunda gösteriliyor.
 - Backend room sözleşmesine `room_type` ve `is_private` alanları eklendi; private odalar için şifre `bcrypt` ile hashlenerek `room_password_hash` olarak saklanıyor, API yanıtlarında expose edilmiyor.
 - Join akışı iki aşamalı hale geldi: kullanıcı önce sadece oda kodu giriyor, oda private ise aynı form içinde ikinci adımda şifre isteniyor; public odalar mevcut akışla direkt katılıyor.
