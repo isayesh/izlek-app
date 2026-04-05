@@ -12,6 +12,7 @@ Mevcut İzlek kod tabanında sadece `/program/create` onboarding ekranı minimal
 - Draft autosave yapısı korundu, eski draft’lar için versiyonlu geri uyumluluk eklendi.
 
 ## Implemented
+- RoomPage kronometre kartı desktop davranışında sticky hale getirildi (`top-5`, `z-10`); sol kolon wrapper’ındaki sticky’yi engelleyen overflow kısıtı kaldırıldı.
 - RoomPage sol kolon layout’u dengelendi: katılımcılar kartı kontrollü desktop yüksekliğe alındı, böylece kronometre kartı aşağı itilmeden görünür ana blok olarak kaldı.
 - Room sayfası ana yerleşiminde gereksiz page scroll azaltıldı; chat paneli kendi iç scroll davranışını korurken participants modal ve timer işlevleri değişmeden kaldı.
 - RoomPage `Katılımcılar` bileşeni ölçeklenebilir hale getirildi: ilk görünümde en fazla 2 kişi gösteriliyor, fazlası için `+X kişi daha · Tümünü gör` CTA’sı ile modal açılıyor.

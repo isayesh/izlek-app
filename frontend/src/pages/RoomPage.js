@@ -713,7 +713,7 @@ export default function RoomPage() {
 
       <div className="grid w-full flex-1 min-h-0 gap-6 overflow-y-auto lg:grid-cols-3 lg:overflow-hidden" data-testid="room-main-grid">
         {/* Left: Participants + Timer */}
-        <div className="space-y-6 min-h-0 lg:flex lg:h-full lg:flex-col lg:overflow-hidden" data-testid="room-left-column">
+        <div className="space-y-6 min-h-0 lg:flex lg:h-full lg:flex-col" data-testid="room-left-column">
           {/* Participants */}
           <Card className="overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:max-h-[272px] lg:shrink-0" data-testid="participants-card">
             <CardHeader className="border-b border-border/60 pb-3">
@@ -772,7 +772,7 @@ export default function RoomPage() {
           </Dialog>
 
           {/* Timer */}
-          <Card className="rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:shrink-0" data-testid="timer-card">
+          <Card className="rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:sticky lg:top-5 lg:z-10 lg:shrink-0" data-testid="timer-card">
             <CardHeader className="border-b border-border/60 pb-3">
               <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="timer-title">
                 <Clock className="h-5 w-5 text-accent" />
