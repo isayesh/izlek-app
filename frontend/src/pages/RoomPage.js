@@ -742,7 +742,7 @@ export default function RoomPage() {
           </Card>
 
           <Dialog open={showParticipantsModal} onOpenChange={setShowParticipantsModal}>
-            <DialogContent className="max-w-xl rounded-2xl border border-border/70 bg-card p-0 shadow-[0_20px_50px_-30px_rgba(15,23,42,0.45)]" data-testid="participants-modal">
+            <DialogContent className="max-w-xl rounded-2xl border border-border/70 bg-card p-0 shadow-[0_20px_50px_-30px_rgba(15,23,42,0.45)] [&>button]:hidden" data-testid="participants-modal">
               <DialogHeader className="border-b border-border/60 px-6 py-4">
                 <div className="flex items-start justify-between gap-4">
                   <div>

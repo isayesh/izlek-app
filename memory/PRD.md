@@ -12,6 +12,8 @@ Mevcut İzlek kod tabanında sadece `/program/create` onboarding ekranı minimal
 - Draft autosave yapısı korundu, eski draft’lar için versiyonlu geri uyumluluk eklendi.
 
 ## Implemented
+- RoomPage `Katılımcılar` bileşeni ölçeklenebilir hale getirildi: ilk görünümde en fazla 2 kişi gösteriliyor, fazlası için `+X kişi daha · Tümünü gör` CTA’sı ile modal açılıyor.
+- Katılımcılar kartındaki iç scroll kaldırıldı; avatar/initial, kullanıcı adı, alan bilgisi ve sahip etiketi korunarak tam liste modal içinde gösteriliyor.
 - Dashboard üst özet kartları profile’ın yeni modeline bağlandı: eski `Hedef` ve `Günlük tempo` kartları kaldırıldı, yerine `grade_level + study_field` tabanlı koşullu profil özeti kartı eklendi.
 - Dashboard fallback davranışı sadeleştirildi: grade/alan birlikteyse tek satır `Mezun • Sayısal`, biri varsa tek başına, ikisi de yoksa kart hiç render edilmiyor.
 - Profile sayfasında `study_goal` ve `daily_study_hours` inputları UI’dan kaldırıldı; yerine `grade_level` ve editable `study_field` alanları eklendi.
