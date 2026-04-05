@@ -1,0 +1,35 @@
+{
+  "summary": "Completed backend + frontend validation for Profile schema/UI changes. Confirmed legacy study_goal/daily_study_hours inputs are removed from UI, new grade_level/study_field fields work, preview meta-line fallback logic works, profile save/update endpoints remain stable, legacy fields are preserved during simplified payload updates, and core profile identity consumers did not regress.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_profile_grade_and_study_field_update.py",
+    "/app/backend/tests/test_profile_and_core_flows.py",
+    "/app/backend/tests/test_dashboard_profile_integration_contract.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Existing non-blocking API consistency gap remains in backend: some validation branches still return {\"error\": ...} with HTTP 200 instead of 4xx HTTPException (outside this task scope, but should be standardized)."
+  ],
+  "updated_files": [
+    "/app/test_reports/iteration_14.json"
+  ],
+  "success_rate": {
+    "backend": "100% (8/8)",
+    "frontend": "100% for requested Profile UI/integration checks"
+  },
+  "test_credentials": "Read /app/memory/test_credentials.md. Environment uses dev auth bypass user test@izlek.dev (MOCKED auth flow).",
+  "seed_data_creation": "Created TEST_* profile records via public API during pytest runs.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "UI checks executed on public URL from frontend/.env at /profile. Verified options include Dil and Eşit Ağırlık, and preview fallback behavior: both -> 'Mezun • Eşit Ağırlık', grade-only -> 'Mezun', field-only -> 'Dil', none -> hidden. Save from UI succeeded and dashboard route still loaded.",
+  "rca of the issue": "No regression reproduced for requested changes. Backend preservation logic is validated by create /api/profiles (with legacy fields) then update /api/profile (without legacy fields), confirming study_goal and daily_study_hours remain intact."
+}

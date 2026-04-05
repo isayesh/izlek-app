@@ -75,6 +75,7 @@ class Profile(BaseModel):
     daily_study_hours: Optional[float] = None
     avatar_url: Optional[str] = None
     study_field: Optional[str] = None  # "Sayısal" / "EA" / "Sözel"
+    grade_level: Optional[str] = None
     streak_count: int = 0
     last_active_date: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -89,6 +90,7 @@ class ProfileCreate(BaseModel):
     daily_study_hours: Optional[float] = None
     avatar_url: Optional[str] = None
     study_field: Optional[str] = None
+    grade_level: Optional[str] = None
 
 class SimpleProfilePayload(BaseModel):
     firebase_uid: str
@@ -98,6 +100,8 @@ class SimpleProfilePayload(BaseModel):
     study_goal: Optional[str] = None
     daily_study_hours: Optional[float] = None
     avatar_url: Optional[str] = None
+    study_field: Optional[str] = None
+    grade_level: Optional[str] = None
 
 
 def normalize_existing_handle(raw_handle: Optional[str]) -> Optional[str]:
@@ -205,6 +209,8 @@ def format_profile_document(profile: Optional[dict]) -> Optional[Profile]:
     normalized["email"] = (normalized.get("email") or None)
     normalized["study_goal"] = (normalized.get("study_goal") or None)
     normalized["avatar_url"] = (normalized.get("avatar_url") or None)
+    normalized["study_field"] = (normalized.get("study_field") or None)
+    normalized["grade_level"] = (normalized.get("grade_level") or None)
     normalized["streak_count"] = int(normalized.get("streak_count") or 0)
     normalized["last_active_date"] = normalized.get("last_active_date") or None
 
@@ -213,6 +219,7 @@ def format_profile_document(profile: Optional[dict]) -> Optional[Profile]:
 
 def build_profile_document(input_data: SimpleProfilePayload, existing_profile: Optional[dict] = None) -> dict:
     existing_profile = existing_profile or {}
+    submitted_fields = input_data.model_fields_set
 
     username = input_data.username.strip()
     email = input_data.email.strip()
@@ -229,8 +236,25 @@ def build_profile_document(input_data: SimpleProfilePayload, existing_profile: O
     if isinstance(created_at, str):
         created_at = datetime.fromisoformat(created_at)
 
-    study_goal = input_data.study_goal.strip() if input_data.study_goal else None
-    avatar_url = input_data.avatar_url.strip() if input_data.avatar_url else None
+    study_goal = existing_profile.get("study_goal") or None
+    if "study_goal" in submitted_fields:
+        study_goal = input_data.study_goal.strip() if input_data.study_goal else None
+
+    daily_study_hours = existing_profile.get("daily_study_hours")
+    if "daily_study_hours" in submitted_fields:
+        daily_study_hours = input_data.daily_study_hours
+
+    avatar_url = existing_profile.get("avatar_url") or None
+    if "avatar_url" in submitted_fields:
+        avatar_url = input_data.avatar_url.strip() if input_data.avatar_url else None
+
+    study_field = existing_profile.get("study_field") or None
+    if "study_field" in submitted_fields:
+        study_field = input_data.study_field.strip() if input_data.study_field else None
+
+    grade_level = existing_profile.get("grade_level") or None
+    if "grade_level" in submitted_fields:
+        grade_level = input_data.grade_level.strip() if input_data.grade_level else None
 
     return {
         "id": existing_profile.get("id", str(uuid.uuid4())),
@@ -240,9 +264,10 @@ def build_profile_document(input_data: SimpleProfilePayload, existing_profile: O
         "handle": handle,
         "email": email,
         "study_goal": study_goal,
-        "daily_study_hours": input_data.daily_study_hours,
+        "daily_study_hours": daily_study_hours,
         "avatar_url": avatar_url,
-        "study_field": existing_profile.get("study_field"),
+        "study_field": study_field,
+        "grade_level": grade_level,
         "streak_count": int(existing_profile.get("streak_count") or 0),
         "last_active_date": existing_profile.get("last_active_date") or None,
         "created_at": created_at,
@@ -695,6 +720,8 @@ async def create_profile(input: ProfileCreate):
     profile_payload["email"] = input.email.strip() if input.email else None
     profile_payload["study_goal"] = input.study_goal.strip() if input.study_goal else None
     profile_payload["avatar_url"] = input.avatar_url.strip() if input.avatar_url else None
+    profile_payload["study_field"] = input.study_field.strip() if input.study_field else None
+    profile_payload["grade_level"] = input.grade_level.strip() if input.grade_level else None
 
     profile_obj = Profile(**profile_payload)
     doc = profile_obj.model_dump()

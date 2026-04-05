@@ -16,8 +16,8 @@ const getDefaultFormData = (currentUser) => ({
   handle: "",
   streak_count: 0,
   email: currentUser?.email || "",
-  study_goal: "",
-  daily_study_hours: "",
+  grade_level: "",
+  study_field: "",
   avatar_url: ""
 });
 
@@ -26,15 +26,36 @@ const mapProfileToFormData = (profile, currentUser) => ({
   handle: profile?.handle || "",
   streak_count: profile?.streak_count || 0,
   email: currentUser?.email || profile?.email || "",
-  study_goal: profile?.study_goal || "",
-  daily_study_hours:
-    profile?.daily_study_hours === null || profile?.daily_study_hours === undefined
-      ? ""
-      : String(profile.daily_study_hours),
+  grade_level: profile?.grade_level || "",
+  study_field: profile?.study_field || "",
   avatar_url: profile?.avatar_url || ""
 });
 
 const HANDLE_PATTERN = /^[a-z0-9_]{3,20}$/;
+const GRADE_LEVEL_OPTIONS = [
+  { value: "11", label: "11. Sınıf" },
+  { value: "12", label: "12. Sınıf" },
+  { value: "mezun", label: "Mezun" }
+];
+const GRADE_LEVEL_LABELS = Object.fromEntries(GRADE_LEVEL_OPTIONS.map((option) => [option.value, option.label]));
+const STUDY_FIELD_OPTIONS = [
+  { value: "Sayısal", label: "Sayısal" },
+  { value: "EA", label: "Eşit Ağırlık" },
+  { value: "Sözel", label: "Sözel" },
+  { value: "Dil", label: "Dil" }
+];
+const STUDY_FIELD_LABELS = {
+  Sayısal: "Sayısal",
+  EA: "Eşit Ağırlık",
+  "Eşit Ağırlık": "Eşit Ağırlık",
+  Sözel: "Sözel",
+  Dil: "Dil"
+};
+
+const getProfileMetaLine = (gradeLevel, studyField) => {
+  const parts = [GRADE_LEVEL_LABELS[gradeLevel] || gradeLevel, STUDY_FIELD_LABELS[studyField] || studyField].filter(Boolean);
+  return parts.length ? parts.join(" • ") : null;
+};
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -45,6 +66,7 @@ export default function Profile() {
   const [profileExists, setProfileExists] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const profileMetaLine = getProfileMetaLine(formData.grade_level, formData.study_field);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -117,23 +139,14 @@ export default function Profile() {
       return;
     }
 
-    if (
-      formData.daily_study_hours !== "" &&
-      Number.isNaN(Number(formData.daily_study_hours))
-    ) {
-      setError("Günlük çalışma saati geçerli bir sayı olmalıdır.");
-      return;
-    }
-
     const payload = {
       firebase_uid: currentUser.uid,
       username: formData.username.trim(),
       handle: normalizedHandle,
       email: resolvedEmail,
-      study_goal: formData.study_goal.trim() || null,
-      daily_study_hours:
-        formData.daily_study_hours === "" ? null : Number(formData.daily_study_hours),
-      avatar_url: formData.avatar_url.trim() || null
+      avatar_url: formData.avatar_url.trim() || null,
+      grade_level: formData.grade_level || null,
+      study_field: formData.study_field || null
     };
 
     try {
@@ -177,7 +190,7 @@ export default function Profile() {
                   Profil
                 </h1>
                 <p className="mt-2 text-base md:text-lg text-slate-600 dark:text-slate-300" data-testid="profile-subtitle">
-                  Hesap bilgilerini görüntüle ve çalışma hedefini güncelle.
+                  Hesap bilgilerini görüntüle ve profil detaylarını güncelle.
                 </p>
               </div>
 
@@ -281,34 +294,43 @@ export default function Profile() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="profile-study-goal" className="font-semibold text-slate-700 dark:text-slate-200" data-testid="profile-study-goal-label">
-                    Çalışma Hedefi
+                  <Label htmlFor="profile-grade-level" className="font-semibold text-slate-700 dark:text-slate-200" data-testid="profile-grade-level-label">
+                    Sınıf Durumu
                   </Label>
-                  <Input
-                    id="profile-study-goal"
-                    value={formData.study_goal}
-                    onChange={(event) => handleChange("study_goal", event.target.value)}
-                    placeholder="Örn: TYT matematikte düzenli ilerlemek"
-                    className="h-11 rounded-xl border-border/70 bg-background"
-                    data-testid="profile-study-goal-input"
-                  />
+                  <select
+                    id="profile-grade-level"
+                    value={formData.grade_level}
+                    onChange={(event) => handleChange("grade_level", event.target.value)}
+                    className="h-11 w-full rounded-xl border border-border/70 bg-background px-3 text-sm text-slate-900 outline-none ring-offset-background transition-[border-color,box-shadow] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:text-slate-100"
+                    data-testid="profile-grade-level-select"
+                  >
+                    <option value="">Seçiniz</option>
+                    {GRADE_LEVEL_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="profile-daily-hours" className="font-semibold text-slate-700 dark:text-slate-200" data-testid="profile-daily-hours-label">
-                    Günlük Çalışma Saati
+                  <Label htmlFor="profile-study-field" className="font-semibold text-slate-700 dark:text-slate-200" data-testid="profile-study-field-label">
+                    Alan
                   </Label>
-                  <Input
-                    id="profile-daily-hours"
-                    type="number"
-                    min="0"
-                    step="0.5"
-                    value={formData.daily_study_hours}
-                    onChange={(event) => handleChange("daily_study_hours", event.target.value)}
-                    placeholder="Örn: 3"
-                    className="h-11 rounded-xl border-border/70 bg-background"
-                    data-testid="profile-daily-hours-input"
-                  />
+                  <select
+                    id="profile-study-field"
+                    value={formData.study_field}
+                    onChange={(event) => handleChange("study_field", event.target.value)}
+                    className="h-11 w-full rounded-xl border border-border/70 bg-background px-3 text-sm text-slate-900 outline-none ring-offset-background transition-[border-color,box-shadow] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:text-slate-100"
+                    data-testid="profile-study-field-select"
+                  >
+                    <option value="">Seçiniz</option>
+                    {STUDY_FIELD_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="space-y-2">
@@ -393,23 +415,16 @@ export default function Profile() {
                   </p>
                 </div>
 
-                <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400" data-testid="profile-preview-study-goal-label">
-                    Hedef
-                  </p>
-                  <p className="mt-1 text-sm text-slate-700 dark:text-slate-300" data-testid="profile-preview-study-goal-value">
-                    {formData.study_goal || "Henüz eklenmedi"}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400" data-testid="profile-preview-daily-hours-label">
-                    Günlük Çalışma
-                  </p>
-                  <p className="mt-1 text-sm text-slate-700 dark:text-slate-300" data-testid="profile-preview-daily-hours-value">
-                    {formData.daily_study_hours === "" ? "Henüz eklenmedi" : `${formData.daily_study_hours} saat`}
-                  </p>
-                </div>
+                {profileMetaLine && (
+                  <div data-testid="profile-preview-meta-wrap">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400" data-testid="profile-preview-meta-label">
+                      Profil Özeti
+                    </p>
+                    <p className="mt-1 text-sm text-slate-700 dark:text-slate-300" data-testid="profile-preview-meta-value">
+                      {profileMetaLine}
+                    </p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
