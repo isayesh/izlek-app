@@ -12,6 +12,9 @@ Mevcut İzlek kod tabanında sadece `/program/create` onboarding ekranı minimal
 - Draft autosave yapısı korundu, eski draft’lar için versiyonlu geri uyumluluk eklendi.
 
 ## Implemented
+- Room create/join formlarındaki alan seçimi tamamen kaldırıldı; create ve join payload’larından study_field bağımlılığı temizlendi.
+- Room participant ve chat identity’lerinde alan bilgisi artık `profiles.study_field` üzerinden resolve ediliyor; profile’da alan yoksa UI bu metni sessizce gizliyor.
+- Leaderboard tarafında alan gösterimi olmadığı için ek UI değişikliği yapılmadı; mevcut görünüm korunarak regresyon doğrulandı.
 - Rooms create formundan `Alan (Opsiyonel)` alanı tamamen kaldırıldı; ilgili create state ve backend request payload temizlendi, join tarafı olduğu gibi bırakıldı.
 - Room privacy sistemi eklendi: oda oluştururken `Herkese Açık` / `Özel` seçimi yapılabiliyor; private odalarda şifre alanı yalnız gerekli olduğunda gösteriliyor.
 - Backend room sözleşmesine `room_type` ve `is_private` alanları eklendi; private odalar için şifre `bcrypt` ile hashlenerek `room_password_hash` olarak saklanıyor, API yanıtlarında expose edilmiyor.
