@@ -926,11 +926,6 @@ export default function RoomPage() {
                               {!isGrouped && (
                                 <div className={`flex items-center gap-2 mb-1 ${isOwnMessage ? 'justify-end' : ''}`} data-testid={`message-meta-${message.id}`}>
                                   <span className="text-sm font-semibold text-foreground/90" data-testid={`message-user-name-${message.id}`}>{message.user_name}</span>
-                                  {message.user_study_field && (
-                                    <span className="text-xs text-muted-foreground" data-testid={`message-user-study-field-${message.id}`}>
-                                      ({message.user_study_field})
-                                    </span>
-                                  )}
                                 </div>
                               )}
 
