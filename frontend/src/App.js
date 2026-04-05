@@ -34,8 +34,7 @@ export const API = normalizedBackendUrl ? `${normalizedBackendUrl}/api` : "/api"
 function App() {
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
-    const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initialTheme = savedTheme || (systemPrefersDark ? "dark" : "light");
+    const initialTheme = savedTheme || "light";
 
     if (initialTheme === "dark") {
       document.documentElement.classList.add("dark");
