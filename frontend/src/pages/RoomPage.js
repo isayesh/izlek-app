@@ -711,9 +711,9 @@ export default function RoomPage() {
         </div>
       </div>
 
-      <div className="grid w-full flex-1 min-h-0 gap-6 overflow-y-auto lg:grid-cols-3 lg:overflow-hidden" data-testid="room-main-grid">
+      <div className="grid w-full flex-1 min-h-0 gap-6 overflow-y-auto lg:grid-cols-3 lg:items-start" data-testid="room-main-grid">
         {/* Left: Participants + Timer */}
-        <div className="space-y-6 min-h-0 lg:flex lg:h-full lg:flex-col" data-testid="room-left-column">
+        <div className="space-y-6 min-h-0 lg:flex lg:flex-col" data-testid="room-left-column">
           {/* Participants */}
           <Card className="overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:max-h-[272px] lg:shrink-0" data-testid="participants-card">
             <CardHeader className="border-b border-border/60 pb-3">
@@ -772,15 +772,16 @@ export default function RoomPage() {
           </Dialog>
 
           {/* Timer */}
-          <Card className="rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:sticky lg:top-5 lg:z-10 lg:shrink-0" data-testid="timer-card">
-            <CardHeader className="border-b border-border/60 pb-3">
-              <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="timer-title">
-                <Clock className="h-5 w-5 text-accent" />
-                Kronometre
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-6 pb-6 pt-6">
-              <div className="space-y-6 text-center" data-testid="timer-panel">
+          <div className="lg:sticky lg:top-5 lg:z-10" data-testid="timer-sticky-wrap">
+            <Card className="rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:shrink-0" data-testid="timer-card">
+              <CardHeader className="border-b border-border/60 pb-3">
+                <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="timer-title">
+                  <Clock className="h-5 w-5 text-accent" />
+                  Kronometre
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="px-6 pb-6 pt-6">
+                <div className="space-y-6 text-center" data-testid="timer-panel">
                 {/* Timer Input */}
                 <div className="space-y-3.5" data-testid="timer-input-group">
                   <label className="block text-sm font-medium tracking-tight text-foreground/90" data-testid="timer-minutes-label">
@@ -846,9 +847,10 @@ export default function RoomPage() {
                 <p className="inline-flex items-center rounded-full border border-border/70 bg-secondary/80 px-3 py-1 text-xs text-muted-foreground" data-testid="timer-sync-note">
                   Kronometre tüm katılımcılar için senkronize
                 </p>
-              </div>
-            </CardContent>
-          </Card>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Right: Chat */}
