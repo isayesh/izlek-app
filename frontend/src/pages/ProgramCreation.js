@@ -391,29 +391,12 @@ export default function ProgramCreation() {
             </div>
 
             <div className="space-y-3" data-testid="program-create-progress-group">
-              <div className="h-2 rounded-full bg-slate-200 dark:bg-slate-800" data-testid="program-create-progress-track">
+              <div className="h-1.5 rounded-full bg-slate-200 dark:bg-slate-800" data-testid="program-create-progress-track">
                 <div
-                  className="h-2 rounded-full bg-slate-900 transition-[width] duration-300 dark:bg-slate-100"
+                  className="h-1.5 rounded-full bg-slate-900 transition-[width] duration-300 dark:bg-slate-100"
                   style={{ width: `${progressValue}%` }}
                   data-testid="program-create-progress-bar"
                 />
-              </div>
-              <div className="grid grid-cols-5 gap-2" data-testid="program-create-progress-steps">
-                {Array.from({ length: TOTAL_STEPS }, (_, index) => {
-                  const itemStep = index + 1;
-                  const active = itemStep <= step;
-
-                  return (
-                    <div
-                      key={itemStep}
-                      className={cn(
-                        "h-1.5 rounded-full transition-[background-color] duration-300",
-                        active ? "bg-slate-900 dark:bg-slate-100" : "bg-slate-200 dark:bg-slate-800"
-                      )}
-                      data-testid={`program-create-progress-step-${itemStep}`}
-                    />
-                  );
-                })}
               </div>
             </div>
         </CardHeader>

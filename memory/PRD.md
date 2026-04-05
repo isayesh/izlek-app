@@ -12,6 +12,8 @@ Mevcut İzlek kod tabanında sadece `/program/create` onboarding ekranı minimal
 - Draft autosave yapısı korundu, eski draft’lar için versiyonlu geri uyumluluk eklendi.
 
 ## Implemented
+- Onboarding progress bölümünde alt segment/çizgili gösterge DOM’dan tamamen kaldırıldı; sadece ana progress bar ve `Adım x / 5` metni bırakıldı.
+- Ana progress bar minimal polish ile hafif inceltildi; dark mode contrast korunarak mevcut dolum mantığı aynen bırakıldı.
 - 5 adımlı yeni görünür onboarding akışı kuruldu: takma isim, handle, sınıf durumu, alan, çalışma sıklığı.
 - Eski radio yapıları kaldırıldı; class status, study field ve study frequency için selectable card bileşenleri eklendi.
 - Dark mode okunabilirliği güçlendirildi: başlık, açıklama, input, helper text, border, error state ve selected state kontrastları güncellendi.
