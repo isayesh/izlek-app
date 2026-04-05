@@ -6,14 +6,12 @@ import {
   BarChart3,
   Bell,
   CalendarDays,
-  Clock3,
   Edit,
   Flame,
   Home,
   LogOut,
   Plus,
   Search,
-  Target,
   Trash2,
   Trophy,
   User,
@@ -60,6 +58,23 @@ const findKnownDayName = (dayName = "") => {
 const normalizeTaskDay = (dayName = "") => findKnownDayName(dayName) || dayName;
 
 const getCurrentDayName = () => findKnownDayName(new Date().toLocaleDateString("tr-TR", { weekday: "long" })) || DAY_ORDER[0];
+const GRADE_LEVEL_LABELS = {
+  "11": "11. Sınıf",
+  "12": "12. Sınıf",
+  mezun: "Mezun",
+};
+const STUDY_FIELD_LABELS = {
+  Sayısal: "Sayısal",
+  EA: "Eşit Ağırlık",
+  "Eşit Ağırlık": "Eşit Ağırlık",
+  Sözel: "Sözel",
+  Dil: "Dil",
+};
+
+const getDashboardProfileMeta = (gradeLevel, studyField) => {
+  const parts = [GRADE_LEVEL_LABELS[gradeLevel] || gradeLevel, STUDY_FIELD_LABELS[studyField] || studyField].filter(Boolean);
+  return parts.length ? parts.join(" • ") : null;
+};
 
 function TaskFormFields({ draft, setDraft, prefix }) {
   return (
@@ -156,12 +171,14 @@ export default function Dashboard() {
   const [profileData, setProfileData] = useState({
     username: "",
     avatar_url: "",
-    study_goal: "",
-    daily_study_hours: null,
+    grade_level: "",
+    study_field: "",
     streak_count: 0,
     last_active_date: null,
   });
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
+  const profileMetaLine = getDashboardProfileMeta(profileData.grade_level, profileData.study_field);
+  const hasProfileMeta = Boolean(profileMetaLine);
 
   const getTodayDateString = () => {
     const now = new Date();
@@ -200,8 +217,8 @@ export default function Dashboard() {
           setProfileData({
             username: backendUserName,
             avatar_url: res.data.avatar_url || "",
-            study_goal: res.data.study_goal || "",
-            daily_study_hours: res.data.daily_study_hours,
+            grade_level: res.data.grade_level || "",
+            study_field: res.data.study_field || "",
             streak_count: res.data.streak_count || 0,
             last_active_date: res.data.last_active_date || null,
           });
@@ -211,8 +228,8 @@ export default function Dashboard() {
           setProfileData({
             username: fallbackName,
             avatar_url: "",
-            study_goal: "",
-            daily_study_hours: null,
+            grade_level: "",
+            study_field: "",
             streak_count: 0,
             last_active_date: null,
           });
@@ -228,8 +245,8 @@ export default function Dashboard() {
           setProfileData({
             username: storedUserName,
             avatar_url: "",
-            study_goal: "",
-            daily_study_hours: null,
+            grade_level: "",
+            study_field: "",
             streak_count: 0,
             last_active_date: null,
           });
@@ -609,26 +626,18 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                  <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Target className="h-4 w-4 text-accent" />
-                      Hedef
+                <div className={`grid grid-cols-1 gap-3 ${hasProfileMeta ? "sm:grid-cols-2" : ""}`}>
+                  {hasProfileMeta && (
+                    <div className="rounded-2xl border border-border/70 bg-background/70 p-4" data-testid="dashboard-profile-meta-card">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <User className="h-4 w-4 text-accent" />
+                        Profil özeti
+                      </div>
+                      <p className="mt-3 text-lg font-semibold text-foreground" data-testid="dashboard-profile-meta-value">
+                        {profileMetaLine}
+                      </p>
                     </div>
-                    <p className="mt-3 text-lg font-semibold text-foreground">
-                      {profileData.study_goal || selectedProgram.exam_goal}
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock3 className="h-4 w-4 text-accent" />
-                      Günlük tempo
-                    </div>
-                    <p className="mt-3 text-lg font-semibold text-foreground">
-                      {profileData.daily_study_hours ?? selectedProgram.daily_hours} saat
-                    </p>
-                  </div>
+                  )}
 
                   <div className="rounded-2xl border border-border/70 bg-background/70 p-4" data-testid="dashboard-streak-summary">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -666,7 +675,7 @@ export default function Dashboard() {
                       <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">Profil özeti</p>
                       <p className="text-lg font-semibold text-foreground">{userName}</p>
                       <p className="text-sm text-muted-foreground">
-                        {profileData.study_goal || "Planın hazır, odak noktan belli."}
+                        {profileMetaLine || "Profil detaylarınla dashboard özetini kişiselleştir."}
                       </p>
                     </div>
                   </div>

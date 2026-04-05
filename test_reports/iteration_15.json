@@ -1,0 +1,30 @@
+{
+  "summary": "Frontend-only dashboard regression checks completed on public preview URL. Requested card replacement behavior is working: old Hedef/Günlük tempo cards are removed, profile-driven meta card renders from grade_level + study_field, and card hides cleanly when both are empty.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Dashboard page file size is high (frontend/src/pages/Dashboard.js ~990 lines). Per maintainability guideline (>700), split into focused sections/components."
+  ],
+  "updated_files": [
+    "/app/test_reports/iteration_15.json"
+  ],
+  "success_rate": {
+    "backend": "N/A (not requested)",
+    "frontend": "100% for requested scenarios"
+  },
+  "test_credentials": "Read /app/memory/test_credentials.md. Dev auth bypass user observed: test@izlek.dev.",
+  "seed_data_creation": "No new seeded entities created. Existing profile fields were updated during UI validation and reset to empty at end.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "One early broad text selector produced a false positive on 'Hedef' because welcome copy includes 'hedefin'; exact-match check confirms legacy card labels are absent. Final state left with both grade_level and study_field empty, and dashboard meta card hidden.",
+  "rca of the issue": "No functional regression reproduced for requested scope."
+}
