@@ -711,7 +711,7 @@ export default function RoomPage() {
         </div>
       </div>
 
-      <div className="grid w-full flex-1 min-h-0 gap-6 overflow-y-auto lg:grid-cols-3 lg:items-start" data-testid="room-main-grid">
+      <div className="grid w-full flex-1 min-h-0 gap-6 overflow-hidden lg:grid-cols-3" data-testid="room-main-grid">
         {/* Left: Participants + Timer */}
         <div className="space-y-6 min-h-0 lg:flex lg:flex-col" data-testid="room-left-column">
           {/* Participants */}
@@ -854,7 +854,7 @@ export default function RoomPage() {
         </div>
 
         {/* Right: Chat */}
-        <Card className="lg:col-span-2 rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] flex min-h-0 flex-col" data-testid="chat-card">
+        <Card className="flex h-[560px] min-h-0 flex-col rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:col-span-2 lg:h-full" data-testid="chat-card">
           <CardHeader className="border-b border-border/60 pb-4">
             <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="chat-title">
               <MessageCircle className="h-5 w-5 text-accent" />
@@ -862,8 +862,8 @@ export default function RoomPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0 flex-1 min-h-0">
-            <div className="flex h-[560px] min-h-0 flex-col lg:h-full" data-testid="chat-panel">
-              <div className="min-h-0 flex-1 px-5 pt-5" data-testid="chat-messages-wrapper">
+            <div className="flex h-full min-h-0 flex-col" data-testid="chat-panel">
+              <div className="min-h-0 flex-1 overflow-hidden px-5 pt-5" data-testid="chat-messages-wrapper">
                 <ScrollArea className="h-full pr-3" ref={chatContainerRef} data-testid="chat-scroll-area">
                   <div className="space-y-3" data-testid="messages-list">
                     {messages.length === 0 ? (
