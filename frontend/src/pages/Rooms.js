@@ -11,6 +11,8 @@ import { Home, Plus, LogIn, Trophy, Search } from "lucide-react";
 import { saveRoom } from "@/lib/storage";
 import { useAuth } from "@/contexts/AuthContext";
 
+const ROOM_PASSWORD_MIN_LENGTH = 6;
+
 export default function Rooms() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
@@ -25,15 +27,21 @@ export default function Rooms() {
 
   const [createForm, setCreateForm] = useState({
     room_name: "",
-    owner_study_field: ""
+    owner_study_field: "",
+    room_type: "public",
+    room_password: ""
   });
 
   const [joinForm, setJoinForm] = useState({
     room_code: "",
-    user_study_field: ""
+    user_study_field: "",
+    room_password: ""
   });
 
   const [loading, setLoading] = useState(false);
+  const [joinRequiresPassword, setJoinRequiresPassword] = useState(false);
+  const [joinResolvedRoomName, setJoinResolvedRoomName] = useState("");
+  const [joinError, setJoinError] = useState("");
 
   useEffect(() => {
     const loadIdentity = async () => {
@@ -127,6 +135,10 @@ export default function Rooms() {
     if (!ensureHandleReady()) {
       return;
     }
+    if (createForm.room_type === "private" && createForm.room_password.trim().length < ROOM_PASSWORD_MIN_LENGTH) {
+      alert(`Özel odalar için şifre en az ${ROOM_PASSWORD_MIN_LENGTH} karakter olmalıdır.`);
+      return;
+    }
 
     const stableUserId = currentUser?.uid || localStorage.getItem("userId");
 
@@ -137,7 +149,9 @@ export default function Rooms() {
         owner_name: identity.name,
         owner_id: stableUserId,
         owner_avatar_url: identity.avatar_url || null,
-        owner_study_field: createForm.owner_study_field || null
+        owner_study_field: createForm.owner_study_field || null,
+        room_type: createForm.room_type,
+        room_password: createForm.room_type === "private" ? createForm.room_password : null
       });
 
       const roomId = res.data.id;
@@ -179,15 +193,33 @@ export default function Rooms() {
     }
 
     const stableUserId = currentUser?.uid || localStorage.getItem("userId");
+    const normalizedRoomCode = joinForm.room_code.trim().toUpperCase();
+
+    if (joinRequiresPassword && !joinForm.room_password.trim()) {
+      setJoinError("Bu oda özel. Devam etmek için oda şifresini gir.");
+      return;
+    }
 
     setLoading(true);
     try {
+      if (!joinRequiresPassword) {
+        const roomLookup = await axios.get(`${API}/rooms/code/${normalizedRoomCode}`);
+
+        if (roomLookup.data?.is_private) {
+          setJoinRequiresPassword(true);
+          setJoinResolvedRoomName(roomLookup.data?.name || "");
+          setJoinError("");
+          return;
+        }
+      }
+
       const res = await axios.post(`${API}/rooms/join`, {
-        room_code: joinForm.room_code,
+        room_code: normalizedRoomCode,
         user_id: stableUserId,
         user_name: identity.name,
         user_avatar_url: identity.avatar_url || null,
-        user_study_field: joinForm.user_study_field || null
+        user_study_field: joinForm.user_study_field || null,
+        room_password: joinRequiresPassword ? joinForm.room_password : null
       });
 
       if (res.data.error) {
@@ -214,6 +246,20 @@ export default function Rooms() {
       console.error("Error joining room:", error);
       console.error("Error response:", error.response?.data);
       console.error("Error status:", error.response?.status);
+
+      if (error.response?.status === 404) {
+        setJoinRequiresPassword(false);
+        setJoinResolvedRoomName("");
+        setJoinForm((prev) => ({ ...prev, room_password: "" }));
+        setJoinError("Oda bulunamadı.");
+        return;
+      }
+
+      if (error.response?.status === 403) {
+        setJoinError(error.response?.data?.detail || "Oda şifresi hatalı.");
+        return;
+      }
+
       alert(`Odaya katılırken hata: ${error.response?.data?.detail || error.message}`);
     } finally {
       setLoading(false);
@@ -246,8 +292,12 @@ export default function Rooms() {
         }
       : {
           title: "Var olan odaya katıl",
-          description: "Oda kodunu gir ve mevcut çalışma alanına aynı akışla katıl.",
-          submitText: loading ? "Katılınıyor..." : "Odaya Katıl",
+          description: joinRequiresPassword
+            ? "Bu oda özel. Şifreni girerek aynı akış içinde devam et."
+            : "Oda kodunu gir ve mevcut çalışma alanına aynı akışla katıl.",
+          submitText: joinRequiresPassword
+            ? (loading ? "Katılınıyor..." : "Şifre ile Katıl")
+            : (loading ? "Kod Kontrol Ediliyor..." : "Odaya Katıl"),
           submitTestId: "btn-join-room"
         };
 
@@ -398,6 +448,42 @@ export default function Rooms() {
                     </select>
                   </div>
 
+                  <div className="space-y-2">
+                    <Label htmlFor="room-type" className="text-sm font-medium text-foreground" data-testid="label-room-type">Oda Türü</Label>
+                    <select
+                      id="room-type"
+                      className={sharedSelectClass}
+                      value={createForm.room_type}
+                      onChange={(e) => setCreateForm((prev) => ({
+                        ...prev,
+                        room_type: e.target.value,
+                        room_password: e.target.value === "private" ? prev.room_password : ""
+                      }))}
+                      data-testid="select-room-type"
+                    >
+                      <option value="public">Herkese Açık</option>
+                      <option value="private">Özel</option>
+                    </select>
+                  </div>
+
+                  {createForm.room_type === "private" && (
+                    <div className="space-y-2" data-testid="create-room-password-wrap">
+                      <Label htmlFor="room-password" className="text-sm font-medium text-foreground" data-testid="label-room-password">Oda Şifresi *</Label>
+                      <Input
+                        id="room-password"
+                        type="password"
+                        placeholder="En az 6 karakter"
+                        value={createForm.room_password}
+                        onChange={(e) => setCreateForm({ ...createForm, room_password: e.target.value })}
+                        className={sharedInputClass}
+                        data-testid="input-room-password"
+                      />
+                      <p className="mt-2 text-sm text-muted-foreground" data-testid="room-password-help-text">
+                        Özel odalara yalnızca kod ve doğru şifre ile girilir.
+                      </p>
+                    </div>
+                  )}
+
                   <Button
                     className="h-11 w-full rounded-xl"
                     onClick={handleCreateRoom}
@@ -415,12 +501,46 @@ export default function Rooms() {
                       id="room-code"
                       placeholder="Örn: ABC123"
                       value={joinForm.room_code}
-                      onChange={(e) => setJoinForm({ ...joinForm, room_code: e.target.value.toUpperCase() })}
+                      onChange={(e) => {
+                        setJoinForm({ ...joinForm, room_code: e.target.value.toUpperCase(), room_password: "" });
+                        setJoinRequiresPassword(false);
+                        setJoinResolvedRoomName("");
+                        setJoinError("");
+                      }}
                       className={sharedInputClass}
                       data-testid="input-room-code"
                     />
                     <p className="mt-2 text-sm text-muted-foreground" data-testid="room-code-help-text">Oda sahibinden aldığın kodu buraya gir.</p>
                   </div>
+
+                  {joinRequiresPassword && (
+                    <div className="space-y-2" data-testid="join-room-password-wrap">
+                      <Label htmlFor="join-room-password" className="text-sm font-medium text-foreground" data-testid="label-join-room-password">Oda Şifresi *</Label>
+                      <Input
+                        id="join-room-password"
+                        type="password"
+                        placeholder="Özel oda şifresini gir"
+                        value={joinForm.room_password}
+                        onChange={(e) => {
+                          setJoinForm({ ...joinForm, room_password: e.target.value });
+                          setJoinError("");
+                        }}
+                        className={sharedInputClass}
+                        data-testid="input-join-room-password"
+                      />
+                      <p className="mt-2 text-sm text-muted-foreground" data-testid="join-room-password-help-text">
+                        {joinResolvedRoomName
+                          ? `"${joinResolvedRoomName}" özel oda olarak ayarlı. Devam etmek için şifre gir.`
+                          : "Bu oda özel. Devam etmek için şifre gir."}
+                      </p>
+                    </div>
+                  )}
+
+                  {joinError && (
+                    <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300" data-testid="join-room-error-message">
+                      {joinError}
+                    </div>
+                  )}
 
                   <div className="space-y-2">
                     <Label htmlFor="user-field" className="text-sm font-medium text-foreground" data-testid="label-user-field">Alan (Opsiyonel)</Label>

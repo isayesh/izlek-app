@@ -11,6 +11,7 @@ from typing import List, Optional
 import uuid
 from datetime import datetime, timedelta, timezone
 from pymongo.errors import DuplicateKeyError
+import bcrypt
 
 
 ROOT_DIR = Path(__file__).parent
@@ -50,6 +51,12 @@ FRIEND_RELATIONSHIP_NONE = "none"
 FRIEND_RELATIONSHIP_PENDING_OUTGOING = "outgoing_pending"
 FRIEND_RELATIONSHIP_PENDING_INCOMING = "incoming_pending"
 FRIEND_RELATIONSHIP_FRIENDS = "friends"
+ROOM_TYPE_PUBLIC = "public"
+ROOM_TYPE_PRIVATE = "private"
+ROOM_PASSWORD_MIN_LENGTH = 6
+ROOM_PASSWORD_REQUIRED_MESSAGE = "Bu oda özel. Devam etmek için oda şifresini gir."
+ROOM_PASSWORD_INVALID_MESSAGE = "Oda şifresi hatalı."
+ROOM_PASSWORD_VALIDATION_MESSAGE = f"Oda şifresi en az {ROOM_PASSWORD_MIN_LENGTH} karakter olmalıdır."
 
 
 # ============ MODELS ============
@@ -437,6 +444,8 @@ class Room(BaseModel):
     name: str
     code: str = Field(default_factory=lambda: str(uuid.uuid4())[:6].upper())
     owner_id: str
+    room_type: str = ROOM_TYPE_PUBLIC
+    is_private: bool = False
     participants: List[RoomParticipant] = []
     timer_state: TimerState = Field(default_factory=TimerState)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -447,6 +456,8 @@ class RoomCreate(BaseModel):
     owner_id: Optional[str] = None
     owner_avatar_url: Optional[str] = None
     owner_study_field: Optional[str] = None
+    room_type: Optional[str] = ROOM_TYPE_PUBLIC
+    room_password: Optional[str] = None
 
 class RoomJoin(BaseModel):
     room_code: str
@@ -454,6 +465,7 @@ class RoomJoin(BaseModel):
     user_name: str
     user_avatar_url: Optional[str] = None
     user_study_field: Optional[str] = None
+    room_password: Optional[str] = None
 
 class RoomLeave(BaseModel):
     user_id: str
@@ -471,6 +483,52 @@ async def create_system_room_message(room_id: str, content: str):
     doc = message_obj.model_dump()
     doc['timestamp'] = doc['timestamp'].isoformat()
     await db.messages.insert_one(doc)
+
+
+def normalize_room_type(raw_room_type: Optional[str]) -> str:
+    normalized = (raw_room_type or ROOM_TYPE_PUBLIC).strip().lower()
+    return ROOM_TYPE_PRIVATE if normalized == ROOM_TYPE_PRIVATE else ROOM_TYPE_PUBLIC
+
+
+def normalize_room_password(raw_password: Optional[str]) -> Optional[str]:
+    if raw_password is None:
+        return None
+
+    normalized = raw_password.strip()
+    return normalized or None
+
+
+def hash_room_password(raw_password: str) -> str:
+    return bcrypt.hashpw(raw_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+
+def verify_room_password(raw_password: Optional[str], stored_hash: Optional[str]) -> bool:
+    if not stored_hash:
+        return True
+
+    normalized_password = normalize_room_password(raw_password)
+    if not normalized_password:
+        return False
+
+    try:
+        return bcrypt.checkpw(normalized_password.encode("utf-8"), stored_hash.encode("utf-8"))
+    except ValueError:
+        return False
+
+
+def format_room_document(room: Optional[dict]) -> Optional[Room]:
+    if not room:
+        return None
+
+    normalized = dict(room)
+    created_at = normalized.get("created_at")
+    if isinstance(created_at, str):
+        normalized["created_at"] = datetime.fromisoformat(created_at)
+
+    room_type = normalize_room_type(normalized.get("room_type"))
+    normalized["room_type"] = room_type
+    normalized["is_private"] = room_type == ROOM_TYPE_PRIVATE or bool(normalized.get("room_password_hash"))
+    return Room(**normalized)
 
 
 # Message Models
@@ -1002,10 +1060,17 @@ async def create_room(input: RoomCreate):
         return {"error": "Oda adı boş olamaz"}
     if not input.owner_name or input.owner_name.strip() == "":
         return {"error": "İsim boş olamaz"}
+
+    room_type = normalize_room_type(input.room_type)
+    room_password = normalize_room_password(input.room_password)
+    if room_type == ROOM_TYPE_PRIVATE and (not room_password or len(room_password) < ROOM_PASSWORD_MIN_LENGTH):
+        raise HTTPException(status_code=400, detail=ROOM_PASSWORD_VALIDATION_MESSAGE)
     
     room_obj = Room(
         name=input.name,
-        owner_id=input.owner_id or str(uuid.uuid4())
+        owner_id=input.owner_id or str(uuid.uuid4()),
+        room_type=room_type,
+        is_private=room_type == ROOM_TYPE_PRIVATE,
     )
     
     # Add owner as first participant
@@ -1019,6 +1084,7 @@ async def create_room(input: RoomCreate):
     
     doc = room_obj.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
+    doc['room_password_hash'] = hash_room_password(room_password) if room_type == ROOM_TYPE_PRIVATE else None
     
     await db.rooms.insert_one(doc)
     return room_obj
@@ -1034,6 +1100,14 @@ async def join_room(input: RoomJoin):
     
     if not room:
         return {"error": "Oda bulunamadı"}
+
+    room_type = normalize_room_type(room.get("room_type"))
+    is_private = room_type == ROOM_TYPE_PRIVATE or bool(room.get("room_password_hash"))
+    if is_private and not verify_room_password(input.room_password, room.get("room_password_hash")):
+        raise HTTPException(
+            status_code=403,
+            detail=ROOM_PASSWORD_REQUIRED_MESSAGE if not normalize_room_password(input.room_password) else ROOM_PASSWORD_INVALID_MESSAGE,
+        )
 
     participant_id = input.user_id or str(uuid.uuid4())
     participants = room.get("participants", [])
@@ -1061,10 +1135,7 @@ async def join_room(input: RoomJoin):
         await create_system_room_message(room["id"], f"{input.user_name} odaya katıldı")
     
     updated_room = await db.rooms.find_one({"code": input.room_code.upper()}, {"_id": 0})
-    if updated_room and isinstance(updated_room.get('created_at'), str):
-        updated_room['created_at'] = datetime.fromisoformat(updated_room['created_at'])
-    
-    return updated_room
+    return format_room_document(updated_room)
 
 @api_router.post("/rooms/{room_id}/leave")
 async def leave_room(room_id: str, input: RoomLeave):
@@ -1091,16 +1162,14 @@ async def leave_room(room_id: str, input: RoomLeave):
 @api_router.get("/rooms/{room_id}", response_model=Room)
 async def get_room(room_id: str):
     room = await db.rooms.find_one({"id": room_id}, {"_id": 0})
-    if room and isinstance(room.get('created_at'), str):
-        room['created_at'] = datetime.fromisoformat(room['created_at'])
-    return room
+    return format_room_document(room)
 
 @api_router.get("/rooms/code/{room_code}", response_model=Room)
 async def get_room_by_code(room_code: str):
     room = await db.rooms.find_one({"code": room_code.upper()}, {"_id": 0})
-    if room and isinstance(room.get('created_at'), str):
-        room['created_at'] = datetime.fromisoformat(room['created_at'])
-    return room
+    if not room:
+        raise HTTPException(status_code=404, detail="Oda bulunamadı")
+    return format_room_document(room)
 
 @api_router.put("/rooms/{room_id}/timer")
 async def update_timer(room_id: str, timer_state: TimerState):
