@@ -6,7 +6,7 @@ import json
 from datetime import datetime
 
 class DashboardAPITester:
-    def __init__(self, base_url="https://dashboard-modernize-5.preview.emergentagent.com"):
+    def __init__(self, base_url="https://room-responsive-fix.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.tests_run = 0

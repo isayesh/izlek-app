@@ -711,70 +711,68 @@ export default function RoomPage() {
         </div>
       </div>
 
-      <div className="grid h-full w-full flex-1 min-h-0 gap-6 overflow-hidden lg:grid-cols-3" data-testid="room-main-grid">
-        {/* Left: Participants + Timer */}
-        <div className="space-y-6 min-h-0 lg:flex lg:h-full lg:flex-col" data-testid="room-left-column">
-          {/* Participants */}
-          <Card className="overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:max-h-[272px] lg:shrink-0" data-testid="participants-card">
-            <CardHeader className="border-b border-border/60 pb-3">
-              <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="participants-title">
-                <Users className="h-5 w-5 text-accent" />
-                Katılımcılar ({room.participants.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 pb-4 pt-4">
-              <div className="space-y-3" data-testid="participants-list">
-                {visibleParticipants.map((participant) => renderParticipantItem(participant, "card"))}
-              </div>
+      <div className="grid h-full w-full flex-1 min-h-0 grid-cols-1 grid-rows-[auto_auto_minmax(0,1fr)] gap-x-6 gap-y-6 overflow-hidden lg:grid-cols-2 lg:grid-rows-[auto_minmax(0,1fr)]" data-testid="room-main-grid">
+        {/* Participants */}
+        <Card className="overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:col-start-1 lg:row-start-1 lg:max-h-[272px] lg:shrink-0" data-testid="participants-card">
+          <CardHeader className="border-b border-border/60 pb-3">
+            <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="participants-title">
+              <Users className="h-5 w-5 text-accent" />
+              Katılımcılar ({room.participants.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 pb-4 pt-4">
+            <div className="space-y-3" data-testid="participants-list">
+              {visibleParticipants.map((participant) => renderParticipantItem(participant, "card"))}
+            </div>
 
-              {hiddenParticipantsCount > 0 && (
+            {hiddenParticipantsCount > 0 && (
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setShowParticipantsModal(true)}
+                className="h-auto w-full justify-start rounded-2xl border border-dashed border-border/70 px-4 py-3 text-sm font-medium text-muted-foreground hover:bg-background/80"
+                data-testid="participants-show-more-button"
+              >
+                +{hiddenParticipantsCount} kişi daha · Tümünü gör
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+
+        <Dialog open={showParticipantsModal} onOpenChange={setShowParticipantsModal}>
+          <DialogContent className="max-w-xl rounded-2xl border border-border/70 bg-card p-0 shadow-[0_20px_50px_-30px_rgba(15,23,42,0.45)] [&>button]:hidden" data-testid="participants-modal">
+            <DialogHeader className="border-b border-border/60 px-6 py-4">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <DialogTitle className="text-xl font-semibold text-foreground" data-testid="participants-modal-title">
+                    Tüm Katılımcılar ({room.participants.length})
+                  </DialogTitle>
+                  <DialogDescription className="mt-1 text-sm text-muted-foreground" data-testid="participants-modal-description">
+                    Odadaki tüm katılımcıları avatarları ve rol bilgileriyle birlikte görüntüle.
+                  </DialogDescription>
+                </div>
                 <Button
                   type="button"
                   variant="ghost"
-                  onClick={() => setShowParticipantsModal(true)}
-                  className="h-auto w-full justify-start rounded-2xl border border-dashed border-border/70 px-4 py-3 text-sm font-medium text-muted-foreground hover:bg-background/80"
-                  data-testid="participants-show-more-button"
+                  size="icon"
+                  onClick={() => setShowParticipantsModal(false)}
+                  className="shrink-0 rounded-xl"
+                  data-testid="participants-modal-close-button"
                 >
-                  +{hiddenParticipantsCount} kişi daha · Tümünü gör
+                  <X className="h-4 w-4" />
                 </Button>
-              )}
-            </CardContent>
-          </Card>
-
-          <Dialog open={showParticipantsModal} onOpenChange={setShowParticipantsModal}>
-            <DialogContent className="max-w-xl rounded-2xl border border-border/70 bg-card p-0 shadow-[0_20px_50px_-30px_rgba(15,23,42,0.45)] [&>button]:hidden" data-testid="participants-modal">
-              <DialogHeader className="border-b border-border/60 px-6 py-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <DialogTitle className="text-xl font-semibold text-foreground" data-testid="participants-modal-title">
-                      Tüm Katılımcılar ({room.participants.length})
-                    </DialogTitle>
-                    <DialogDescription className="mt-1 text-sm text-muted-foreground" data-testid="participants-modal-description">
-                      Odadaki tüm katılımcıları avatarları ve rol bilgileriyle birlikte görüntüle.
-                    </DialogDescription>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setShowParticipantsModal(false)}
-                    className="shrink-0 rounded-xl"
-                    data-testid="participants-modal-close-button"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              </DialogHeader>
-              <div className="max-h-[70vh] space-y-3 overflow-y-auto px-6 py-5" data-testid="participants-modal-list">
-                {room.participants.map((participant) => renderParticipantItem(participant, "modal"))}
               </div>
-            </DialogContent>
-          </Dialog>
+            </DialogHeader>
+            <div className="max-h-[70vh] space-y-3 overflow-y-auto px-6 py-5" data-testid="participants-modal-list">
+              {room.participants.map((participant) => renderParticipantItem(participant, "modal"))}
+            </div>
+          </DialogContent>
+        </Dialog>
 
-          {/* Timer */}
-          <div className="lg:flex lg:min-h-0 lg:flex-1" data-testid="timer-sticky-wrap">
-            <div className="lg:sticky lg:top-5 lg:z-10 lg:flex lg:h-full lg:w-full" data-testid="timer-sticky-inner">
-              <Card className="rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:flex lg:h-full lg:w-full lg:flex-1 lg:flex-col" data-testid="timer-card">
+        {/* Timer */}
+        <div className="min-h-0 lg:col-start-1 lg:row-start-2 lg:flex lg:min-h-0" data-testid="timer-sticky-wrap">
+          <div className="w-full min-h-0 lg:sticky lg:top-5 lg:z-10 lg:flex lg:h-full lg:w-full" data-testid="timer-sticky-inner">
+            <Card className="w-full rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:flex lg:h-full lg:w-full lg:flex-1 lg:flex-col" data-testid="timer-card">
               <CardHeader className="border-b border-border/60 pb-3">
                 <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="timer-title">
                   <Clock className="h-5 w-5 text-accent" />
@@ -783,76 +781,75 @@ export default function RoomPage() {
               </CardHeader>
               <CardContent className="px-6 pb-6 pt-6 lg:flex lg:flex-1 lg:flex-col lg:justify-center">
                 <div className="space-y-6 text-center" data-testid="timer-panel">
-                {/* Timer Input */}
-                <div className="space-y-3.5" data-testid="timer-input-group">
-                  <label className="block text-sm font-medium tracking-tight text-foreground/90" data-testid="timer-minutes-label">
-                    Çalışma Süresi (dakika)
-                  </label>
-                  <div className="flex items-center justify-center gap-3" data-testid="timer-minutes-row">
-                    <Input
-                      type="number"
-                      min="1"
-                      max="180"
-                      value={duration}
-                      onChange={handleDurationChange}
-                      disabled={isRunning}
-                      className="h-14 w-28 rounded-2xl border border-border/70 bg-background/80 text-center text-2xl font-semibold leading-none text-foreground shadow-sm focus:ring-2 focus:ring-ring focus:ring-offset-0 disabled:opacity-60"
-                      data-testid="input-timer-minutes"
-                    />
-                    <span className="min-w-[62px] text-left text-base font-medium tracking-tight text-muted-foreground" data-testid="timer-minutes-unit">dakika</span>
+                  {/* Timer Input */}
+                  <div className="space-y-3.5" data-testid="timer-input-group">
+                    <label className="block text-sm font-medium tracking-tight text-foreground/90" data-testid="timer-minutes-label">
+                      Çalışma Süresi (dakika)
+                    </label>
+                    <div className="flex flex-wrap items-center justify-center gap-3" data-testid="timer-minutes-row">
+                      <Input
+                        type="number"
+                        min="1"
+                        max="180"
+                        value={duration}
+                        onChange={handleDurationChange}
+                        disabled={isRunning}
+                        className="h-14 w-28 rounded-2xl border border-border/70 bg-background/80 text-center text-2xl font-semibold leading-none text-foreground shadow-sm focus:ring-2 focus:ring-ring focus:ring-offset-0 disabled:opacity-60"
+                        data-testid="input-timer-minutes"
+                      />
+                      <span className="min-w-[62px] text-left text-base font-medium tracking-tight text-muted-foreground" data-testid="timer-minutes-unit">dakika</span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Timer Display */}
-                <div className="mx-auto flex w-fit min-w-[228px] items-center justify-center rounded-2xl border border-border/70 bg-background/70 px-8 py-5.5 shadow-sm" data-testid="timer-display-wrap">
-                  <div className="font-mono text-center text-[3.5rem] font-semibold leading-none tracking-tight text-foreground sm:text-[4.25rem]" data-testid="timer-display">
-                    {formatTime(remainingSeconds)}
+                  {/* Timer Display */}
+                  <div className="mx-auto flex w-full max-w-[320px] items-center justify-center rounded-2xl border border-border/70 bg-background/70 px-8 py-5.5 shadow-sm sm:w-fit sm:min-w-[228px]" data-testid="timer-display-wrap">
+                    <div className="font-mono text-center text-[3.5rem] font-semibold leading-none tracking-tight text-foreground sm:text-[4.25rem]" data-testid="timer-display">
+                      {formatTime(remainingSeconds)}
+                    </div>
                   </div>
-                </div>
 
-                <div className="flex flex-wrap items-center justify-center gap-3.5 pt-1" data-testid="timer-controls">
-                  {!isRunning ? (
+                  <div className="flex flex-wrap items-center justify-center gap-3.5 pt-1" data-testid="timer-controls">
+                    {!isRunning ? (
+                      <Button
+                        onClick={handleStartTimer}
+                        size="lg"
+                        className="min-w-[148px] justify-center rounded-xl px-8"
+                        data-testid="btn-timer-start"
+                      >
+                        <Play className="mr-2 h-5 w-5" />
+                        Başlat
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={handlePauseTimer}
+                        variant="outline"
+                        size="lg"
+                        className="min-w-[148px] justify-center rounded-xl px-8"
+                        data-testid="btn-timer-pause"
+                      >
+                        <Pause className="mr-2 h-5 w-5" />
+                        Duraklat
+                      </Button>
+                    )}
+
                     <Button
-                      onClick={handleStartTimer}
-                      size="lg"
-                      className="min-w-[148px] justify-center px-8 rounded-xl"
-                      data-testid="btn-timer-start"
-                    >
-                      <Play className="h-5 w-5 mr-2" />
-                      Başlat
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={handlePauseTimer}
+                      onClick={handleResetTimer}
                       variant="outline"
                       size="lg"
-                      className="min-w-[148px] justify-center px-8 rounded-xl"
-                      data-testid="btn-timer-pause"
+                      className="min-w-[56px] rounded-xl"
+                      data-testid="btn-timer-reset"
                     >
-                      <Pause className="h-5 w-5 mr-2" />
-                      Duraklat
+                      <RotateCcw className="h-5 w-5" />
                     </Button>
-                  )}
-
-                  <Button
-                    onClick={handleResetTimer}
-                    variant="outline"
-                    size="lg"
-                    className="min-w-[56px] rounded-xl"
-                    data-testid="btn-timer-reset"
-                  >
-                    <RotateCcw className="h-5 w-5" />
-                  </Button>
-                </div>
+                  </div>
                 </div>
               </CardContent>
-              </Card>
-            </div>
+            </Card>
           </div>
         </div>
 
         {/* Right: Chat */}
-        <Card className="flex h-[560px] min-h-0 flex-col rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:col-span-2 lg:h-full" data-testid="chat-card">
+        <Card className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:col-start-2 lg:row-span-2 lg:row-start-1" data-testid="chat-card">
           <CardHeader className="border-b border-border/60 pb-4">
             <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="chat-title">
               <MessageCircle className="h-5 w-5 text-accent" />
