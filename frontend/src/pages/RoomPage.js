@@ -667,9 +667,9 @@ export default function RoomPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background px-4 py-6 sm:px-6 lg:px-10 xl:px-12 flex h-screen flex-col overflow-hidden" data-testid="room-page">
+    <div className="min-h-screen min-w-0 bg-background px-4 py-6 sm:px-6 xl:px-10 2xl:px-12 flex h-screen flex-col overflow-hidden" data-testid="room-page">
       {/* Header */}
-      <div className="mb-8 w-full shrink-0" data-testid="room-header-wrapper">
+      <div className="mb-8 w-full min-w-0 shrink-0" data-testid="room-header-wrapper">
         <div className="rounded-2xl border border-border/70 bg-card/95 p-5 sm:p-6 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)]" data-testid="room-header-card">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -683,7 +683,7 @@ export default function RoomPage() {
               </Button>
 
               <div className="space-y-2">
-                <h1 className="font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl" data-testid="room-name">
+                <h1 className="font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl xl:text-6xl" data-testid="room-name">
                   {room.name}
                 </h1>
                 <div className="flex flex-wrap items-center gap-2" data-testid="room-meta-row">
@@ -711,9 +711,9 @@ export default function RoomPage() {
         </div>
       </div>
 
-      <div className="grid h-full w-full flex-1 min-h-0 grid-cols-1 grid-rows-[auto_auto_minmax(0,1fr)] gap-x-6 gap-y-6 overflow-hidden lg:grid-cols-2 lg:grid-rows-[auto_minmax(0,1fr)]" data-testid="room-main-grid">
+      <div className="grid h-full w-full flex-1 min-h-0 min-w-0 grid-cols-1 grid-rows-[auto_auto_minmax(0,1fr)] gap-x-6 gap-y-6 overflow-hidden xl:grid-cols-2 xl:grid-rows-[auto_minmax(0,1fr)]" data-testid="room-main-grid">
         {/* Participants */}
-        <Card className="overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:col-start-1 lg:row-start-1 lg:max-h-[272px] lg:shrink-0" data-testid="participants-card">
+        <Card className="overflow-hidden min-w-0 rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] xl:col-start-1 xl:row-start-1 xl:max-h-[272px] xl:shrink-0" data-testid="participants-card">
           <CardHeader className="border-b border-border/60 pb-3">
             <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="participants-title">
               <Users className="h-5 w-5 text-accent" />
@@ -770,16 +770,16 @@ export default function RoomPage() {
         </Dialog>
 
         {/* Timer */}
-        <div className="min-h-0 lg:col-start-1 lg:row-start-2 lg:flex lg:min-h-0" data-testid="timer-sticky-wrap">
-          <div className="w-full min-h-0 lg:sticky lg:top-5 lg:z-10 lg:flex lg:h-full lg:w-full" data-testid="timer-sticky-inner">
-            <Card className="w-full rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:flex lg:h-full lg:w-full lg:flex-1 lg:flex-col" data-testid="timer-card">
+        <div className="min-h-0 min-w-0 xl:col-start-1 xl:row-start-2 xl:flex xl:min-h-0" data-testid="timer-sticky-wrap">
+          <div className="w-full min-h-0 min-w-0 xl:sticky xl:top-5 xl:z-10 xl:flex xl:h-full xl:w-full" data-testid="timer-sticky-inner">
+            <Card className="w-full min-w-0 rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] xl:flex xl:h-full xl:w-full xl:flex-1 xl:flex-col" data-testid="timer-card">
               <CardHeader className="border-b border-border/60 pb-3">
                 <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="timer-title">
                   <Clock className="h-5 w-5 text-accent" />
                   Kronometre
                 </CardTitle>
               </CardHeader>
-              <CardContent className="px-6 pb-6 pt-6 lg:flex lg:flex-1 lg:flex-col lg:justify-center">
+              <CardContent className="min-w-0 px-6 pb-6 pt-6 xl:flex xl:flex-1 xl:flex-col xl:justify-center">
                 <div className="space-y-6 text-center" data-testid="timer-panel">
                   {/* Timer Input */}
                   <div className="space-y-3.5" data-testid="timer-input-group">
@@ -849,18 +849,18 @@ export default function RoomPage() {
         </div>
 
         {/* Right: Chat */}
-        <Card className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:col-start-2 lg:row-span-2 lg:row-start-1" data-testid="chat-card">
+        <Card className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] xl:col-start-2 xl:row-span-2 xl:row-start-1" data-testid="chat-card">
           <CardHeader className="border-b border-border/60 pb-4">
             <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="chat-title">
               <MessageCircle className="h-5 w-5 text-accent" />
               Sohbet
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 flex-1 min-h-0">
-            <div className="flex h-full min-h-0 flex-col" data-testid="chat-panel">
-              <div className="min-h-0 flex-1 overflow-hidden px-5 pt-5" data-testid="chat-messages-wrapper">
-                <ScrollArea className="h-full pr-3" ref={chatContainerRef} data-testid="chat-scroll-area">
-                  <div className="space-y-3" data-testid="messages-list">
+          <CardContent className="flex-1 min-h-0 min-w-0 p-0">
+            <div className="flex h-full min-h-0 min-w-0 flex-col" data-testid="chat-panel">
+              <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden px-5 pt-5" data-testid="chat-messages-wrapper">
+                <ScrollArea className="h-full min-h-0 min-w-0 flex-1 overflow-y-auto pr-3" ref={chatContainerRef} data-testid="chat-scroll-area">
+                  <div className="min-w-0 space-y-3" data-testid="messages-list">
                     {messages.length === 0 ? (
                       <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/70 bg-background/60 px-6 py-12 text-center" data-testid="chat-empty-state">
                         <p className="text-base font-semibold text-foreground">Henüz mesaj yok</p>
@@ -914,7 +914,7 @@ export default function RoomPage() {
                               <div className="w-8 flex-shrink-0"></div>
                             )}
 
-                            <div className={`flex-1 ${widthClass} ${isOwnMessage ? 'text-right' : ''}`}>
+                            <div className={`min-w-0 flex-1 ${widthClass} ${isOwnMessage ? 'text-right' : ''}`}>
                               {/* Sender name: only show if not grouped (first message of sender) */}
                               {!isGrouped && (
                                 <div className={`flex items-center gap-2 mb-1 ${isOwnMessage ? 'justify-end' : ''}`} data-testid={`message-meta-${message.id}`}>
@@ -956,16 +956,16 @@ export default function RoomPage() {
               </div>
 
               {/* Message Input */}
-              <div className="flex items-center gap-3 border-t border-border/60 bg-background/70 px-5 py-4" data-testid="chat-input-row">
+              <div className="shrink-0 flex items-center gap-3 border-t border-border/60 bg-background/70 px-5 py-4" data-testid="chat-input-row">
                 <Input
                   placeholder="Mesajını yaz..."
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                  className="h-11 border border-border/70 bg-background/80 text-foreground placeholder:text-muted-foreground shadow-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0"
+                  className="h-11 min-w-0 flex-1 border border-border/70 bg-background/80 text-foreground placeholder:text-muted-foreground shadow-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0"
                   data-testid="input-message"
                 />
-                <Button onClick={sendMessage} className="h-11 px-4 rounded-xl" data-testid="btn-send-message">
+                <Button onClick={sendMessage} className="h-11 shrink-0 rounded-xl px-4" data-testid="btn-send-message">
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
