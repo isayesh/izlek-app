@@ -711,7 +711,7 @@ export default function RoomPage() {
         </div>
       </div>
 
-      <div className="grid h-full w-full flex-1 min-h-0 gap-6 overflow-hidden lg:grid-cols-[300px_1fr]" data-testid="room-main-grid">
+      <div className="grid h-full w-full flex-1 min-h-0 gap-6 overflow-hidden md:grid-cols-[280px_1fr] lg:grid-cols-2" data-testid="room-main-grid">
         {/* Left: Participants + Timer */}
         <div className="space-y-6 min-h-0 lg:flex lg:h-full lg:flex-col" data-testid="room-left-column">
           {/* Participants */}
