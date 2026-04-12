@@ -667,9 +667,9 @@ export default function RoomPage() {
   }
 
   return (
-    <div className="min-h-screen min-w-0 bg-background px-4 py-6 sm:px-6 xl:px-10 2xl:px-12 flex h-screen flex-col overflow-hidden" data-testid="room-page">
+    <div className="min-h-screen bg-background px-4 py-6 sm:px-6 lg:px-10 xl:px-12 flex h-screen flex-col overflow-hidden" data-testid="room-page">
       {/* Header */}
-      <div className="mb-8 w-full min-w-0 shrink-0" data-testid="room-header-wrapper">
+      <div className="mb-8 w-full shrink-0" data-testid="room-header-wrapper">
         <div className="rounded-2xl border border-border/70 bg-card/95 p-5 sm:p-6 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)]" data-testid="room-header-card">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -683,7 +683,7 @@ export default function RoomPage() {
               </Button>
 
               <div className="space-y-2">
-                <h1 className="font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl xl:text-6xl" data-testid="room-name">
+                <h1 className="font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl" data-testid="room-name">
                   {room.name}
                 </h1>
                 <div className="flex flex-wrap items-center gap-2" data-testid="room-meta-row">
@@ -711,156 +711,163 @@ export default function RoomPage() {
         </div>
       </div>
 
-      <div className="grid h-full w-full flex-1 min-h-0 min-w-0 grid-cols-1 grid-rows-[auto_auto_minmax(0,1fr)] gap-x-6 gap-y-6 overflow-hidden xl:grid-cols-2 xl:grid-rows-[auto_minmax(0,1fr)]" data-testid="room-main-grid">
-        {/* Participants */}
-        <Card className="overflow-hidden min-w-0 rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] xl:col-start-1 xl:row-start-1 xl:max-h-[272px] xl:shrink-0" data-testid="participants-card">
-          <CardHeader className="border-b border-border/60 pb-3">
-            <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="participants-title">
-              <Users className="h-5 w-5 text-accent" />
-              Katılımcılar ({room.participants.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 pb-4 pt-4">
-            <div className="space-y-3" data-testid="participants-list">
-              {visibleParticipants.map((participant) => renderParticipantItem(participant, "card"))}
-            </div>
+      <div className="grid h-full w-full flex-1 min-h-0 gap-6 overflow-hidden lg:grid-cols-3" data-testid="room-main-grid">
+        {/* Left: Participants + Timer */}
+        <div className="space-y-6 min-h-0 lg:flex lg:h-full lg:flex-col" data-testid="room-left-column">
+          {/* Participants */}
+          <Card className="overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:max-h-[272px] lg:shrink-0" data-testid="participants-card">
+            <CardHeader className="border-b border-border/60 pb-3">
+              <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="participants-title">
+                <Users className="h-5 w-5 text-accent" />
+                Katılımcılar ({room.participants.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 pb-4 pt-4">
+              <div className="space-y-3" data-testid="participants-list">
+                {visibleParticipants.map((participant) => renderParticipantItem(participant, "card"))}
+              </div>
 
-            {hiddenParticipantsCount > 0 && (
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setShowParticipantsModal(true)}
-                className="h-auto w-full justify-start rounded-2xl border border-dashed border-border/70 px-4 py-3 text-sm font-medium text-muted-foreground hover:bg-background/80"
-                data-testid="participants-show-more-button"
-              >
-                +{hiddenParticipantsCount} kişi daha · Tümünü gör
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-
-        <Dialog open={showParticipantsModal} onOpenChange={setShowParticipantsModal}>
-          <DialogContent className="max-w-xl rounded-2xl border border-border/70 bg-card p-0 shadow-[0_20px_50px_-30px_rgba(15,23,42,0.45)] [&>button]:hidden" data-testid="participants-modal">
-            <DialogHeader className="border-b border-border/60 px-6 py-4">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <DialogTitle className="text-xl font-semibold text-foreground" data-testid="participants-modal-title">
-                    Tüm Katılımcılar ({room.participants.length})
-                  </DialogTitle>
-                  <DialogDescription className="mt-1 text-sm text-muted-foreground" data-testid="participants-modal-description">
-                    Odadaki tüm katılımcıları avatarları ve rol bilgileriyle birlikte görüntüle.
-                  </DialogDescription>
-                </div>
+              {hiddenParticipantsCount > 0 && (
                 <Button
                   type="button"
                   variant="ghost"
-                  size="icon"
-                  onClick={() => setShowParticipantsModal(false)}
-                  className="shrink-0 rounded-xl"
-                  data-testid="participants-modal-close-button"
+                  onClick={() => setShowParticipantsModal(true)}
+                  className="h-auto w-full justify-start rounded-2xl border border-dashed border-border/70 px-4 py-3 text-sm font-medium text-muted-foreground hover:bg-background/80"
+                  data-testid="participants-show-more-button"
                 >
-                  <X className="h-4 w-4" />
+                  +{hiddenParticipantsCount} kişi daha · Tümünü gör
                 </Button>
-              </div>
-            </DialogHeader>
-            <div className="max-h-[70vh] space-y-3 overflow-y-auto px-6 py-5" data-testid="participants-modal-list">
-              {room.participants.map((participant) => renderParticipantItem(participant, "modal"))}
-            </div>
-          </DialogContent>
-        </Dialog>
+              )}
+            </CardContent>
+          </Card>
 
-        {/* Timer */}
-        <div className="min-h-0 min-w-0 xl:col-start-1 xl:row-start-2 xl:flex xl:min-h-0" data-testid="timer-sticky-wrap">
-          <div className="w-full min-h-0 min-w-0 xl:sticky xl:top-5 xl:z-10 xl:flex xl:h-full xl:w-full" data-testid="timer-sticky-inner">
-            <Card className="w-full min-w-0 rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] xl:flex xl:h-full xl:w-full xl:flex-1 xl:flex-col" data-testid="timer-card">
+          <Dialog open={showParticipantsModal} onOpenChange={setShowParticipantsModal}>
+            <DialogContent className="max-w-xl rounded-2xl border border-border/70 bg-card p-0 shadow-[0_20px_50px_-30px_rgba(15,23,42,0.45)] [&>button]:hidden" data-testid="participants-modal">
+              <DialogHeader className="border-b border-border/60 px-6 py-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <DialogTitle className="text-xl font-semibold text-foreground" data-testid="participants-modal-title">
+                      Tüm Katılımcılar ({room.participants.length})
+                    </DialogTitle>
+                    <DialogDescription className="mt-1 text-sm text-muted-foreground" data-testid="participants-modal-description">
+                      Odadaki tüm katılımcıları avatarları ve rol bilgileriyle birlikte görüntüle.
+                    </DialogDescription>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowParticipantsModal(false)}
+                    className="shrink-0 rounded-xl"
+                    data-testid="participants-modal-close-button"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </DialogHeader>
+              <div className="max-h-[70vh] space-y-3 overflow-y-auto px-6 py-5" data-testid="participants-modal-list">
+                {room.participants.map((participant) => renderParticipantItem(participant, "modal"))}
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Timer */}
+          <div className="lg:flex lg:min-h-0 lg:flex-1" data-testid="timer-sticky-wrap">
+            <div className="lg:sticky lg:top-5 lg:z-10 lg:flex lg:h-full lg:w-full" data-testid="timer-sticky-inner">
+              <Card className="rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:flex lg:h-full lg:w-full lg:flex-1 lg:flex-col" data-testid="timer-card">
               <CardHeader className="border-b border-border/60 pb-3">
                 <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="timer-title">
                   <Clock className="h-5 w-5 text-accent" />
                   Kronometre
                 </CardTitle>
               </CardHeader>
-              <CardContent className="min-w-0 px-6 pb-6 pt-6 xl:flex xl:flex-1 xl:flex-col xl:justify-center">
+              <CardContent className="px-6 pb-6 pt-6 lg:flex lg:flex-1 lg:flex-col lg:justify-center">
                 <div className="space-y-6 text-center" data-testid="timer-panel">
-                  {/* Timer Input */}
-                  <div className="space-y-3.5" data-testid="timer-input-group">
-                    <label className="block text-sm font-medium tracking-tight text-foreground/90" data-testid="timer-minutes-label">
-                      Çalışma Süresi (dakika)
-                    </label>
-                    <div className="flex flex-wrap items-center justify-center gap-3" data-testid="timer-minutes-row">
-                      <Input
-                        type="number"
-                        min="1"
-                        max="180"
-                        value={duration}
-                        onChange={handleDurationChange}
-                        disabled={isRunning}
-                        className="h-14 w-28 rounded-2xl border border-border/70 bg-background/80 text-center text-2xl font-semibold leading-none text-foreground shadow-sm focus:ring-2 focus:ring-ring focus:ring-offset-0 disabled:opacity-60"
-                        data-testid="input-timer-minutes"
-                      />
-                      <span className="min-w-[62px] text-left text-base font-medium tracking-tight text-muted-foreground" data-testid="timer-minutes-unit">dakika</span>
-                    </div>
-                  </div>
-
-                  {/* Timer Display */}
-                  <div className="mx-auto flex w-full max-w-[320px] items-center justify-center rounded-2xl border border-border/70 bg-background/70 px-8 py-5.5 shadow-sm sm:w-fit sm:min-w-[228px]" data-testid="timer-display-wrap">
-                    <div className="font-mono text-center text-[3.5rem] font-semibold leading-none tracking-tight text-foreground sm:text-[4.25rem]" data-testid="timer-display">
-                      {formatTime(remainingSeconds)}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap items-center justify-center gap-3.5 pt-1" data-testid="timer-controls">
-                    {!isRunning ? (
-                      <Button
-                        onClick={handleStartTimer}
-                        size="lg"
-                        className="min-w-[148px] justify-center rounded-xl px-8"
-                        data-testid="btn-timer-start"
-                      >
-                        <Play className="mr-2 h-5 w-5" />
-                        Başlat
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={handlePauseTimer}
-                        variant="outline"
-                        size="lg"
-                        className="min-w-[148px] justify-center rounded-xl px-8"
-                        data-testid="btn-timer-pause"
-                      >
-                        <Pause className="mr-2 h-5 w-5" />
-                        Duraklat
-                      </Button>
-                    )}
-
-                    <Button
-                      onClick={handleResetTimer}
-                      variant="outline"
-                      size="lg"
-                      className="min-w-[56px] rounded-xl"
-                      data-testid="btn-timer-reset"
-                    >
-                      <RotateCcw className="h-5 w-5" />
-                    </Button>
+                {/* Timer Input */}
+                <div className="space-y-3.5" data-testid="timer-input-group">
+                  <label className="block text-sm font-medium tracking-tight text-foreground/90" data-testid="timer-minutes-label">
+                    Çalışma Süresi (dakika)
+                  </label>
+                  <div className="flex items-center justify-center gap-3" data-testid="timer-minutes-row">
+                    <Input
+                      type="number"
+                      min="1"
+                      max="180"
+                      value={duration}
+                      onChange={handleDurationChange}
+                      disabled={isRunning}
+                      className="h-14 w-28 rounded-2xl border border-border/70 bg-background/80 text-center text-2xl font-semibold leading-none text-foreground shadow-sm focus:ring-2 focus:ring-ring focus:ring-offset-0 disabled:opacity-60"
+                      data-testid="input-timer-minutes"
+                    />
+                    <span className="min-w-[62px] text-left text-base font-medium tracking-tight text-muted-foreground" data-testid="timer-minutes-unit">dakika</span>
                   </div>
                 </div>
+
+                {/* Timer Display */}
+                <div className="mx-auto flex w-fit min-w-[228px] items-center justify-center rounded-2xl border border-border/70 bg-background/70 px-8 py-5.5 shadow-sm" data-testid="timer-display-wrap">
+                  <div className="font-mono text-center text-[3.5rem] font-semibold leading-none tracking-tight text-foreground sm:text-[4.25rem]" data-testid="timer-display">
+                    {formatTime(remainingSeconds)}
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-center gap-3.5 pt-1" data-testid="timer-controls">
+                  {!isRunning ? (
+                    <Button
+                      onClick={handleStartTimer}
+                      size="lg"
+                      className="min-w-[148px] justify-center px-8 rounded-xl"
+                      data-testid="btn-timer-start"
+                    >
+                      <Play className="h-5 w-5 mr-2" />
+                      Başlat
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={handlePauseTimer}
+                      variant="outline"
+                      size="lg"
+                      className="min-w-[148px] justify-center px-8 rounded-xl"
+                      data-testid="btn-timer-pause"
+                    >
+                      <Pause className="h-5 w-5 mr-2" />
+                      Duraklat
+                    </Button>
+                  )}
+
+                  <Button
+                    onClick={handleResetTimer}
+                    variant="outline"
+                    size="lg"
+                    className="min-w-[56px] rounded-xl"
+                    data-testid="btn-timer-reset"
+                  >
+                    <RotateCcw className="h-5 w-5" />
+                  </Button>
+                </div>
+
+                <p className="inline-flex items-center rounded-full border border-border/70 bg-secondary/80 px-3 py-1 text-xs text-muted-foreground" data-testid="timer-sync-note">
+                  Kronometre tüm katılımcılar için senkronize
+                </p>
+                </div>
               </CardContent>
-            </Card>
+              </Card>
+            </div>
           </div>
         </div>
 
         {/* Right: Chat */}
-        <Card className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] xl:col-start-2 xl:row-span-2 xl:row-start-1" data-testid="chat-card">
+        <Card className="flex h-[560px] min-h-0 flex-col rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:col-span-2 lg:h-full" data-testid="chat-card">
           <CardHeader className="border-b border-border/60 pb-4">
             <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="chat-title">
               <MessageCircle className="h-5 w-5 text-accent" />
               Sohbet
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 min-h-0 min-w-0 p-0">
-            <div className="flex h-full min-h-0 min-w-0 flex-col" data-testid="chat-panel">
-              <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden px-5 pt-5" data-testid="chat-messages-wrapper">
-                <ScrollArea className="h-full min-h-0 min-w-0 flex-1 overflow-y-auto pr-3" ref={chatContainerRef} data-testid="chat-scroll-area">
-                  <div className="min-w-0 space-y-3" data-testid="messages-list">
+          <CardContent className="p-0 flex-1 min-h-0">
+            <div className="flex h-full min-h-0 flex-col" data-testid="chat-panel">
+              <div className="min-h-0 flex-1 overflow-hidden px-5 pt-5" data-testid="chat-messages-wrapper">
+                <ScrollArea className="h-full pr-3" ref={chatContainerRef} data-testid="chat-scroll-area">
+                  <div className="space-y-3" data-testid="messages-list">
                     {messages.length === 0 ? (
                       <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/70 bg-background/60 px-6 py-12 text-center" data-testid="chat-empty-state">
                         <p className="text-base font-semibold text-foreground">Henüz mesaj yok</p>
@@ -914,7 +921,7 @@ export default function RoomPage() {
                               <div className="w-8 flex-shrink-0"></div>
                             )}
 
-                            <div className={`min-w-0 flex-1 ${widthClass} ${isOwnMessage ? 'text-right' : ''}`}>
+                            <div className={`flex-1 ${widthClass} ${isOwnMessage ? 'text-right' : ''}`}>
                               {/* Sender name: only show if not grouped (first message of sender) */}
                               {!isGrouped && (
                                 <div className={`flex items-center gap-2 mb-1 ${isOwnMessage ? 'justify-end' : ''}`} data-testid={`message-meta-${message.id}`}>
@@ -942,6 +949,9 @@ export default function RoomPage() {
                                       minute: '2-digit'
                                     })}
                                   </span>
+                                  {isOwnMessage && (
+                                    <span className="text-xs text-muted-foreground" data-testid={`message-status-${message.id}`}>• görüldü</span>
+                                  )}
                                 </div>
                               )}
                             </div>
@@ -956,16 +966,16 @@ export default function RoomPage() {
               </div>
 
               {/* Message Input */}
-              <div className="shrink-0 flex items-center gap-3 border-t border-border/60 bg-background/70 px-5 py-4" data-testid="chat-input-row">
+              <div className="flex items-center gap-3 border-t border-border/60 bg-background/70 px-5 py-4" data-testid="chat-input-row">
                 <Input
                   placeholder="Mesajını yaz..."
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                  className="h-11 min-w-0 flex-1 border border-border/70 bg-background/80 text-foreground placeholder:text-muted-foreground shadow-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0"
+                  className="h-11 border border-border/70 bg-background/80 text-foreground placeholder:text-muted-foreground shadow-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0"
                   data-testid="input-message"
                 />
-                <Button onClick={sendMessage} className="h-11 shrink-0 rounded-xl px-4" data-testid="btn-send-message">
+                <Button onClick={sendMessage} className="h-11 px-4 rounded-xl" data-testid="btn-send-message">
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
