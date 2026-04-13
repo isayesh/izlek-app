@@ -667,7 +667,7 @@ export default function RoomPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background px-4 py-6 sm:px-6 lg:px-10 xl:px-12 flex h-screen flex-col overflow-hidden" data-testid="room-page">
+    <div className="min-h-screen bg-background px-4 py-6 sm:px-6 lg:px-10 xl:px-12 flex flex-col lg:h-screen lg:overflow-hidden" data-testid="room-page">
       {/* Header */}
       <div className="mb-8 w-full shrink-0" data-testid="room-header-wrapper">
         <div className="rounded-2xl border border-border/70 bg-card/95 p-5 sm:p-6 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)]" data-testid="room-header-card">
@@ -711,9 +711,9 @@ export default function RoomPage() {
         </div>
       </div>
 
-      <div className="grid h-full w-full flex-1 min-h-0 gap-6 overflow-hidden lg:grid-cols-3" data-testid="room-main-grid">
+      <div className="grid w-full flex-1 grid-cols-1 min-w-0 gap-6 lg:h-full lg:min-h-0 lg:overflow-hidden lg:grid-cols-3" data-testid="room-main-grid">
         {/* Left: Participants + Timer */}
-        <div className="space-y-6 min-h-0 lg:flex lg:h-full lg:flex-col" data-testid="room-left-column">
+        <div className="min-w-0 space-y-6 min-h-0 lg:flex lg:h-full lg:flex-col" data-testid="room-left-column">
           {/* Participants */}
           <Card className="overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:max-h-[272px] lg:shrink-0" data-testid="participants-card">
             <CardHeader className="border-b border-border/60 pb-3">
@@ -856,7 +856,7 @@ export default function RoomPage() {
         </div>
 
         {/* Right: Chat */}
-        <Card className="flex h-[560px] min-h-0 flex-col rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:col-span-2 lg:h-full" data-testid="chat-card">
+        <Card className="min-w-0 flex h-[560px] min-h-0 flex-col rounded-2xl border border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)] lg:col-span-2 lg:h-full" data-testid="chat-card">
           <CardHeader className="border-b border-border/60 pb-4">
             <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="chat-title">
               <MessageCircle className="h-5 w-5 text-accent" />
