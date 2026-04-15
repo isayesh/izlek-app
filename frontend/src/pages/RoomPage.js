@@ -124,7 +124,14 @@ export default function RoomPage() {
         </div>
         <div className="min-w-0 flex-1 space-y-2" data-testid={`${variant}-participant-info-${participant.id}`}>
           <div className="min-w-0">
-            <p className="truncate text-[0.95rem] font-semibold text-foreground" data-testid={`${variant}-participant-name-${participant.id}`}>{participant.name}</p>
+            <div className="flex min-w-0 items-center gap-2">
+              <p className="truncate text-[0.95rem] font-semibold text-foreground" data-testid={`${variant}-participant-name-${participant.id}`}>{participant.name}</p>
+              {participant.id === room.owner_id && (
+                <span className="shrink-0 rounded-md border border-slate-200/80 bg-slate-100/70 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-slate-500 dark:border-slate-700/70 dark:bg-slate-800/40 dark:text-slate-400" data-testid={`${variant}-participant-owner-badge-${participant.id}`}>
+                  Sahip
+                </span>
+              )}
+            </div>
             {participant.study_field && (
               <p className="mt-1 truncate text-xs font-medium text-muted-foreground/90" data-testid={`${variant}-participant-study-field-${participant.id}`}>{participant.study_field}</p>
             )}
@@ -133,11 +140,6 @@ export default function RoomPage() {
             <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] ${participantStatusClasses}`} data-testid={`${variant}-participant-status-badge-${participant.id}`}>
               {participantStatusLabel}
             </span>
-            {participant.id === room.owner_id && (
-              <span className="inline-flex items-center rounded-full border border-border/70 bg-secondary/55 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground" data-testid={`${variant}-participant-owner-badge-${participant.id}`}>
-                Sahip
-              </span>
-            )}
           </div>
         </div>
       </div>
