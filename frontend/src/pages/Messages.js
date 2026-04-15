@@ -12,6 +12,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { API } from "@/App";
 import { formatPublicHandle, getAvatarFallback, getPublicUsername } from "@/lib/publicProfile";
 
+const ROOM_INVITE_MESSAGE_TYPE = "room_invite";
+
 const formatMessageTime = (timestamp) => new Date(timestamp).toLocaleTimeString("tr-TR", {
   hour: "2-digit",
   minute: "2-digit",
@@ -31,6 +33,42 @@ const formatSidebarTime = (timestamp) => {
     : messageDate.toLocaleDateString("tr-TR", { day: "2-digit", month: "short" });
 };
 
+const getDirectMessagePreview = (messageLike) => {
+  if (!messageLike) {
+    return "";
+  }
+
+  if (messageLike.message_type === ROOM_INVITE_MESSAGE_TYPE) {
+    const roomName = messageLike.room_invite?.room_name?.trim();
+    return roomName ? `"${roomName}" odasına davet` : "Oda daveti";
+  }
+
+  return (messageLike.message || messageLike.last_message || "").trim();
+};
+
+const getRoomInviteCopy = (message, isOwnMessage) => {
+  const roomName = message.room_invite?.room_name?.trim();
+  const inviterName = message.room_invite?.inviter_name?.trim();
+
+  if (isOwnMessage) {
+    return roomName ? `"${roomName}" odası için davet gönderdin.` : "Bu konuşmaya bir oda daveti gönderdin.";
+  }
+
+  if (roomName && inviterName) {
+    return `${inviterName} seni "${roomName}" odasına çağırıyor.`;
+  }
+
+  if (roomName) {
+    return `Seni "${roomName}" odasına çağırıyor.`;
+  }
+
+  if (inviterName) {
+    return `${inviterName} seni bir çalışma odasına çağırıyor.`;
+  }
+
+  return "Seni bir çalışma odasına çağırıyor.";
+};
+
 export default function Messages() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
@@ -38,15 +76,23 @@ export default function Messages() {
   const [friendsLoading, setFriendsLoading] = useState(true);
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [sendingMessage, setSendingMessage] = useState(false);
+  const [sendingInvite, setSendingInvite] = useState(false);
+  const [roomInviteLoading, setRoomInviteLoading] = useState(false);
   const [selectedFriendId, setSelectedFriendId] = useState("");
   const [draftMessage, setDraftMessage] = useState("");
   const [activeMessages, setActiveMessages] = useState([]);
   const [conversationSummaries, setConversationSummaries] = useState({});
+  const [activeRoomInviteTarget, setActiveRoomInviteTarget] = useState(null);
   const [error, setError] = useState("");
 
   const authHeaders = useMemo(() => (
     currentUser?.uid ? { "X-Firebase-UID": currentUser.uid } : {}
   ), [currentUser]);
+
+  const currentRoomParticipantId = useMemo(
+    () => localStorage.getItem("currentUserId") || currentUser?.uid || "",
+    [currentUser]
+  );
 
   const loadFriends = useCallback(async () => {
     if (!currentUser?.uid) {
@@ -108,10 +154,51 @@ export default function Messages() {
     }
   }, [authHeaders, currentUser]);
 
+  const loadActiveRoomInviteTarget = useCallback(async () => {
+    if (!currentUser?.uid) {
+      setActiveRoomInviteTarget(null);
+      setRoomInviteLoading(false);
+      return;
+    }
+
+    const storedRoomId = localStorage.getItem("currentRoomId");
+    if (!storedRoomId) {
+      setActiveRoomInviteTarget(null);
+      setRoomInviteLoading(false);
+      return;
+    }
+
+    try {
+      setRoomInviteLoading(true);
+      const response = await axios.get(`${API}/rooms/${storedRoomId}`);
+      const room = response.data;
+      const participants = Array.isArray(room?.participants) ? room.participants : [];
+      const isParticipant = participants.some(
+        (participant) => participant?.id === currentRoomParticipantId || participant?.id === currentUser.uid
+      );
+
+      if (!room?.id || !isParticipant) {
+        setActiveRoomInviteTarget(null);
+        return;
+      }
+
+      setActiveRoomInviteTarget({
+        room_id: room.id,
+        room_name: room.name || "",
+      });
+    } catch (loadError) {
+      console.error("Error resolving active room invite target:", loadError);
+      setActiveRoomInviteTarget(null);
+    } finally {
+      setRoomInviteLoading(false);
+    }
+  }, [currentRoomParticipantId, currentUser]);
+
   useEffect(() => {
     loadFriends();
     loadConversationSummaries();
-  }, [loadFriends, loadConversationSummaries]);
+    loadActiveRoomInviteTarget();
+  }, [loadFriends, loadConversationSummaries, loadActiveRoomInviteTarget]);
 
   useEffect(() => {
     if (!selectedFriendId) {
@@ -160,7 +247,7 @@ export default function Messages() {
         ...previousSummaries,
         [selectedFriendId]: {
           ...(previousSummaries[selectedFriendId] || {}),
-          last_message: response.data?.message || trimmedMessage,
+          last_message: getDirectMessagePreview(response.data),
           last_message_at: response.data?.created_at || new Date().toISOString(),
           unread_count: 0,
         },
@@ -171,6 +258,50 @@ export default function Messages() {
       setError(sendError.response?.data?.detail || "Mesaj gönderilirken bir hata oluştu.");
     } finally {
       setSendingMessage(false);
+    }
+  };
+
+  const handleSendRoomInvite = async () => {
+    if (!selectedFriendId) {
+      return;
+    }
+
+    if (!activeRoomInviteTarget?.room_id) {
+      setError("Davet göndermek için önce aktif olduğun bir room seçili olmalı.");
+      return;
+    }
+
+    try {
+      setSendingInvite(true);
+      setError("");
+      const response = await axios.post(
+        `${API}/messages/direct`,
+        {
+          receiver_profile_id: selectedFriendId,
+          message_type: ROOM_INVITE_MESSAGE_TYPE,
+          room_invite: {
+            room_id: activeRoomInviteTarget.room_id,
+          },
+        },
+        { headers: authHeaders }
+      );
+
+      setActiveMessages((previousMessages) => [...previousMessages, response.data]);
+      setConversationSummaries((previousSummaries) => ({
+        ...previousSummaries,
+        [selectedFriendId]: {
+          ...(previousSummaries[selectedFriendId] || {}),
+          last_message: getDirectMessagePreview(response.data),
+          last_message_at: response.data?.created_at || new Date().toISOString(),
+          unread_count: 0,
+        },
+      }));
+    } catch (sendError) {
+      console.error("Error sending room invite:", sendError);
+      setError(sendError.response?.data?.detail || "Oda daveti gönderilirken bir hata oluştu.");
+      await loadActiveRoomInviteTarget();
+    } finally {
+      setSendingInvite(false);
     }
   };
 
@@ -274,7 +405,7 @@ export default function Messages() {
                                 )}
                               </div>
                             </div>
-                            </div>
+                          </div>
                         </button>
                       );
                     })
@@ -287,14 +418,39 @@ export default function Messages() {
               {selectedFriend ? (
                 <>
                   <div className="border-b border-border/60 px-5 py-4" data-testid="messages-conversation-header">
-                    <p className="text-lg font-semibold text-slate-900 dark:text-slate-100" data-testid="messages-conversation-title">
-                      {getPublicUsername(selectedFriend)}
-                    </p>
-                    {selectedFriendHandle && (
-                      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400" data-testid="messages-conversation-handle">
-                        {selectedFriendHandle}
-                      </p>
-                    )}
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <p className="text-lg font-semibold text-slate-900 dark:text-slate-100" data-testid="messages-conversation-title">
+                          {getPublicUsername(selectedFriend)}
+                        </p>
+                        {selectedFriendHandle && (
+                          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400" data-testid="messages-conversation-handle">
+                            {selectedFriendHandle}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col items-stretch gap-1.5 sm:items-end">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={handleSendRoomInvite}
+                          disabled={!activeRoomInviteTarget?.room_id || sendingInvite || roomInviteLoading}
+                          className="rounded-xl border-border/70 bg-background hover:bg-secondary"
+                          data-testid="messages-invite-room-button"
+                        >
+                          <Users className="h-4 w-4" /> {sendingInvite ? "Gönderiliyor..." : "Odaya Davet Et"}
+                        </Button>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400" data-testid="messages-active-room-hint">
+                          {roomInviteLoading
+                            ? "Aktif room kontrol ediliyor..."
+                            : activeRoomInviteTarget?.room_name
+                              ? `Aktif room: ${activeRoomInviteTarget.room_name}`
+                              : "Davet göndermek için önce aktif bir room içinde olmalısın."}
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
                   <ScrollArea className="flex-1 bg-background/30 px-5 py-5" data-testid="messages-conversation-scroll-area">
@@ -313,13 +469,37 @@ export default function Messages() {
                       <div className="space-y-3" data-testid="messages-conversation-list">
                         {activeMessages.map((message) => {
                           const isOwnMessage = message.sender_uid === currentUser?.uid;
+                          const isRoomInvite = message.message_type === ROOM_INVITE_MESSAGE_TYPE && message.room_invite?.room_id;
 
                           return (
                             <div key={message.id} className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`} data-testid={`messages-conversation-item-${message.id}`}>
-                              <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm ${isOwnMessage ? "rounded-br-md bg-primary text-primary-foreground" : "rounded-bl-md border border-border/70 bg-background text-foreground"}`}>
-                                <p>{message.message}</p>
-                                <p className={`mt-2 text-[11px] ${isOwnMessage ? "text-primary-foreground/75" : "text-muted-foreground"}`}>{formatMessageTime(message.created_at)}</p>
-                              </div>
+                              {isRoomInvite ? (
+                                <div className={`max-w-[92%] rounded-2xl border px-4 py-3 text-sm shadow-sm ${isOwnMessage ? "border-primary/25 bg-primary/10 text-foreground" : "border-border/70 bg-background text-foreground"}`} data-testid={`messages-room-invite-card-${message.id}`}>
+                                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/80">Oda Daveti</p>
+                                  <p className="mt-2 leading-6 text-slate-700 dark:text-slate-200">{getRoomInviteCopy(message, isOwnMessage)}</p>
+                                  {message.room_invite?.room_name && (
+                                    <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">{message.room_invite.room_name}</p>
+                                  )}
+                                  <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                                    <p className="text-[11px] text-muted-foreground">{formatMessageTime(message.created_at)}</p>
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant={isOwnMessage ? "secondary" : "outline"}
+                                      className="h-8 rounded-lg px-3.5"
+                                      onClick={() => navigate(`/room/${message.room_invite.room_id}`)}
+                                      data-testid={`messages-room-invite-join-${message.id}`}
+                                    >
+                                      Katıl
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm ${isOwnMessage ? "rounded-br-md bg-primary text-primary-foreground" : "rounded-bl-md border border-border/70 bg-background text-foreground"}`}>
+                                  <p>{message.message}</p>
+                                  <p className={`mt-2 text-[11px] ${isOwnMessage ? "text-primary-foreground/75" : "text-muted-foreground"}`}>{formatMessageTime(message.created_at)}</p>
+                                </div>
+                              )}
                             </div>
                           );
                         })}

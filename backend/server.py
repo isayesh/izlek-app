@@ -57,6 +57,8 @@ ROOM_PASSWORD_MIN_LENGTH = 6
 ROOM_PASSWORD_REQUIRED_MESSAGE = "Bu oda özel. Devam etmek için oda şifresini gir."
 ROOM_PASSWORD_INVALID_MESSAGE = "Oda şifresi hatalı."
 ROOM_PASSWORD_VALIDATION_MESSAGE = f"Oda şifresi en az {ROOM_PASSWORD_MIN_LENGTH} karakter olmalıdır."
+DIRECT_MESSAGE_TYPE_TEXT = "text"
+DIRECT_MESSAGE_TYPE_ROOM_INVITE = "room_invite"
 
 
 # ============ MODELS ============
@@ -569,6 +571,39 @@ async def resolve_profile_study_field(firebase_uid: Optional[str]) -> Optional[s
     return study_field.strip() if isinstance(study_field, str) and study_field.strip() else None
 
 
+def normalize_direct_message_type(raw_message_type: Optional[str], *, strict: bool = False) -> str:
+    normalized = (raw_message_type or DIRECT_MESSAGE_TYPE_TEXT).strip().lower()
+    if normalized in {DIRECT_MESSAGE_TYPE_TEXT, DIRECT_MESSAGE_TYPE_ROOM_INVITE}:
+        return normalized
+    if strict:
+        raise HTTPException(status_code=400, detail="Geçersiz mesaj tipi")
+    return DIRECT_MESSAGE_TYPE_TEXT
+
+
+def build_room_invite_preview(room_invite: Optional[dict]) -> str:
+    room_name = ((room_invite or {}).get("room_name") or "").strip()
+    return f'"{room_name}" odasına davet' if room_name else "Oda daveti"
+
+
+def build_room_invite_message_text(room_invite: Optional[dict]) -> str:
+    room_name = ((room_invite or {}).get("room_name") or "").strip()
+    inviter_name = ((room_invite or {}).get("inviter_name") or "").strip()
+    if room_name and inviter_name:
+        return f'{inviter_name} seni "{room_name}" odasına davet etti.'
+    if room_name:
+        return f'Seni "{room_name}" odasına davet etti.'
+    if inviter_name:
+        return f"{inviter_name} seni bir odaya davet etti."
+    return "Seni bir odaya davet etti."
+
+
+def build_direct_message_sidebar_preview(message_type: Optional[str], message: Optional[str], room_invite: Optional[dict]) -> str:
+    normalized_message_type = normalize_direct_message_type(message_type)
+    if normalized_message_type == DIRECT_MESSAGE_TYPE_ROOM_INVITE:
+        return build_room_invite_preview(room_invite)
+    return (message or "").strip()
+
+
 # Message Models
 class Message(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -591,6 +626,15 @@ class MessageCreate(BaseModel):
     content: str
 
 
+class DirectMessageRoomInvite(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    room_id: str
+    room_name: Optional[str] = None
+    inviter_name: Optional[str] = None
+    inviter_uid: Optional[str] = None
+
+
 class DirectMessage(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
@@ -598,13 +642,17 @@ class DirectMessage(BaseModel):
     sender_uid: str
     receiver_uid: str
     message: str
+    message_type: str = DIRECT_MESSAGE_TYPE_TEXT
+    room_invite: Optional[DirectMessageRoomInvite] = None
     is_read: bool = False
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class DirectMessageCreate(BaseModel):
     receiver_profile_id: str
-    message: str
+    message: Optional[str] = None
+    message_type: Optional[str] = DIRECT_MESSAGE_TYPE_TEXT
+    room_invite: Optional[DirectMessageRoomInvite] = None
 
 # Old Models (keep for compatibility)
 class StatusCheck(BaseModel):
@@ -1447,6 +1495,8 @@ async def get_direct_message_sidebar_summary(firebase_uid: str = Header(..., ali
             "$group": {
                 "_id": "$other_uid",
                 "last_message": {"$first": "$message"},
+                "last_message_type": {"$first": "$message_type"},
+                "last_room_invite": {"$first": "$room_invite"},
                 "last_message_at": {"$first": "$created_at"},
                 "unread_count": {"$sum": "$is_unread_for_user"},
             }
@@ -1473,7 +1523,11 @@ async def get_direct_message_sidebar_summary(firebase_uid: str = Header(..., ali
         profile_id = profile_id_by_uid.get(other_uid)
         if profile_id:
             summaries[profile_id] = {
-                "last_message": group.get("last_message") or "",
+                "last_message": build_direct_message_sidebar_preview(
+                    group.get("last_message_type"),
+                    group.get("last_message"),
+                    group.get("last_room_invite"),
+                ),
                 "last_message_at": group.get("last_message_at"),
                 "unread_count": group.get("unread_count", 0),
             }
@@ -1521,6 +1575,10 @@ async def get_direct_messages(friend_profile_id: str, firebase_uid: str = Header
     for direct_message in direct_messages:
         if isinstance(direct_message.get("created_at"), str):
             direct_message["created_at"] = datetime.fromisoformat(direct_message["created_at"])
+        direct_message["message_type"] = normalize_direct_message_type(direct_message.get("message_type"))
+        direct_message["room_invite"] = direct_message.get("room_invite") if isinstance(direct_message.get("room_invite"), dict) else None
+        if direct_message["message_type"] == DIRECT_MESSAGE_TYPE_ROOM_INVITE and not (direct_message.get("message") or "").strip():
+            direct_message["message"] = build_room_invite_message_text(direct_message.get("room_invite"))
         direct_message["is_read"] = bool(direct_message.get("is_read", False))
 
     return direct_messages
@@ -1528,8 +1586,38 @@ async def get_direct_messages(friend_profile_id: str, firebase_uid: str = Header
 
 @api_router.post("/messages/direct", response_model=DirectMessage)
 async def create_direct_message(input: DirectMessageCreate, firebase_uid: str = Header(..., alias="X-Firebase-UID")):
-    if not input.message or input.message.strip() == "":
-        raise HTTPException(status_code=400, detail="Mesaj boş olamaz")
+    message_type = normalize_direct_message_type(input.message_type, strict=True)
+    room_invite_payload = None
+
+    if message_type == DIRECT_MESSAGE_TYPE_TEXT:
+        if not input.message or input.message.strip() == "":
+            raise HTTPException(status_code=400, detail="Mesaj boş olamaz")
+        normalized_message = input.message.strip()
+    else:
+        room_id = (input.room_invite.room_id if input.room_invite else "").strip()
+        if not room_id:
+            raise HTTPException(status_code=400, detail="Oda daveti için room_id zorunludur")
+
+        room = await db.rooms.find_one({"id": room_id}, {"_id": 0, "id": 1, "name": 1, "participants": 1})
+        if not room:
+            raise HTTPException(status_code=404, detail="Davet edilmek istenen oda bulunamadı")
+
+        participants = room.get("participants") or []
+        sender_is_participant = any(
+            isinstance(participant, dict) and participant.get("id") == firebase_uid
+            for participant in participants
+        )
+        if not sender_is_participant:
+            raise HTTPException(status_code=403, detail="Sadece aktif olduğun odaya davet gönderebilirsin")
+
+        sender_profile = await get_profile_document_by_uid(firebase_uid)
+        room_invite_payload = DirectMessageRoomInvite(
+            room_id=room["id"],
+            room_name=(room.get("name") or None),
+            inviter_name=resolve_public_username(sender_profile),
+            inviter_uid=firebase_uid,
+        )
+        normalized_message = build_room_invite_message_text(room_invite_payload.model_dump())
 
     receiver_profile = await db.profiles.find_one({"id": input.receiver_profile_id}, {"_id": 0, "firebase_uid": 1})
     if not receiver_profile:
@@ -1548,7 +1636,9 @@ async def create_direct_message(input: DirectMessageCreate, firebase_uid: str = 
     direct_message = DirectMessage(
         sender_uid=firebase_uid,
         receiver_uid=receiver_uid,
-        message=input.message.strip(),
+        message=normalized_message,
+        message_type=message_type,
+        room_invite=room_invite_payload,
     )
     direct_message_doc = direct_message.model_dump()
     direct_message_doc["created_at"] = direct_message_doc["created_at"].isoformat()
