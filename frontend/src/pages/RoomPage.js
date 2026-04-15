@@ -98,15 +98,15 @@ export default function RoomPage() {
     const participantAvatarUrl = getParticipantAvatarUrl(participant);
     const participantStatusLabel = participant.is_on_break ? "Molada" : isRunning ? "Çalışıyor" : "Hazır";
     const participantStatusTextClasses = participant.is_on_break
-      ? "text-yellow-700 dark:text-yellow-400"
+      ? "text-yellow-700 font-semibold dark:text-yellow-400"
       : isRunning
-        ? "text-green-700 dark:text-green-400"
-        : "text-slate-600 dark:text-slate-300";
+        ? "text-green-700 font-semibold dark:text-green-400"
+        : "text-slate-600 font-medium dark:text-slate-300";
 
     return (
       <div
         key={`${variant}-${participant.id}`}
-        className="flex items-start gap-4 rounded-2xl border border-border/50 bg-background/45 px-4 py-4 shadow-[0_18px_38px_-34px_rgba(2,6,23,0.95)] transition-[background-color,border-color,box-shadow] duration-200 hover:border-border/70 hover:bg-background/60 hover:shadow-[0_22px_42px_-34px_rgba(2,6,23,1)]"
+        className="flex items-start gap-4 rounded-2xl border border-border/50 bg-background/45 px-4 py-4 shadow-[0_18px_38px_-34px_rgba(2,6,23,0.95)] transition-[background-color,border-color,box-shadow] duration-200 hover:border-border/70 hover:bg-white/5 hover:shadow-[0_22px_42px_-34px_rgba(2,6,23,1)]"
         data-testid={`${variant}-participant-${participant.id}`}
       >
         <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-base font-semibold text-foreground shadow-[0_16px_30px_-22px_rgba(59,130,246,0.45)] ring-1 ring-primary/20" data-testid={`${variant}-participant-avatar-${participant.id}`}>
@@ -122,16 +122,15 @@ export default function RoomPage() {
             getInitial(participant.name)
           )}
         </div>
-        <div className="min-w-0 flex-1" data-testid={`${variant}-participant-info-${participant.id}`}>
+        <div className="min-w-0 flex-1 space-y-2.5" data-testid={`${variant}-participant-info-${participant.id}`}>
           <p className="truncate text-[0.95rem] font-semibold text-foreground" data-testid={`${variant}-participant-name-${participant.id}`}>{participant.name}</p>
-          <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs font-medium">
+          <div className="space-y-1 text-xs font-medium">
             {participant.study_field && (
-              <span className="truncate text-muted-foreground/90" data-testid={`${variant}-participant-study-field-${participant.id}`}>{participant.study_field}</span>
+              <p className="truncate text-muted-foreground/90" data-testid={`${variant}-participant-study-field-${participant.id}`}>{participant.study_field}</p>
             )}
-            {participant.study_field && <span className="text-muted-foreground/60">·</span>}
-            <span className={participantStatusTextClasses} data-testid={`${variant}-participant-status-badge-${participant.id}`}>
+            <p className={participantStatusTextClasses} data-testid={`${variant}-participant-status-badge-${participant.id}`}>
               {participantStatusLabel}
-            </span>
+            </p>
           </div>
         </div>
       </div>
