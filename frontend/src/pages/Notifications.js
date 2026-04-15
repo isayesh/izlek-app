@@ -34,7 +34,7 @@ export default function Notifications() {
       setRequests(Array.isArray(response.data) ? response.data : []);
     } catch (loadError) {
       console.error("Error loading incoming friend requests:", loadError);
-      setError("Bildirimler yüklenirken bir hata oluştu.");
+      setError("Gelen istekler yüklenirken bir hata oluştu.");
     } finally {
       setLoading(false);
     }
@@ -67,7 +67,7 @@ export default function Notifications() {
           <CardContent className="p-6 sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4" data-testid="notifications-header-content">
               <div>
-                <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100" data-testid="notifications-title">Bildirimler</h1>
+                <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100" data-testid="notifications-title">Gelen İstekler</h1>
                 <p className="mt-2 text-base text-slate-600 dark:text-slate-300" data-testid="notifications-subtitle">
                   Gelen arkadaşlık isteklerini buradan kabul edebilir veya reddedebilirsin.
                 </p>

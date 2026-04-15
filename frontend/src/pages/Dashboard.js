@@ -4,7 +4,6 @@ import axios from "axios";
 import {
   AlertTriangle,
   BarChart3,
-  Bell,
   CalendarDays,
   Edit,
   Flame,
@@ -540,7 +539,6 @@ export default function Dashboard() {
     { label: "Profil", icon: User, onClick: () => navigate("/profile"), testId: "dashboard-btn-profile" },
     { label: "DM Kutum", icon: MessageSquare, onClick: () => navigate("/messages"), testId: "dashboard-btn-messages", badgeCount: unreadDmCount },
     { label: "Arkadaşlar", icon: Users, onClick: () => navigate("/friends"), testId: "dashboard-btn-friends", badgeCount: pendingFriendRequestCount },
-    { label: "Bildirimler", icon: Bell, onClick: () => navigate("/notifications"), testId: "dashboard-btn-notifications" },
   ];
 
   const quickActions = [

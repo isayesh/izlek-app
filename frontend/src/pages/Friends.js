@@ -151,7 +151,7 @@ export default function Friends() {
               <div className="flex flex-wrap items-center gap-2" data-testid="friends-header-actions">
                 <ThemeToggle className="h-10 w-10 rounded-xl border border-border/70 bg-background text-slate-700 hover:bg-secondary dark:text-slate-100" />
                 <Button variant="outline" onClick={() => navigate("/notifications")} className="h-10 rounded-xl border-border/70 bg-background hover:bg-secondary" data-testid="friends-go-notifications-button">
-                  <Bell className="mr-2 h-4 w-4" /> Bildirimler
+                  <Bell className="mr-2 h-4 w-4" /> Gelen İstekler
                 </Button>
                 <Button variant="outline" onClick={() => navigate("/dashboard")} className="h-10 rounded-xl border-border/70 bg-background hover:bg-secondary" data-testid="friends-go-dashboard-button">
                   <Home className="mr-2 h-4 w-4" /> Dashboard
