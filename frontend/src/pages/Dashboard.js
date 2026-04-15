@@ -4,7 +4,6 @@ import axios from "axios";
 import {
   AlertTriangle,
   BarChart3,
-  CalendarDays,
   Edit,
   Flame,
   Home,
@@ -548,6 +547,8 @@ export default function Dashboard() {
       icon: Search,
       onClick: () => navigate("/rooms"),
       variant: "default",
+      emphasis: "primary",
+      className: "border-transparent shadow-none hover:shadow-none",
       testId: "dashboard-quick-action-find-room-button",
     },
     {
@@ -555,7 +556,9 @@ export default function Dashboard() {
       description: "Kendi odanı aç ve davet et",
       icon: Users,
       onClick: () => navigate("/rooms"),
-      variant: "secondary",
+      variant: "ghost",
+      emphasis: "secondary",
+      className: "border border-border/45 bg-background/30 text-foreground shadow-none hover:border-border/60 hover:bg-background/60 hover:text-foreground",
       testId: "dashboard-quick-action-create-room-button",
     },
     {
@@ -563,7 +566,9 @@ export default function Dashboard() {
       description: "Programına yeni bir çalışma ekle",
       icon: Plus,
       onClick: () => setShowAddTask(true),
-      variant: "outline",
+      variant: "ghost",
+      emphasis: "secondary",
+      className: "border border-border/45 bg-background/30 text-foreground shadow-none hover:border-border/60 hover:bg-background/60 hover:text-foreground",
       testId: "dashboard-quick-action-add-task-button",
     },
   ];
@@ -572,24 +577,24 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="px-4 pb-10 pt-6 sm:px-6 sm:pb-12 lg:px-10 xl:px-12">
         <div className="space-y-8 sm:space-y-10">
-          <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div className="space-y-1 pl-1 sm:pl-2">
+          <header className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+            <div className="space-y-1.5 pl-1 sm:pl-2">
               <button
                 type="button"
                 onClick={() => navigate("/dashboard")}
-                className="font-display text-left text-[2rem] font-semibold tracking-[0.06em] text-foreground sm:text-[2.45rem] dark:bg-gradient-to-r dark:from-slate-50 dark:via-white dark:to-cyan-200 dark:bg-clip-text dark:text-transparent"
+                className="font-display text-left text-[1.9rem] font-semibold tracking-[-0.04em] text-foreground sm:text-[2.3rem] dark:bg-gradient-to-r dark:from-slate-50 dark:via-white dark:to-cyan-200 dark:bg-clip-text dark:text-transparent"
                 data-testid="dashboard-header-brand"
               >
                 izlek
               </button>
-              <p className="text-sm text-muted-foreground">odaklı çalışma alanın</p>
+              <p className="text-xs text-muted-foreground/80 sm:text-sm">odaklı çalışma alanın</p>
             </div>
 
             <div className="flex flex-col gap-3 lg:items-end">
               <div className="flex items-center justify-end gap-2" data-testid="dashboard-theme-toggle">
                 <ThemeToggle
                   dataTestId="theme-toggle"
-                  className="border border-border bg-background/90 shadow-sm hover:bg-secondary"
+                  className="border border-border/50 bg-background/70 shadow-none hover:bg-secondary/60"
                 />
                 <Button
                   variant="outline"
@@ -598,7 +603,7 @@ export default function Dashboard() {
                     await logout();
                     navigate("/");
                   }}
-                  className="shrink-0"
+                  className="shrink-0 border-border/50 bg-background/70 shadow-none hover:bg-secondary/60"
                   data-testid="btn-logout"
                 >
                   <LogOut className="h-4 w-4" />
@@ -607,17 +612,17 @@ export default function Dashboard() {
               </div>
 
               <div className="w-full max-w-full overflow-x-auto pb-1" data-testid="dashboard-header-nav">
-                <div className="flex items-center gap-2 lg:justify-end">
+                <div className="flex items-center gap-1.5 lg:justify-end">
                   {navigationActions.map((action) => {
                     const Icon = action.icon;
                     const badgeLabel = action.badgeCount > 9 ? "9+" : action.badgeCount;
                     return (
                       <Button
                         key={action.label}
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
                         onClick={action.onClick}
-                        className="shrink-0"
+                        className="shrink-0 rounded-full border border-transparent px-3 text-muted-foreground shadow-none hover:border-border/50 hover:bg-secondary/50 hover:text-foreground"
                         data-testid={action.testId}
                       >
                         <span className="relative inline-flex">
@@ -654,20 +659,20 @@ export default function Dashboard() {
           )}
 
           <section
-            className="relative overflow-hidden rounded-2xl border border-border/70 bg-card px-6 py-7 shadow-sm sm:px-8 sm:py-8"
+            className="relative overflow-hidden rounded-[28px] border border-border/50 bg-card/80 px-6 py-7 shadow-[0_20px_45px_-38px_rgba(15,23,42,0.35)] sm:px-8 sm:py-9"
             data-testid="dashboard-hero-section"
           >
-            <div className="pointer-events-none absolute left-0 top-0 h-40 w-40 rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.18),transparent_68%)]" />
-            <div className="pointer-events-none absolute bottom-0 right-0 h-36 w-36 rounded-full bg-[radial-gradient(circle,rgba(45,212,191,0.14),transparent_68%)]" />
+            <div className="pointer-events-none absolute left-0 top-0 h-36 w-36 rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.12),transparent_68%)]" />
+            <div className="pointer-events-none absolute bottom-0 right-0 h-32 w-32 rounded-full bg-[radial-gradient(circle,rgba(45,212,191,0.1),transparent_68%)]" />
 
-            <div className="relative flex flex-col gap-8 xl:flex-row xl:items-start xl:justify-between">
-              <div className="max-w-3xl space-y-6">
-                <div className="space-y-3">
-                  <p className="text-sm font-medium uppercase tracking-[0.18em] text-muted-foreground">
+            <div className="relative flex flex-col gap-10 xl:flex-row xl:items-start xl:justify-between">
+              <div className="max-w-3xl space-y-7">
+                <div className="space-y-3.5">
+                  <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
                     Bugün için net bir düzen
                   </p>
                   <div className="space-y-3">
-                    <h1 className="font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl" data-testid="dashboard-title">
+                    <h1 className="font-display text-4xl font-semibold tracking-[-0.05em] text-foreground sm:text-5xl lg:text-6xl" data-testid="dashboard-title">
                       Merhaba, {userName}
                     </h1>
                     <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg" data-testid="dashboard-program-summary">
@@ -676,36 +681,32 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className={`grid grid-cols-1 gap-3 ${hasProfileMeta ? "sm:grid-cols-2" : ""}`}>
+                <div className="flex flex-wrap items-center gap-2.5 text-sm">
                   {hasProfileMeta && (
-                    <div className="rounded-2xl border border-border/70 bg-background/70 p-4" data-testid="dashboard-profile-meta-card">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <User className="h-4 w-4 text-accent" />
-                        Profil özeti
-                      </div>
-                      <p className="mt-3 text-lg font-semibold text-foreground" data-testid="dashboard-profile-meta-value">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-border/45 bg-background/35 px-3.5 py-2 text-muted-foreground" data-testid="dashboard-profile-meta-card">
+                      <User className="h-4 w-4" />
+                      <span className="text-muted-foreground">Profil</span>
+                      <span className="font-medium text-foreground" data-testid="dashboard-profile-meta-value">
                         {profileMetaLine}
-                      </p>
+                      </span>
                     </div>
                   )}
 
-                  <div className="rounded-2xl border border-border/70 bg-background/70 p-4" data-testid="dashboard-streak-summary">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Flame className="h-4 w-4 text-amber-500" />
-                      Çalışma serisi
-                    </div>
-                    <p className="mt-3 text-lg font-semibold text-foreground" data-testid="dashboard-streak-value">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-border/45 bg-background/35 px-3.5 py-2 text-muted-foreground" data-testid="dashboard-streak-summary">
+                    <Flame className="h-4 w-4 text-amber-500" />
+                    <span className="text-muted-foreground">Seri</span>
+                    <span className="font-medium text-foreground" data-testid="dashboard-streak-value">
                       {profileData.streak_count > 0 ? `${profileData.streak_count} gün` : "Yeni seri başlat"}
-                    </p>
+                    </span>
                   </div>
                 </div>
               </div>
 
-              <div className="grid w-full gap-3 xl:max-w-sm">
-                <div className="rounded-2xl border border-border/70 bg-background/70 p-5" data-testid="dashboard-identity-block">
+              <div className="w-full xl:max-w-sm">
+                <div className="rounded-[24px] border border-border/45 bg-background/45 p-5 sm:p-6" data-testid="dashboard-identity-block">
                   <div className="flex items-center gap-4">
                     <div
-                      className="flex h-16 w-16 flex-shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-border/70 bg-secondary text-xl font-semibold text-foreground"
+                      className="flex h-16 w-16 flex-shrink-0 items-center justify-center overflow-hidden rounded-[20px] border border-border/50 bg-secondary/80 text-xl font-semibold text-foreground"
                       data-testid="dashboard-avatar"
                     >
                       {profileData.avatar_url && !avatarLoadFailed ? (
@@ -721,41 +722,42 @@ export default function Dashboard() {
                       )}
                     </div>
 
-                    <div className="space-y-1">
-                      <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">Profil özeti</p>
-                      <p className="text-lg font-semibold text-foreground">{userName}</p>
-                      <p className="text-sm text-muted-foreground">
+                    <div className="min-w-0 space-y-1">
+                      <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">Profil özeti</p>
+                      <p className="truncate text-lg font-semibold text-foreground">{userName}</p>
+                      <p className="text-sm leading-6 text-muted-foreground">
                         {profileMetaLine || "Profil detaylarınla dashboard özetini kişiselleştir."}
                       </p>
                     </div>
                   </div>
 
-                  {shouldShowStreakReminder && (
-                    <div className="mt-4 rounded-2xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-200" data-testid="dashboard-streak-reminder">
-                      Bugün çalışmanı işaretleyerek serini koru.
-                    </div>
-                  )}
-                </div>
+                  <div className="my-5 h-px bg-border/60" />
 
-                <div className="rounded-2xl border border-border/70 bg-background/70 p-5" data-testid="dashboard-progress-summary">
-                  <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-end justify-between gap-4" data-testid="dashboard-progress-summary">
                     <div>
                       <p className="text-sm text-muted-foreground">Genel ilerleme</p>
-                      <p className="mt-1 text-2xl font-semibold text-foreground" data-testid="progress-percentage">
+                      <p className="mt-1 text-3xl font-semibold tracking-[-0.03em] text-foreground" data-testid="progress-percentage">
                         %{progressValue}
                       </p>
                     </div>
-                    <div className="text-right text-sm text-muted-foreground">
+                    <div className="text-right text-sm leading-6 text-muted-foreground">
                       <p>{totalCompletedTasks}/{selectedProgram.tasks.length} görev tamamlandı</p>
                       <p>{completedTodayCount}/{todaysTasks.length || 0} görev bugün bitti</p>
                     </div>
                   </div>
-                  <Progress value={progressValue} className="mt-4 h-3 bg-secondary" />
+                  <Progress value={progressValue} className="mt-4 h-2.5 bg-secondary/80" />
+
+                  {shouldShowStreakReminder && (
+                    <div className="mt-4 flex items-start gap-2 text-sm text-amber-700 dark:text-amber-300" data-testid="dashboard-streak-reminder">
+                      <Flame className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-500" />
+                      <span>Bugün çalışmanı işaretleyerek serini koru.</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
 
-            <div className="relative mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="relative mt-8 grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1.3fr)_repeat(2,minmax(0,1fr))]">
               {quickActions.map((action) => {
                 const Icon = action.icon;
                 return (
@@ -764,15 +766,15 @@ export default function Dashboard() {
                     variant={action.variant}
                     size="lg"
                     onClick={action.onClick}
-                    className="hover-lift h-auto items-start justify-between rounded-2xl px-5 py-4 text-left"
+                    className={`hover-lift h-auto min-h-[88px] items-start justify-between whitespace-normal rounded-[22px] px-5 py-4 text-left ${action.className}`}
                     data-testid={action.testId}
                   >
                     <div>
-                      <div className="flex items-center gap-2 text-sm font-semibold">
+                      <div className="flex items-center gap-2 text-sm font-semibold sm:text-[15px]">
                         <Icon className="h-4 w-4" />
                         {action.label}
                       </div>
-                      <p className="mt-1 text-xs font-medium text-muted-foreground sm:text-sm">
+                      <p className={`mt-2 text-sm leading-6 ${action.emphasis === "primary" ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
                         {action.description}
                       </p>
                     </div>
@@ -783,24 +785,29 @@ export default function Dashboard() {
           </section>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,6fr)_minmax(0,4fr)] lg:gap-8">
-            <Card className="border-border/70 bg-card/95" data-testid="todays-tasks-card">
+            <Card className="border-border/50 bg-card/75 shadow-none" data-testid="todays-tasks-card">
               <CardHeader className="pb-0">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div className="space-y-2">
-                    <CardTitle className="font-display text-2xl sm:text-3xl">Bugün Yapılacaklar</CardTitle>
+                    <CardTitle className="font-display text-2xl tracking-[-0.03em] sm:text-3xl">Bugün Yapılacaklar</CardTitle>
                     <CardDescription>
                       Günlük önceliklerini ferah bir listede takip et, tamamlananları anında işaretle.
                     </CardDescription>
                   </div>
 
                   <div className="flex flex-wrap items-center gap-3">
-                    <div className="rounded-2xl border border-border/70 bg-background/70 px-4 py-3 text-right">
-                      <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Bugün</p>
+                    <div className="text-right">
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Bugün</p>
                       <p className="mt-1 text-lg font-semibold text-foreground">
                         {completedTodayCount}/{todaysTasks.length}
                       </p>
                     </div>
-                    <Button onClick={() => setShowAddTask(true)} data-testid="btn-add-task">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowAddTask(true)}
+                      className="border-border/50 bg-background/55 shadow-none hover:bg-secondary/60"
+                      data-testid="btn-add-task"
+                    >
                       <Plus className="h-4 w-4" />
                       Görev Ekle
                     </Button>
@@ -810,91 +817,94 @@ export default function Dashboard() {
 
               <CardContent className="pt-6">
                 {todaysTasks.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-border/70 bg-background/60 px-6 py-12 text-center" data-testid="today-tasks-empty-state">
-                    <p className="font-display text-2xl font-semibold text-foreground">Bugün için görev görünmüyor</p>
-                    <p className="mt-2 text-sm text-muted-foreground">
+                  <div className="rounded-[24px] border border-dashed border-border/55 bg-background/35 px-6 py-12 text-center" data-testid="today-tasks-empty-state">
+                    <p className="font-display text-2xl font-semibold tracking-[-0.03em] text-foreground">Bugün için görev görünmüyor</p>
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
                       Haftalık programına yeni bir görev ekleyerek bugünün odağını oluşturabilirsin.
                     </p>
-                    <Button className="mt-6" onClick={() => setShowAddTask(true)}>
+                    <Button className="mt-6 shadow-none" onClick={() => setShowAddTask(true)}>
                       <Plus className="h-4 w-4" />
                       İlk görevi ekle
                     </Button>
                   </div>
                 ) : (
                   <ScrollArea className="max-h-[560px] pr-3" data-testid="today-tasks-list">
-                    <div className="space-y-3">
-                      {todaysTasks.map((task) => (
-                        <div
-                          key={task.id}
-                          className="rounded-2xl border border-border/70 bg-background/80 p-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
-                          data-testid={`task-${task.id}`}
-                        >
-                          <div className="flex items-start gap-4">
-                            <Checkbox
-                              checked={task.completed}
-                              onCheckedChange={() => toggleTaskComplete(task.id)}
-                              className="mt-1"
-                              data-testid={`checkbox-${task.id}`}
-                            />
+                    <div className="overflow-hidden rounded-[24px] border border-border/45 bg-background/40">
+                      <div className="divide-y divide-border/50">
+                        {todaysTasks.map((task) => (
+                          <div
+                            key={task.id}
+                            className="group px-4 py-4 transition-colors duration-200 hover:bg-secondary/35 sm:px-5"
+                            data-testid={`task-${task.id}`}
+                          >
+                            <div className="flex items-start gap-4">
+                              <Checkbox
+                                checked={task.completed}
+                                onCheckedChange={() => toggleTaskComplete(task.id)}
+                                className="mt-1"
+                                data-testid={`checkbox-${task.id}`}
+                              />
 
-                            <div className="min-w-0 flex-1">
-                              <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                                <span>{task.day}</span>
-                                <span className="h-1 w-1 rounded-full bg-border" />
-                                <span>{task.duration} dakika</span>
+                              <div className="min-w-0 flex-1">
+                                <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                                  <span>{task.day}</span>
+                                  <span className="h-1 w-1 rounded-full bg-border" />
+                                  <span>{task.duration} dakika</span>
+                                </div>
+                                <p
+                                  className={`mt-3 text-lg font-semibold tracking-[-0.02em] ${
+                                    task.completed ? "text-muted-foreground line-through" : "text-foreground"
+                                  }`}
+                                >
+                                  {task.lesson}
+                                </p>
+                                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                                  {task.topic}
+                                </p>
                               </div>
-                              <p
-                                className={`mt-3 text-lg font-semibold ${
-                                  task.completed ? "text-muted-foreground line-through" : "text-foreground"
-                                }`}
-                              >
-                                {task.lesson}
-                              </p>
-                              <p className={`mt-1 text-sm ${task.completed ? "text-muted-foreground" : "text-muted-foreground"}`}>
-                                {task.topic}
-                              </p>
-                            </div>
 
-                            <div className="flex items-center gap-1">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => editTask(task)}
-                                aria-label="Görevi düzenle"
-                                data-testid={`edit-${task.id}`}
-                              >
-                                <Edit className="h-4 w-4 text-accent" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => deleteTask(task.id)}
-                                aria-label="Görevi sil"
-                                data-testid={`delete-${task.id}`}
-                              >
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                              </Button>
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => editTask(task)}
+                                  aria-label="Görevi düzenle"
+                                  className="text-muted-foreground hover:text-foreground"
+                                  data-testid={`edit-${task.id}`}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => deleteTask(task.id)}
+                                  aria-label="Görevi sil"
+                                  className="text-muted-foreground hover:text-destructive"
+                                  data-testid={`delete-${task.id}`}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </ScrollArea>
                 )}
               </CardContent>
             </Card>
 
-            <Card className="border-border/70 bg-card/95" data-testid="weekly-program-card">
+            <Card className="border-border/50 bg-card/75 shadow-none" data-testid="weekly-program-card">
               <CardHeader className="pb-0">
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   <div className="flex items-center justify-between gap-4">
-                    <CardTitle className="font-display text-xl sm:text-2xl">Haftalık Program</CardTitle>
-                    <div className="flex items-center gap-2 rounded-2xl border border-border/70 bg-background/70 px-4 py-2 text-sm text-muted-foreground">
-                      <CalendarDays className="h-4 w-4 text-accent" />
+                    <CardTitle className="font-display text-xl tracking-[-0.03em] sm:text-2xl">Haftalık Program</CardTitle>
+                    <p className="text-sm text-muted-foreground">
                       {selectedProgram.tasks.length} görev
-                    </div>
+                    </p>
                   </div>
-                  <CardDescription>
+                  <CardDescription className="leading-6">
                     Tüm haftayı gün gün incele, görevlerini aynı yerden düzenle veya sil.
                   </CardDescription>
                 </div>
@@ -903,12 +913,12 @@ export default function Dashboard() {
               <CardContent className="pt-6">
                 <Tabs value={activeWeeklyDay} onValueChange={setActiveWeeklyDay} className="space-y-4" data-testid="weekly-program-tabs">
                   <div className="w-full overflow-hidden pb-2">
-                    <TabsList className="flex h-auto w-full flex-nowrap gap-1 rounded-2xl bg-secondary/80 p-1">
+                    <TabsList className="flex h-auto w-full flex-nowrap gap-1 rounded-[20px] border border-border/50 bg-background/40 p-1">
                       {DAY_ORDER.map((day) => (
                         <TabsTrigger
                           key={day}
                           value={day}
-                          className="min-w-0 flex-1 whitespace-nowrap px-2 py-2 text-[13px] leading-none"
+                          className="min-w-0 flex-1 whitespace-nowrap rounded-[16px] px-2 py-2 text-[13px] leading-none text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-none"
                           data-testid={`weekly-program-tab-${day.toLocaleLowerCase("tr-TR").replace(/[^a-z0-9]+/g, "-")}`}
                         >
                           {day}
@@ -923,50 +933,54 @@ export default function Dashboard() {
                     return (
                       <TabsContent key={day} value={day} data-testid="weekly-program-day-panel">
                         {dayTasks.length === 0 ? (
-                          <div className="rounded-2xl border border-dashed border-border/70 bg-background/60 px-4 py-10 text-center text-sm text-muted-foreground">
+                          <div className="rounded-[24px] border border-dashed border-border/55 bg-background/35 px-4 py-10 text-center text-sm text-muted-foreground">
                             Bu gün için planlanmış görev görünmüyor.
                           </div>
                         ) : (
                           <ScrollArea className="max-h-[560px] pr-3">
-                            <div className="space-y-3">
-                              {dayTasks.map((task) => (
-                                <div
-                                  key={task.id}
-                                  className="rounded-2xl border border-border/70 bg-background/80 p-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
-                                >
-                                  <div className="flex items-start justify-between gap-3">
-                                    <div className="min-w-0">
-                                      <p className={`text-sm font-semibold ${task.completed ? "text-muted-foreground line-through" : "text-foreground"}`}>
-                                        {task.lesson} · {task.topic}
-                                      </p>
-                                      <p className="mt-1 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                                        {task.duration} dakika
-                                      </p>
-                                    </div>
+                            <div className="overflow-hidden rounded-[24px] border border-border/45 bg-background/40">
+                              <div className="divide-y divide-border/50">
+                                {dayTasks.map((task) => (
+                                  <div
+                                    key={task.id}
+                                    className="group px-4 py-4 transition-colors duration-200 hover:bg-secondary/35 sm:px-5"
+                                  >
+                                    <div className="flex items-start justify-between gap-3">
+                                      <div className="min-w-0">
+                                        <p className={`text-sm font-semibold leading-6 ${task.completed ? "text-muted-foreground line-through" : "text-foreground"}`}>
+                                          {task.lesson} · {task.topic}
+                                        </p>
+                                        <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                                          {task.duration} dakika
+                                        </p>
+                                      </div>
 
-                                    <div className="flex items-center gap-1">
-                                      <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => editTask(task)}
-                                        aria-label="Görevi düzenle"
-                                        data-testid={`weekly-edit-${task.id}`}
-                                      >
-                                        <Edit className="h-4 w-4 text-accent" />
-                                      </Button>
-                                      <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => deleteTask(task.id)}
-                                        aria-label="Görevi sil"
-                                        data-testid={`weekly-delete-${task.id}`}
-                                      >
-                                        <Trash2 className="h-4 w-4 text-destructive" />
-                                      </Button>
+                                      <div className="flex items-center gap-1">
+                                        <Button
+                                          variant="ghost"
+                                          size="icon"
+                                          onClick={() => editTask(task)}
+                                          aria-label="Görevi düzenle"
+                                          className="text-muted-foreground hover:text-foreground"
+                                          data-testid={`weekly-edit-${task.id}`}
+                                        >
+                                          <Edit className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                          variant="ghost"
+                                          size="icon"
+                                          onClick={() => deleteTask(task.id)}
+                                          aria-label="Görevi sil"
+                                          className="text-muted-foreground hover:text-destructive"
+                                          data-testid={`weekly-delete-${task.id}`}
+                                        >
+                                          <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              ))}
+                                ))}
+                              </div>
                             </div>
                           </ScrollArea>
                         )}
