@@ -1364,6 +1364,51 @@ async def get_unread_direct_messages_count(firebase_uid: str = Header(..., alias
     return {"count": unread_count}
 
 
+@api_router.get("/messages/direct/unread-by-friend")
+async def get_unread_direct_messages_by_friend(firebase_uid: str = Header(..., alias="X-Firebase-UID")):
+    unread_groups = await db.direct_messages.aggregate([
+        {
+            "$match": {
+                "receiver_uid": firebase_uid,
+                "$or": [
+                    {"is_read": False},
+                    {"is_read": {"$exists": False}},
+                ],
+            }
+        },
+        {
+            "$group": {
+                "_id": "$sender_uid",
+                "count": {"$sum": 1},
+            }
+        },
+    ]).to_list(1000)
+
+    sender_uids = [group.get("_id") for group in unread_groups if group.get("_id")]
+    if not sender_uids:
+        return {"counts": {}}
+
+    sender_profiles = await db.profiles.find(
+        {"firebase_uid": {"$in": sender_uids}},
+        {"_id": 0, "firebase_uid": 1, "id": 1},
+    ).to_list(1000)
+    profile_id_by_uid = {
+        profile.get("firebase_uid"): profile.get("id")
+        for profile in sender_profiles
+        if profile.get("firebase_uid") and profile.get("id")
+    }
+
+    counts = {}
+    for group in unread_groups:
+        sender_uid = group.get("_id")
+        profile_id = profile_id_by_uid.get(sender_uid)
+        if profile_id:
+            counts[profile_id] = group.get("count", 0)
+
+    return {"counts": counts}
+
+
+
 @api_router.get("/messages/direct/{friend_profile_id}", response_model=List[DirectMessage])
 async def get_direct_messages(friend_profile_id: str, firebase_uid: str = Header(..., alias="X-Firebase-UID")):
     friend_profile = await db.profiles.find_one({"id": friend_profile_id}, {"_id": 0, "firebase_uid": 1})

@@ -27,6 +27,7 @@ export default function Messages() {
   const [selectedFriendId, setSelectedFriendId] = useState("");
   const [draftMessage, setDraftMessage] = useState("");
   const [activeMessages, setActiveMessages] = useState([]);
+  const [unreadCountsByFriend, setUnreadCountsByFriend] = useState({});
   const [error, setError] = useState("");
 
   const authHeaders = useMemo(() => (
@@ -63,6 +64,10 @@ export default function Messages() {
       setError("");
       const response = await axios.get(`${API}/messages/direct/${friendProfileId}`, { headers: authHeaders });
       setActiveMessages(Array.isArray(response.data) ? response.data : []);
+      setUnreadCountsByFriend((previousCounts) => ({
+        ...previousCounts,
+        [friendProfileId]: 0,
+      }));
     } catch (loadError) {
       console.error("Error loading direct messages:", loadError);
       setError(loadError.response?.data?.detail || "Mesajlar yüklenirken bir hata oluştu.");
@@ -72,9 +77,24 @@ export default function Messages() {
     }
   }, [authHeaders, currentUser]);
 
+  const loadUnreadCountsByFriend = useCallback(async () => {
+    if (!currentUser?.uid) {
+      setUnreadCountsByFriend({});
+      return;
+    }
+
+    try {
+      const response = await axios.get(`${API}/messages/direct/unread-by-friend`, { headers: authHeaders });
+      setUnreadCountsByFriend(response.data?.counts || {});
+    } catch (loadError) {
+      console.error("Error loading unread direct message counts:", loadError);
+    }
+  }, [authHeaders, currentUser]);
+
   useEffect(() => {
     loadFriends();
-  }, [loadFriends]);
+    loadUnreadCountsByFriend();
+  }, [loadFriends, loadUnreadCountsByFriend]);
 
   useEffect(() => {
     if (!selectedFriendId) {
@@ -177,6 +197,8 @@ export default function Messages() {
                     friends.map((friend) => {
                       const handleText = formatPublicHandle(friend.handle_display || friend.handle);
                       const isSelected = selectedFriendId === friend.profile_id;
+                      const unreadCount = Number(unreadCountsByFriend[friend.profile_id] || 0);
+                      const unreadLabel = unreadCount > 9 ? "9+" : unreadCount;
 
                       return (
                         <button
@@ -195,9 +217,16 @@ export default function Messages() {
                           </div>
 
                           <div className="min-w-0 flex-1">
-                            <p className="truncate font-semibold text-slate-900 dark:text-slate-100" data-testid={`messages-friend-username-${friend.profile_id}`}>
-                              {getPublicUsername(friend)}
-                            </p>
+                            <div className="flex items-center justify-between gap-2">
+                              <p className="min-w-0 flex-1 truncate font-semibold text-slate-900 dark:text-slate-100" data-testid={`messages-friend-username-${friend.profile_id}`}>
+                                {getPublicUsername(friend)}
+                              </p>
+                              {unreadCount > 0 && (
+                                <span className="inline-flex min-w-[20px] shrink-0 items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white shadow-sm" data-testid={`messages-friend-unread-badge-${friend.profile_id}`}>
+                                  {unreadLabel}
+                                </span>
+                              )}
+                            </div>
                             {handleText && (
                               <p className="mt-1 truncate text-sm text-slate-500 dark:text-slate-400" data-testid={`messages-friend-handle-${friend.profile_id}`}>
                                 {handleText}
