@@ -590,6 +590,21 @@ class MessageCreate(BaseModel):
     user_study_field: Optional[str] = None
     content: str
 
+
+class DirectMessage(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    sender_uid: str
+    receiver_uid: str
+    message: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class DirectMessageCreate(BaseModel):
+    receiver_profile_id: str
+    message: str
+
 # Old Models (keep for compatibility)
 class StatusCheck(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -1334,6 +1349,66 @@ async def create_message(input: MessageCreate):
     await db.messages.insert_one(doc)
     return message_obj
 
+@api_router.get("/messages/direct/{friend_profile_id}", response_model=List[DirectMessage])
+async def get_direct_messages(friend_profile_id: str, firebase_uid: str = Header(..., alias="X-Firebase-UID")):
+    friend_profile = await db.profiles.find_one({"id": friend_profile_id}, {"_id": 0, "firebase_uid": 1})
+    if not friend_profile:
+        raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
+
+    friend_uid = friend_profile.get("firebase_uid")
+    if not friend_uid:
+        raise HTTPException(status_code=400, detail="Bu kullanıcıyla şu anda mesajlaşılamıyor")
+
+    if not await are_users_friends(firebase_uid, friend_uid):
+        raise HTTPException(status_code=403, detail="Sadece arkadaşlarınla mesajlaşabilirsin")
+
+    direct_messages = await db.direct_messages.find(
+        {
+            "$or": [
+                {"sender_uid": firebase_uid, "receiver_uid": friend_uid},
+                {"sender_uid": friend_uid, "receiver_uid": firebase_uid},
+            ]
+        },
+        {"_id": 0},
+    ).sort("created_at", 1).to_list(1000)
+
+    for direct_message in direct_messages:
+        if isinstance(direct_message.get("created_at"), str):
+            direct_message["created_at"] = datetime.fromisoformat(direct_message["created_at"])
+
+    return direct_messages
+
+
+@api_router.post("/messages/direct", response_model=DirectMessage)
+async def create_direct_message(input: DirectMessageCreate, firebase_uid: str = Header(..., alias="X-Firebase-UID")):
+    if not input.message or input.message.strip() == "":
+        raise HTTPException(status_code=400, detail="Mesaj boş olamaz")
+
+    receiver_profile = await db.profiles.find_one({"id": input.receiver_profile_id}, {"_id": 0, "firebase_uid": 1})
+    if not receiver_profile:
+        raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
+
+    receiver_uid = receiver_profile.get("firebase_uid")
+    if not receiver_uid:
+        raise HTTPException(status_code=400, detail="Bu kullanıcıyla şu anda mesajlaşılamıyor")
+
+    if receiver_uid == firebase_uid:
+        raise HTTPException(status_code=400, detail="Kendine mesaj gönderemezsin")
+
+    if not await are_users_friends(firebase_uid, receiver_uid):
+        raise HTTPException(status_code=403, detail="Sadece arkadaşlarınla mesajlaşabilirsin")
+
+    direct_message = DirectMessage(
+        sender_uid=firebase_uid,
+        receiver_uid=receiver_uid,
+        message=input.message.strip(),
+    )
+    direct_message_doc = direct_message.model_dump()
+    direct_message_doc["created_at"] = direct_message_doc["created_at"].isoformat()
+
+    await db.direct_messages.insert_one(direct_message_doc)
+    return direct_message
+
 @api_router.get("/messages/{room_id}", response_model=List[Message])
 async def get_messages(room_id: str):
     messages = await db.messages.find({"room_id": room_id}, {"_id": 0}).sort("timestamp", 1).to_list(1000)
@@ -1661,6 +1736,7 @@ async def ensure_profile_indexes():
         )
         await db.friend_requests.create_index([("to_uid", 1), ("status", 1)])
         await db.friends.create_index([("user_uid", 1), ("friend_uid", 1)], unique=True)
+        await db.direct_messages.create_index([("sender_uid", 1), ("receiver_uid", 1), ("created_at", 1)])
     except Exception as exc:
         logger.warning("Profile/friend indexes could not be created: %s", exc)
 

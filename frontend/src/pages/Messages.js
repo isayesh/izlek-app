@@ -5,7 +5,7 @@ import { Home, MessageSquare, Send, Users } from "lucide-react";
 
 import ThemeToggle from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/contexts/AuthContext";
@@ -22,9 +22,11 @@ export default function Messages() {
   const { currentUser } = useAuth();
   const [friends, setFriends] = useState([]);
   const [friendsLoading, setFriendsLoading] = useState(true);
+  const [messagesLoading, setMessagesLoading] = useState(false);
+  const [sendingMessage, setSendingMessage] = useState(false);
   const [selectedFriendId, setSelectedFriendId] = useState("");
   const [draftMessage, setDraftMessage] = useState("");
-  const [conversations, setConversations] = useState({});
+  const [activeMessages, setActiveMessages] = useState([]);
   const [error, setError] = useState("");
 
   const authHeaders = useMemo(() => (
@@ -49,18 +51,47 @@ export default function Messages() {
     }
   }, [authHeaders, currentUser]);
 
+  const loadMessages = useCallback(async (friendProfileId) => {
+    if (!currentUser?.uid || !friendProfileId) {
+      setActiveMessages([]);
+      setMessagesLoading(false);
+      return;
+    }
+
+    try {
+      setMessagesLoading(true);
+      setError("");
+      const response = await axios.get(`${API}/messages/direct/${friendProfileId}`, { headers: authHeaders });
+      setActiveMessages(Array.isArray(response.data) ? response.data : []);
+    } catch (loadError) {
+      console.error("Error loading direct messages:", loadError);
+      setError(loadError.response?.data?.detail || "Mesajlar yüklenirken bir hata oluştu.");
+      setActiveMessages([]);
+    } finally {
+      setMessagesLoading(false);
+    }
+  }, [authHeaders, currentUser]);
+
   useEffect(() => {
     loadFriends();
   }, [loadFriends]);
+
+  useEffect(() => {
+    if (!selectedFriendId) {
+      setActiveMessages([]);
+      setMessagesLoading(false);
+      return;
+    }
+
+    loadMessages(selectedFriendId);
+  }, [loadMessages, selectedFriendId]);
 
   const selectedFriend = useMemo(
     () => friends.find((friend) => friend.profile_id === selectedFriendId) || null,
     [friends, selectedFriendId]
   );
 
-  const activeMessages = selectedFriendId ? conversations[selectedFriendId] || [] : [];
-
-  const handleSendMessage = (event) => {
+  const handleSendMessage = async (event) => {
     event.preventDefault();
 
     const trimmedMessage = draftMessage.trim();
@@ -68,18 +99,26 @@ export default function Messages() {
       return;
     }
 
-    const newMessage = {
-      id: `${selectedFriendId}-${Date.now()}`,
-      content: trimmedMessage,
-      timestamp: new Date().toISOString(),
-      sender: "me",
-    };
+    try {
+      setSendingMessage(true);
+      setError("");
+      const response = await axios.post(
+        `${API}/messages/direct`,
+        {
+          receiver_profile_id: selectedFriendId,
+          message: trimmedMessage,
+        },
+        { headers: authHeaders }
+      );
 
-    setConversations((previousConversations) => ({
-      ...previousConversations,
-      [selectedFriendId]: [...(previousConversations[selectedFriendId] || []), newMessage],
-    }));
-    setDraftMessage("");
+      setActiveMessages((previousMessages) => [...previousMessages, response.data]);
+      setDraftMessage("");
+    } catch (sendError) {
+      console.error("Error sending direct message:", sendError);
+      setError(sendError.response?.data?.detail || "Mesaj gönderilirken bir hata oluştu.");
+    } finally {
+      setSendingMessage(false);
+    }
   };
 
   return (
@@ -188,7 +227,11 @@ export default function Messages() {
                   </div>
 
                   <ScrollArea className="flex-1 bg-background/30 px-5 py-5" data-testid="messages-conversation-scroll-area">
-                    {activeMessages.length === 0 ? (
+                    {messagesLoading ? (
+                      <div className="flex h-full min-h-[280px] items-center justify-center" data-testid="messages-conversation-loading">
+                        <p className="text-sm text-slate-600 dark:text-slate-300">Mesajlar yükleniyor...</p>
+                      </div>
+                    ) : activeMessages.length === 0 ? (
                       <div className="flex h-full min-h-[280px] items-center justify-center rounded-2xl border border-dashed border-border/70 bg-background/60 px-6 text-center" data-testid="messages-conversation-empty-state">
                         <div>
                           <p className="text-base font-semibold text-slate-900 dark:text-slate-100">Henüz mesaj yok</p>
@@ -197,14 +240,18 @@ export default function Messages() {
                       </div>
                     ) : (
                       <div className="space-y-3" data-testid="messages-conversation-list">
-                        {activeMessages.map((message) => (
-                          <div key={message.id} className="flex justify-end" data-testid={`messages-conversation-item-${message.id}`}>
-                            <div className="max-w-[85%] rounded-2xl rounded-br-md bg-primary px-4 py-3 text-sm text-primary-foreground shadow-sm">
-                              <p>{message.content}</p>
-                              <p className="mt-2 text-[11px] text-primary-foreground/75">{formatMessageTime(message.timestamp)}</p>
+                        {activeMessages.map((message) => {
+                          const isOwnMessage = message.sender_uid === currentUser?.uid;
+
+                          return (
+                            <div key={message.id} className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`} data-testid={`messages-conversation-item-${message.id}`}>
+                              <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm ${isOwnMessage ? "rounded-br-md bg-primary text-primary-foreground" : "rounded-bl-md border border-border/70 bg-background text-foreground"}`}>
+                                <p>{message.message}</p>
+                                <p className={`mt-2 text-[11px] ${isOwnMessage ? "text-primary-foreground/75" : "text-muted-foreground"}`}>{formatMessageTime(message.created_at)}</p>
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     )}
                   </ScrollArea>
@@ -218,8 +265,8 @@ export default function Messages() {
                         className="h-11 rounded-xl"
                         data-testid="messages-composer-input"
                       />
-                      <Button type="submit" className="h-11 rounded-xl px-5" disabled={!draftMessage.trim()} data-testid="messages-composer-send-button">
-                        <Send className="mr-2 h-4 w-4" /> Gönder
+                      <Button type="submit" className="h-11 rounded-xl px-5" disabled={!draftMessage.trim() || sendingMessage} data-testid="messages-composer-send-button">
+                        <Send className="mr-2 h-4 w-4" /> {sendingMessage ? "Gönderiliyor..." : "Gönder"}
                       </Button>
                     </div>
                   </form>
