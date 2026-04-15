@@ -210,11 +210,8 @@ export default function Dashboard() {
     currentUser?.email?.trim() ||
     "İzlek Kullanıcısı";
 
-  const normalizedHandle = profileData.handle?.trim().replace(/^@+/, "");
   const displayNameCandidate = profileData.display_name?.trim() || currentUser?.displayName?.trim();
-  const heroGreetingName = normalizedHandle
-    ? `@${normalizedHandle}`
-    : profileData.username?.trim() || displayNameCandidate || getFallbackName();
+  const heroGreetingName = profileData.username?.trim() || displayNameCandidate || getFallbackName();
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -690,12 +687,9 @@ export default function Dashboard() {
             <div className="relative flex flex-col gap-10 md:gap-10 xl:flex-row xl:items-start xl:justify-between">
               <div className="w-full space-y-6 xl:max-w-3xl">
                 <div className="space-y-3.5">
-                  <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
-                    Bugün için net bir düzen
-                  </p>
                   <div className="space-y-3">
                     <h1 className="font-display text-4xl font-semibold tracking-[-0.05em] text-foreground sm:text-5xl lg:text-6xl" data-testid="dashboard-title">
-                      Selam, {heroGreetingName}
+                      Merhaba, {heroGreetingName}
                     </h1>
                     <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg" data-testid="dashboard-program-summary">
                       YKS’ye giden yolda bugünü net geçir.
