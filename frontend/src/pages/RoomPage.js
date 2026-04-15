@@ -98,16 +98,16 @@ export default function RoomPage() {
     const participantAvatarUrl = getParticipantAvatarUrl(participant);
     const participantStatusLabel = participant.is_on_break ? "Molada" : "Çalışıyor";
     const participantStatusClasses = participant.is_on_break
-      ? "border-amber-300/70 bg-amber-100/80 text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200"
-      : "border-emerald-300/70 bg-emerald-100/80 text-emerald-800 dark:border-emerald-500/40 dark:bg-emerald-500/15 dark:text-emerald-200";
+      ? "border-yellow-500/20 bg-yellow-500/10 text-yellow-400"
+      : "border-green-500/20 bg-green-500/10 text-green-400";
 
     return (
       <div
         key={`${variant}-${participant.id}`}
-        className="flex items-center gap-4 rounded-2xl border border-transparent bg-background/70 px-4 py-3 shadow-sm transition-[background-color,box-shadow] duration-200 hover:bg-card hover:shadow-md"
+        className="flex items-start gap-4 rounded-xl border border-border/60 bg-background/60 px-4 py-4 shadow-[0_10px_30px_-28px_rgba(15,23,42,0.9)] transition-[background-color,border-color,box-shadow] duration-200 hover:border-border/80 hover:bg-background/80 hover:shadow-[0_16px_36px_-30px_rgba(15,23,42,0.95)]"
         data-testid={`${variant}-participant-${participant.id}`}
       >
-        <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl bg-secondary text-base font-semibold text-foreground shadow-sm ring-1 ring-border/60" data-testid={`${variant}-participant-avatar-${participant.id}`}>
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-secondary text-base font-semibold text-foreground shadow-sm ring-1 ring-border/60" data-testid={`${variant}-participant-avatar-${participant.id}`}>
           {participantAvatarUrl ? (
             <img
               src={participantAvatarUrl}
@@ -120,21 +120,23 @@ export default function RoomPage() {
             getInitial(participant.name)
           )}
         </div>
-        <div className="min-w-0 flex-1" data-testid={`${variant}-participant-info-${participant.id}`}>
-          <p className="truncate text-sm font-semibold text-foreground" data-testid={`${variant}-participant-name-${participant.id}`}>{participant.name}</p>
-          {participant.study_field && (
-            <p className="mt-0.5 text-xs text-muted-foreground" data-testid={`${variant}-participant-study-field-${participant.id}`}>{participant.study_field}</p>
-          )}
-        </div>
-        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-          <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${participantStatusClasses}`} data-testid={`${variant}-participant-status-badge-${participant.id}`}>
-            {participantStatusLabel}
-          </span>
-          {participant.id === room.owner_id && (
-            <span className="rounded-full border border-border/70 bg-secondary/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground" data-testid={`${variant}-participant-owner-badge-${participant.id}`}>
-              Sahip
+        <div className="min-w-0 flex-1 space-y-2" data-testid={`${variant}-participant-info-${participant.id}`}>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-foreground" data-testid={`${variant}-participant-name-${participant.id}`}>{participant.name}</p>
+            {participant.study_field && (
+              <p className="mt-1 truncate text-xs text-muted-foreground" data-testid={`${variant}-participant-study-field-${participant.id}`}>{participant.study_field}</p>
+            )}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] ${participantStatusClasses}`} data-testid={`${variant}-participant-status-badge-${participant.id}`}>
+              {participantStatusLabel}
             </span>
-          )}
+            {participant.id === room.owner_id && (
+              <span className="inline-flex items-center rounded-full border border-border/70 bg-secondary/70 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground" data-testid={`${variant}-participant-owner-badge-${participant.id}`}>
+                Sahip
+              </span>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -901,47 +903,47 @@ export default function RoomPage() {
                   </div>
                 )}
 
-                <div className="flex flex-wrap items-center justify-center gap-3.5 pt-1" data-testid="timer-controls">
+                <div className="flex flex-wrap items-stretch justify-center gap-3 pt-1" data-testid="timer-controls">
                   {!isRunning ? (
                     <Button
                       onClick={handleStartTimer}
                       size="lg"
-                      className="min-w-[148px] justify-center px-8 rounded-xl"
+                      className="h-12 w-full justify-center rounded-xl px-5 sm:w-auto sm:min-w-[156px]"
                       data-testid="btn-timer-start"
                     >
-                      <Play className="h-5 w-5 mr-2" />
+                      <Play className="h-5 w-5" />
                       Başlat
                     </Button>
                   ) : (
                     <Button
                       onClick={handlePauseTimer}
-                      variant="outline"
                       size="lg"
-                      className="min-w-[148px] justify-center px-8 rounded-xl"
+                      className="h-12 w-full justify-center rounded-xl px-5 sm:w-auto sm:min-w-[156px]"
                       data-testid="btn-timer-pause"
                     >
-                      <Pause className="h-5 w-5 mr-2" />
+                      <Pause className="h-5 w-5" />
                       Duraklat
                     </Button>
                   )}
 
                   <Button
-                    onClick={handleResetTimer}
-                    variant="outline"
+                    onClick={handleToggleBreakMode}
                     size="lg"
-                    className="min-w-[56px] rounded-xl"
-                    data-testid="btn-timer-reset"
+                    className={`h-12 w-full justify-center rounded-xl px-5 shadow-sm sm:w-auto sm:min-w-[156px] ${isOnBreak ? 'bg-emerald-500 text-white hover:bg-emerald-600 dark:bg-emerald-500 dark:text-white dark:hover:bg-emerald-600' : 'bg-yellow-500/90 text-yellow-950 hover:bg-yellow-400 dark:bg-yellow-400 dark:text-yellow-950 dark:hover:bg-yellow-300'}`}
+                    data-testid="btn-break-mode-toggle"
                   >
-                    <RotateCcw className="h-5 w-5" />
+                    {isOnBreak ? "Çalışmaya Dön" : "Mola Ver"}
                   </Button>
 
                   <Button
-                    onClick={handleToggleBreakMode}
+                    onClick={handleResetTimer}
+                    variant="outline"
                     size="lg"
-                    className={`min-w-[172px] rounded-xl px-6 ${isOnBreak ? 'bg-emerald-500 text-white hover:bg-emerald-600 dark:bg-emerald-500 dark:text-white dark:hover:bg-emerald-600' : 'bg-amber-400 text-amber-950 hover:bg-amber-500 dark:bg-amber-400 dark:text-amber-950 dark:hover:bg-amber-300'}`}
-                    data-testid="btn-break-mode-toggle"
+                    className="h-12 w-full justify-center rounded-xl px-5 sm:w-auto sm:min-w-[156px]"
+                    data-testid="btn-timer-reset"
                   >
-                    {isOnBreak ? "🟢 Çalışmaya Dön" : "🟡 Mola Ver"}
+                    <RotateCcw className="h-5 w-5" />
+                    Reset
                   </Button>
                 </div>
 
