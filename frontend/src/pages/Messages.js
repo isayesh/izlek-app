@@ -10,12 +10,26 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/contexts/AuthContext";
 import { API } from "@/App";
-import { formatPublicHandle, getAvatarFallback, getPublicUsername } from "@/lib/publicProfile";
+import { getAvatarFallback, getPublicUsername } from "@/lib/publicProfile";
 
 const formatMessageTime = (timestamp) => new Date(timestamp).toLocaleTimeString("tr-TR", {
   hour: "2-digit",
   minute: "2-digit",
 });
+
+const formatSidebarTime = (timestamp) => {
+  if (!timestamp) {
+    return "";
+  }
+
+  const messageDate = new Date(timestamp);
+  const now = new Date();
+  const isToday = messageDate.toDateString() === now.toDateString();
+
+  return isToday
+    ? messageDate.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })
+    : messageDate.toLocaleDateString("tr-TR", { day: "2-digit", month: "short" });
+};
 
 export default function Messages() {
   const navigate = useNavigate();
@@ -27,7 +41,7 @@ export default function Messages() {
   const [selectedFriendId, setSelectedFriendId] = useState("");
   const [draftMessage, setDraftMessage] = useState("");
   const [activeMessages, setActiveMessages] = useState([]);
-  const [unreadCountsByFriend, setUnreadCountsByFriend] = useState({});
+  const [conversationSummaries, setConversationSummaries] = useState({});
   const [error, setError] = useState("");
 
   const authHeaders = useMemo(() => (
@@ -64,9 +78,12 @@ export default function Messages() {
       setError("");
       const response = await axios.get(`${API}/messages/direct/${friendProfileId}`, { headers: authHeaders });
       setActiveMessages(Array.isArray(response.data) ? response.data : []);
-      setUnreadCountsByFriend((previousCounts) => ({
-        ...previousCounts,
-        [friendProfileId]: 0,
+      setConversationSummaries((previousSummaries) => ({
+        ...previousSummaries,
+        [friendProfileId]: {
+          ...(previousSummaries[friendProfileId] || {}),
+          unread_count: 0,
+        },
       }));
     } catch (loadError) {
       console.error("Error loading direct messages:", loadError);
@@ -77,24 +94,24 @@ export default function Messages() {
     }
   }, [authHeaders, currentUser]);
 
-  const loadUnreadCountsByFriend = useCallback(async () => {
+  const loadConversationSummaries = useCallback(async () => {
     if (!currentUser?.uid) {
-      setUnreadCountsByFriend({});
+      setConversationSummaries({});
       return;
     }
 
     try {
-      const response = await axios.get(`${API}/messages/direct/unread-by-friend`, { headers: authHeaders });
-      setUnreadCountsByFriend(response.data?.counts || {});
+      const response = await axios.get(`${API}/messages/direct/sidebar-summary`, { headers: authHeaders });
+      setConversationSummaries(response.data?.summaries || {});
     } catch (loadError) {
-      console.error("Error loading unread direct message counts:", loadError);
+      console.error("Error loading direct message conversation summaries:", loadError);
     }
   }, [authHeaders, currentUser]);
 
   useEffect(() => {
     loadFriends();
-    loadUnreadCountsByFriend();
-  }, [loadFriends, loadUnreadCountsByFriend]);
+    loadConversationSummaries();
+  }, [loadFriends, loadConversationSummaries]);
 
   useEffect(() => {
     if (!selectedFriendId) {
@@ -132,6 +149,15 @@ export default function Messages() {
       );
 
       setActiveMessages((previousMessages) => [...previousMessages, response.data]);
+      setConversationSummaries((previousSummaries) => ({
+        ...previousSummaries,
+        [selectedFriendId]: {
+          ...(previousSummaries[selectedFriendId] || {}),
+          last_message: response.data?.message || trimmedMessage,
+          last_message_at: response.data?.created_at || new Date().toISOString(),
+          unread_count: 0,
+        },
+      }));
       setDraftMessage("");
     } catch (sendError) {
       console.error("Error sending direct message:", sendError);
@@ -195,10 +221,12 @@ export default function Messages() {
                     </div>
                   ) : (
                     friends.map((friend) => {
-                      const handleText = formatPublicHandle(friend.handle_display || friend.handle);
                       const isSelected = selectedFriendId === friend.profile_id;
-                      const unreadCount = Number(unreadCountsByFriend[friend.profile_id] || 0);
+                      const conversationSummary = conversationSummaries[friend.profile_id] || {};
+                      const unreadCount = Number(conversationSummary.unread_count || 0);
                       const unreadLabel = unreadCount > 9 ? "9+" : unreadCount;
+                      const lastMessagePreview = conversationSummary.last_message || "Henüz mesaj yok";
+                      const lastMessageTime = formatSidebarTime(conversationSummary.last_message_at);
 
                       return (
                         <button
@@ -217,22 +245,29 @@ export default function Messages() {
                           </div>
 
                           <div className="min-w-0 flex-1">
-                            <div className="flex items-center justify-between gap-2">
-                              <p className="min-w-0 flex-1 truncate font-semibold text-slate-900 dark:text-slate-100" data-testid={`messages-friend-username-${friend.profile_id}`}>
-                                {getPublicUsername(friend)}
-                              </p>
-                              {unreadCount > 0 && (
-                                <span className="inline-flex min-w-[20px] shrink-0 items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white shadow-sm" data-testid={`messages-friend-unread-badge-${friend.profile_id}`}>
-                                  {unreadLabel}
-                                </span>
-                              )}
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0 flex-1">
+                                <p className="truncate font-semibold text-slate-900 dark:text-slate-100" data-testid={`messages-friend-username-${friend.profile_id}`}>
+                                  {getPublicUsername(friend)}
+                                </p>
+                                <p className="mt-1 truncate text-sm text-slate-500 dark:text-slate-400" data-testid={`messages-friend-preview-${friend.profile_id}`}>
+                                  {lastMessagePreview}
+                                </p>
+                              </div>
+                              <div className="flex shrink-0 flex-col items-end gap-1 pt-0.5">
+                                {lastMessageTime && (
+                                  <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500" data-testid={`messages-friend-time-${friend.profile_id}`}>
+                                    {lastMessageTime}
+                                  </span>
+                                )}
+                                {unreadCount > 0 && (
+                                  <span className="inline-flex min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white shadow-sm" data-testid={`messages-friend-unread-badge-${friend.profile_id}`}>
+                                    {unreadLabel}
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                            {handleText && (
-                              <p className="mt-1 truncate text-sm text-slate-500 dark:text-slate-400" data-testid={`messages-friend-handle-${friend.profile_id}`}>
-                                {handleText}
-                              </p>
-                            )}
-                          </div>
+                            </div>
                         </button>
                       );
                     })

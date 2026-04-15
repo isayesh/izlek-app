@@ -1408,6 +1408,80 @@ async def get_unread_direct_messages_by_friend(firebase_uid: str = Header(..., a
     return {"counts": counts}
 
 
+@api_router.get("/messages/direct/sidebar-summary")
+async def get_direct_message_sidebar_summary(firebase_uid: str = Header(..., alias="X-Firebase-UID")):
+    conversation_groups = await db.direct_messages.aggregate([
+        {
+            "$match": {
+                "$or": [
+                    {"sender_uid": firebase_uid},
+                    {"receiver_uid": firebase_uid},
+                ]
+            }
+        },
+        {
+            "$addFields": {
+                "other_uid": {
+                    "$cond": [
+                        {"$eq": ["$sender_uid", firebase_uid]},
+                        "$receiver_uid",
+                        "$sender_uid",
+                    ]
+                },
+                "is_unread_for_user": {
+                    "$cond": [
+                        {
+                            "$and": [
+                                {"$eq": ["$receiver_uid", firebase_uid]},
+                                {"$eq": [{"$ifNull": ["$is_read", False]}, False]},
+                            ]
+                        },
+                        1,
+                        0,
+                    ]
+                },
+            }
+        },
+        {"$sort": {"created_at": -1}},
+        {
+            "$group": {
+                "_id": "$other_uid",
+                "last_message": {"$first": "$message"},
+                "last_message_at": {"$first": "$created_at"},
+                "unread_count": {"$sum": "$is_unread_for_user"},
+            }
+        },
+    ]).to_list(1000)
+
+    other_uids = [group.get("_id") for group in conversation_groups if group.get("_id")]
+    if not other_uids:
+        return {"summaries": {}}
+
+    other_profiles = await db.profiles.find(
+        {"firebase_uid": {"$in": other_uids}},
+        {"_id": 0, "firebase_uid": 1, "id": 1},
+    ).to_list(1000)
+    profile_id_by_uid = {
+        profile.get("firebase_uid"): profile.get("id")
+        for profile in other_profiles
+        if profile.get("firebase_uid") and profile.get("id")
+    }
+
+    summaries = {}
+    for group in conversation_groups:
+        other_uid = group.get("_id")
+        profile_id = profile_id_by_uid.get(other_uid)
+        if profile_id:
+            summaries[profile_id] = {
+                "last_message": group.get("last_message") or "",
+                "last_message_at": group.get("last_message_at"),
+                "unread_count": group.get("unread_count", 0),
+            }
+
+    return {"summaries": summaries}
+
+
+
 
 @api_router.get("/messages/direct/{friend_profile_id}", response_model=List[DirectMessage])
 async def get_direct_messages(friend_profile_id: str, firebase_uid: str = Header(..., alias="X-Firebase-UID")):
