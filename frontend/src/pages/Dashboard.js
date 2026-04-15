@@ -185,6 +185,8 @@ export default function Dashboard() {
   const [userName, setUserName] = useState("");
   const [profileData, setProfileData] = useState({
     username: "",
+    handle: "",
+    display_name: "",
     avatar_url: "",
     grade_level: "",
     study_field: "",
@@ -207,6 +209,12 @@ export default function Dashboard() {
     currentUser?.displayName?.trim() ||
     currentUser?.email?.trim() ||
     "İzlek Kullanıcısı";
+
+  const normalizedHandle = profileData.handle?.trim().replace(/^@+/, "");
+  const displayNameCandidate = profileData.display_name?.trim() || currentUser?.displayName?.trim();
+  const heroGreetingName = normalizedHandle
+    ? `@${normalizedHandle}`
+    : profileData.username?.trim() || displayNameCandidate || getFallbackName();
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -239,6 +247,8 @@ export default function Dashboard() {
           setUserName(backendUserName);
           setProfileData({
             username: backendUserName,
+            handle: res.data.handle || "",
+            display_name: res.data.display_name || res.data.displayName || res.data.name || "",
             avatar_url: res.data.avatar_url || "",
             grade_level: res.data.grade_level || "",
             study_field: res.data.study_field || "",
@@ -250,6 +260,8 @@ export default function Dashboard() {
           setUserName(fallbackName);
           setProfileData({
             username: fallbackName,
+            handle: "",
+            display_name: currentUser?.displayName?.trim() || "",
             avatar_url: "",
             grade_level: "",
             study_field: "",
@@ -267,6 +279,8 @@ export default function Dashboard() {
           setUserName(storedUserName);
           setProfileData({
             username: storedUserName,
+            handle: "",
+            display_name: currentUser?.displayName?.trim() || "",
             avatar_url: "",
             grade_level: "",
             study_field: "",
@@ -681,7 +695,7 @@ export default function Dashboard() {
                   </p>
                   <div className="space-y-3">
                     <h1 className="font-display text-4xl font-semibold tracking-[-0.05em] text-foreground sm:text-5xl lg:text-6xl" data-testid="dashboard-title">
-                      Selam İsa
+                      Selam, {heroGreetingName}
                     </h1>
                     <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg" data-testid="dashboard-program-summary">
                       YKS’ye giden yolda bugünü net geçir.
