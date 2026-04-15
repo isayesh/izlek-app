@@ -963,6 +963,15 @@ async def get_incoming_friend_requests(firebase_uid: str = Header(..., alias="X-
     return notifications
 
 
+@api_router.get("/friends/requests/incoming/count")
+async def get_incoming_friend_requests_count(firebase_uid: str = Header(..., alias="X-Firebase-UID")):
+    pending_count = await db.friend_requests.count_documents(
+        {"to_uid": firebase_uid, "status": FRIEND_REQUEST_PENDING}
+    )
+    return {"count": pending_count}
+
+
+
 @api_router.post("/friends/requests/{request_id}/accept", response_model=FriendActionResponse)
 async def accept_friend_request(request_id: str, firebase_uid: str = Header(..., alias="X-Firebase-UID")):
     friend_request = await db.friend_requests.find_one({"id": request_id}, {"_id": 0})

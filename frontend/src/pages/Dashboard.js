@@ -149,6 +149,7 @@ export default function Dashboard() {
   const [showAddTask, setShowAddTask] = useState(false);
   const [networkError, setNetworkError] = useState(false);
   const [activeWeeklyDay, setActiveWeeklyDay] = useState(getCurrentDayName());
+  const [pendingFriendRequestCount, setPendingFriendRequestCount] = useState(0);
 
   const [newTask, setNewTask] = useState({
     lesson: "",
@@ -258,6 +259,26 @@ export default function Dashboard() {
 
     checkProfileExists();
   }, [currentUser, navigate]);
+
+  useEffect(() => {
+    const loadPendingFriendRequestCount = async () => {
+      if (!currentUser?.uid) {
+        setPendingFriendRequestCount(0);
+        return;
+      }
+
+      try {
+        const response = await axios.get(`${API}/friends/requests/incoming/count`, {
+          headers: { "X-Firebase-UID": currentUser.uid },
+        });
+        setPendingFriendRequestCount(Number(response.data?.count) || 0);
+      } catch (countError) {
+        console.error("Error loading pending friend request count:", countError);
+      }
+    };
+
+    loadPendingFriendRequestCount();
+  }, [currentUser]);
 
   useEffect(() => {
     setAvatarLoadFailed(false);
@@ -495,7 +516,7 @@ export default function Dashboard() {
     { label: "Odalar", icon: Users, onClick: () => navigate("/rooms"), testId: "btn-rooms" },
     { label: "Liderlik", icon: Trophy, onClick: () => navigate("/leaderboard"), testId: "btn-leaderboard" },
     { label: "Profil", icon: User, onClick: () => navigate("/profile"), testId: "dashboard-btn-profile" },
-    { label: "Arkadaşlar", icon: Users, onClick: () => navigate("/friends"), testId: "dashboard-btn-friends" },
+    { label: "Arkadaşlar", icon: Users, onClick: () => navigate("/friends"), testId: "dashboard-btn-friends", badgeCount: pendingFriendRequestCount },
     { label: "Bildirimler", icon: Bell, onClick: () => navigate("/notifications"), testId: "dashboard-btn-notifications" },
   ];
 
@@ -568,6 +589,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2 lg:justify-end">
                   {navigationActions.map((action) => {
                     const Icon = action.icon;
+                    const badgeLabel = action.badgeCount > 9 ? "9+" : action.badgeCount;
                     return (
                       <Button
                         key={action.label}
@@ -577,7 +599,14 @@ export default function Dashboard() {
                         className="shrink-0"
                         data-testid={action.testId}
                       >
-                        <Icon className="h-4 w-4" />
+                        <span className="relative inline-flex">
+                          <Icon className="h-4 w-4" />
+                          {action.badgeCount > 0 && (
+                            <span className="absolute -right-2 -top-2 inline-flex min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white shadow-sm" data-testid={`${action.testId}-badge`}>
+                              {badgeLabel}
+                            </span>
+                          )}
+                        </span>
                         {action.label}
                       </Button>
                     );
