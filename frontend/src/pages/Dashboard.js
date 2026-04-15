@@ -1008,19 +1008,3 @@ export default function Dashboard() {
     </div>
   );
 }
-se);
-                    setEditingTask(null);
-                  }}
-                  data-testid="task-edit-cancel-button"
-                >
-                  İptal
-                </Button>
-                <Button onClick={saveEditedTask} data-testid="task-edit-save-button">Kaydet</Button>
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-}
