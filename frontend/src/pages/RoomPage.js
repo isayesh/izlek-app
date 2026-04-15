@@ -97,19 +97,19 @@ export default function RoomPage() {
   const renderParticipantItem = (participant, variant = "card") => {
     const participantAvatarUrl = getParticipantAvatarUrl(participant);
     const participantStatusLabel = participant.is_on_break ? "Molada" : isRunning ? "Çalışıyor" : "Hazır";
-    const participantStatusTextClasses = participant.is_on_break
-      ? "text-yellow-700 font-semibold dark:text-yellow-400"
+    const participantStatusPillClasses = participant.is_on_break
+      ? "border-yellow-200 bg-yellow-100 text-yellow-700 dark:border-yellow-500/20 dark:bg-yellow-500/10 dark:text-yellow-400"
       : isRunning
-        ? "text-green-700 font-semibold dark:text-green-400"
-        : "text-slate-600 font-medium dark:text-slate-300";
+        ? "border-green-200 bg-green-100 text-green-700 dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-400"
+        : "border-slate-200 bg-slate-100 text-slate-700 dark:border-slate-500/20 dark:bg-slate-500/10 dark:text-slate-300";
 
     return (
       <div
         key={`${variant}-${participant.id}`}
-        className="flex items-start gap-4 rounded-2xl border border-border/50 bg-background/45 px-4 py-4 shadow-[0_18px_38px_-34px_rgba(2,6,23,0.95)] transition-[background-color,border-color,box-shadow] duration-200 hover:border-border/70 hover:bg-white/5 hover:shadow-[0_22px_42px_-34px_rgba(2,6,23,1)]"
+        className="flex items-center gap-3.5 rounded-2xl border border-border/50 bg-background/45 px-4 py-3.5 shadow-[0_18px_38px_-34px_rgba(2,6,23,0.95)] transition-[background-color,border-color,box-shadow] duration-200 hover:border-border/60 hover:bg-white/5 hover:shadow-[0_22px_42px_-34px_rgba(2,6,23,1)]"
         data-testid={`${variant}-participant-${participant.id}`}
       >
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-base font-semibold text-foreground shadow-[0_16px_30px_-22px_rgba(59,130,246,0.45)] ring-1 ring-primary/20" data-testid={`${variant}-participant-avatar-${participant.id}`}>
+        <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-base font-semibold text-foreground shadow-[0_16px_30px_-22px_rgba(59,130,246,0.45)] ring-1 ring-primary/20" data-testid={`${variant}-participant-avatar-${participant.id}`}>
           {participantAvatarUrl ? (
             <img
               src={participantAvatarUrl}
@@ -122,17 +122,15 @@ export default function RoomPage() {
             getInitial(participant.name)
           )}
         </div>
-        <div className="min-w-0 flex-1 space-y-2.5" data-testid={`${variant}-participant-info-${participant.id}`}>
-          <p className="truncate text-[0.95rem] font-semibold text-foreground" data-testid={`${variant}-participant-name-${participant.id}`}>{participant.name}</p>
-          <div className="space-y-1 text-xs font-medium">
-            {participant.study_field && (
-              <p className="truncate text-muted-foreground/90" data-testid={`${variant}-participant-study-field-${participant.id}`}>{participant.study_field}</p>
-            )}
-            <p className={participantStatusTextClasses} data-testid={`${variant}-participant-status-badge-${participant.id}`}>
-              {participantStatusLabel}
-            </p>
-          </div>
+        <div className="min-w-0 flex-1" data-testid={`${variant}-participant-info-${participant.id}`}>
+          <p className="truncate text-sm font-semibold text-foreground sm:text-[0.95rem]" data-testid={`${variant}-participant-name-${participant.id}`}>{participant.name}</p>
+          {participant.study_field && (
+            <p className="mt-1 truncate text-xs font-medium text-muted-foreground/85" data-testid={`${variant}-participant-study-field-${participant.id}`}>{participant.study_field}</p>
+          )}
         </div>
+        <span className={`inline-flex shrink-0 items-center rounded-full border px-2.5 py-1 text-xs font-semibold leading-none ${participantStatusPillClasses}`} data-testid={`${variant}-participant-status-badge-${participant.id}`}>
+          {participantStatusLabel}
+        </span>
       </div>
     );
   };
@@ -804,8 +802,8 @@ export default function RoomPage() {
                 Katılımcılar ({room.participants.length})
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 pb-4 pt-4">
-              <div className="space-y-3" data-testid="participants-list">
+            <CardContent className="space-y-3.5 pb-4 pt-3.5">
+              <div className="space-y-2.5" data-testid="participants-list">
                 {visibleParticipants.map((participant) => renderParticipantItem(participant, "card"))}
               </div>
 
