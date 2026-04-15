@@ -75,6 +75,20 @@ const getDashboardProfileMeta = (gradeLevel, studyField) => {
   return parts.length ? parts.join(" • ") : null;
 };
 
+const YKS_TARGET_DATE = new Date("2026-06-20T10:15:00");
+
+const getYksCountdown = () => {
+  const remaining = Math.max(YKS_TARGET_DATE.getTime() - Date.now(), 0);
+  const totalSeconds = Math.floor(remaining / 1000);
+
+  return {
+    days: Math.floor(totalSeconds / 86400),
+    hours: Math.floor((totalSeconds % 86400) / 3600),
+    minutes: Math.floor((totalSeconds % 3600) / 60),
+    seconds: totalSeconds % 60,
+  };
+};
+
 function TaskFormFields({ draft, setDraft, prefix }) {
   return (
     <div className="space-y-4">
@@ -178,6 +192,7 @@ export default function Dashboard() {
     last_active_date: null,
   });
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
+  const [yksCountdown, setYksCountdown] = useState(() => getYksCountdown());
   const profileMetaLine = getDashboardProfileMeta(profileData.grade_level, profileData.study_field);
 
   const getTodayDateString = () => {
@@ -192,6 +207,14 @@ export default function Dashboard() {
     currentUser?.displayName?.trim() ||
     currentUser?.email?.trim() ||
     "İzlek Kullanıcısı";
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setYksCountdown(getYksCountdown());
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
     const checkProfileExists = async () => {
@@ -551,6 +574,13 @@ export default function Dashboard() {
     },
   ];
 
+  const countdownSegments = [
+    { label: "Gün", value: yksCountdown.days },
+    { label: "Saat", value: yksCountdown.hours },
+    { label: "Dakika", value: yksCountdown.minutes },
+    { label: "Saniye", value: yksCountdown.seconds },
+  ];
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="px-4 pb-10 pt-6 sm:px-6 sm:pb-12 lg:px-10 xl:px-12">
@@ -644,7 +674,7 @@ export default function Dashboard() {
             <div className="pointer-events-none absolute bottom-0 right-0 h-32 w-32 rounded-full bg-[radial-gradient(circle,rgba(45,212,191,0.1),transparent_68%)]" />
 
             <div className="relative flex flex-col gap-10 xl:flex-row xl:items-start xl:justify-between">
-              <div className="max-w-3xl space-y-5">
+              <div className="max-w-3xl space-y-6">
                 <div className="space-y-3.5">
                   <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
                     Bugün için net bir düzen
@@ -656,6 +686,31 @@ export default function Dashboard() {
                     <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg" data-testid="dashboard-program-summary">
                       {selectedProgram.exam_goal} hedefin için bugün yapacakların hazır. Günlük {selectedProgram.daily_hours} saat odağınla ritmini koru ve planını ferah bir ekranda yönet.
                     </p>
+                  </div>
+                </div>
+
+                <div className="max-w-2xl rounded-[24px] border border-border/40 bg-background/35 px-5 py-4 sm:px-6 sm:py-5">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">
+                      YKS'ye kalan süre
+                    </p>
+                    <p className="text-xs text-muted-foreground">20 Haziran 2026 • 10:15</p>
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-2 gap-y-4 sm:grid-cols-4 sm:gap-y-0">
+                    {countdownSegments.map((segment, index) => (
+                      <div
+                        key={segment.label}
+                        className={`flex flex-col gap-1 ${index > 0 ? "sm:border-l sm:border-border/45 sm:pl-5" : ""}`}
+                      >
+                        <span className="font-display text-3xl font-semibold tracking-[-0.04em] text-foreground sm:text-[2.1rem] dark:text-slate-50">
+                          {String(segment.value).padStart(2, "0")}
+                        </span>
+                        <span className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                          {segment.label}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -710,34 +765,34 @@ export default function Dashboard() {
                       <span>Bugün çalışmanı işaretleyerek serini koru.</span>
                     </div>
                   )}
+
+                  <div className="mt-5 flex justify-end">
+                    {quickActions.map((action) => {
+                      const Icon = action.icon;
+                      return (
+                        <Button
+                          key={action.label}
+                          variant={action.variant}
+                          size="lg"
+                          onClick={action.onClick}
+                          className={`hover-lift h-auto min-h-[88px] w-full items-start justify-between whitespace-normal rounded-[22px] px-5 py-4 text-left sm:w-auto sm:min-w-[220px] ${action.className}`}
+                          data-testid={action.testId}
+                        >
+                          <div>
+                            <div className="flex items-center gap-2 text-sm font-semibold sm:text-[15px]">
+                              <Icon className="h-4 w-4" />
+                              {action.label}
+                            </div>
+                            <p className={`mt-2 text-sm leading-6 ${action.emphasis === "primary" ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
+                              {action.description}
+                            </p>
+                          </div>
+                        </Button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <div className="relative mt-8 max-w-sm">
-              {quickActions.map((action) => {
-                const Icon = action.icon;
-                return (
-                  <Button
-                    key={action.label}
-                    variant={action.variant}
-                    size="lg"
-                    onClick={action.onClick}
-                    className={`hover-lift h-auto min-h-[88px] items-start justify-between whitespace-normal rounded-[22px] px-5 py-4 text-left ${action.className}`}
-                    data-testid={action.testId}
-                  >
-                    <div>
-                      <div className="flex items-center gap-2 text-sm font-semibold sm:text-[15px]">
-                        <Icon className="h-4 w-4" />
-                        {action.label}
-                      </div>
-                      <p className={`mt-2 text-sm leading-6 ${action.emphasis === "primary" ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
-                        {action.description}
-                      </p>
-                    </div>
-                  </Button>
-                );
-              })}
             </div>
           </section>
 
