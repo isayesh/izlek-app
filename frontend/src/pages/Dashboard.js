@@ -765,32 +765,32 @@ export default function Dashboard() {
                       <span>Bugün çalışmanı işaretleyerek serini koru.</span>
                     </div>
                   )}
+                </div>
 
-                  <div className="mt-5 flex justify-end">
-                    {quickActions.map((action) => {
-                      const Icon = action.icon;
-                      return (
-                        <Button
-                          key={action.label}
-                          variant={action.variant}
-                          size="lg"
-                          onClick={action.onClick}
-                          className={`hover-lift h-auto min-h-[88px] w-full items-start justify-between whitespace-normal rounded-[22px] px-5 py-4 text-left sm:w-auto sm:min-w-[220px] ${action.className}`}
-                          data-testid={action.testId}
-                        >
-                          <div>
-                            <div className="flex items-center gap-2 text-sm font-semibold sm:text-[15px]">
-                              <Icon className="h-4 w-4" />
-                              {action.label}
-                            </div>
-                            <p className={`mt-2 text-sm leading-6 ${action.emphasis === "primary" ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
-                              {action.description}
-                            </p>
+                <div className="mt-5 flex justify-end">
+                  {quickActions.map((action) => {
+                    const Icon = action.icon;
+                    return (
+                      <Button
+                        key={action.label}
+                        variant={action.variant}
+                        size="lg"
+                        onClick={action.onClick}
+                        className={`hover-lift h-auto min-h-[88px] w-full items-start justify-between whitespace-normal rounded-[22px] px-5 py-4 text-left sm:w-auto sm:min-w-[220px] ${action.className}`}
+                        data-testid={action.testId}
+                      >
+                        <div>
+                          <div className="flex items-center gap-2 text-sm font-semibold sm:text-[15px]">
+                            <Icon className="h-4 w-4" />
+                            {action.label}
                           </div>
-                        </Button>
-                      );
-                    })}
-                  </div>
+                          <p className={`mt-2 text-sm leading-6 ${action.emphasis === "primary" ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
+                            {action.description}
+                          </p>
+                        </div>
+                      </Button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
