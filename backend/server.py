@@ -598,6 +598,7 @@ class DirectMessage(BaseModel):
     sender_uid: str
     receiver_uid: str
     message: str
+    is_read: bool = False
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -1349,6 +1350,20 @@ async def create_message(input: MessageCreate):
     await db.messages.insert_one(doc)
     return message_obj
 
+@api_router.get("/messages/direct/unread-count")
+async def get_unread_direct_messages_count(firebase_uid: str = Header(..., alias="X-Firebase-UID")):
+    unread_count = await db.direct_messages.count_documents(
+        {
+            "receiver_uid": firebase_uid,
+            "$or": [
+                {"is_read": False},
+                {"is_read": {"$exists": False}},
+            ],
+        }
+    )
+    return {"count": unread_count}
+
+
 @api_router.get("/messages/direct/{friend_profile_id}", response_model=List[DirectMessage])
 async def get_direct_messages(friend_profile_id: str, firebase_uid: str = Header(..., alias="X-Firebase-UID")):
     friend_profile = await db.profiles.find_one({"id": friend_profile_id}, {"_id": 0, "firebase_uid": 1})
@@ -1361,6 +1376,18 @@ async def get_direct_messages(friend_profile_id: str, firebase_uid: str = Header
 
     if not await are_users_friends(firebase_uid, friend_uid):
         raise HTTPException(status_code=403, detail="Sadece arkadaşlarınla mesajlaşabilirsin")
+
+    await db.direct_messages.update_many(
+        {
+            "sender_uid": friend_uid,
+            "receiver_uid": firebase_uid,
+            "$or": [
+                {"is_read": False},
+                {"is_read": {"$exists": False}},
+            ],
+        },
+        {"$set": {"is_read": True}},
+    )
 
     direct_messages = await db.direct_messages.find(
         {
@@ -1375,6 +1402,7 @@ async def get_direct_messages(friend_profile_id: str, firebase_uid: str = Header
     for direct_message in direct_messages:
         if isinstance(direct_message.get("created_at"), str):
             direct_message["created_at"] = datetime.fromisoformat(direct_message["created_at"])
+        direct_message["is_read"] = bool(direct_message.get("is_read", False))
 
     return direct_messages
 

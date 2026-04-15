@@ -151,6 +151,7 @@ export default function Dashboard() {
   const [networkError, setNetworkError] = useState(false);
   const [activeWeeklyDay, setActiveWeeklyDay] = useState(getCurrentDayName());
   const [pendingFriendRequestCount, setPendingFriendRequestCount] = useState(0);
+  const [unreadDmCount, setUnreadDmCount] = useState(0);
 
   const [newTask, setNewTask] = useState({
     lesson: "",
@@ -279,6 +280,26 @@ export default function Dashboard() {
     };
 
     loadPendingFriendRequestCount();
+  }, [currentUser]);
+
+  useEffect(() => {
+    const loadUnreadDmCount = async () => {
+      if (!currentUser?.uid) {
+        setUnreadDmCount(0);
+        return;
+      }
+
+      try {
+        const response = await axios.get(`${API}/messages/direct/unread-count`, {
+          headers: { "X-Firebase-UID": currentUser.uid },
+        });
+        setUnreadDmCount(Number(response.data?.count) || 0);
+      } catch (countError) {
+        console.error("Error loading unread DM count:", countError);
+      }
+    };
+
+    loadUnreadDmCount();
   }, [currentUser]);
 
   useEffect(() => {
@@ -517,7 +538,7 @@ export default function Dashboard() {
     { label: "Odalar", icon: Users, onClick: () => navigate("/rooms"), testId: "btn-rooms" },
     { label: "Liderlik", icon: Trophy, onClick: () => navigate("/leaderboard"), testId: "btn-leaderboard" },
     { label: "Profil", icon: User, onClick: () => navigate("/profile"), testId: "dashboard-btn-profile" },
-    { label: "DM Kutum", icon: MessageSquare, onClick: () => navigate("/messages"), testId: "dashboard-btn-messages" },
+    { label: "DM Kutum", icon: MessageSquare, onClick: () => navigate("/messages"), testId: "dashboard-btn-messages", badgeCount: unreadDmCount },
     { label: "Arkadaşlar", icon: Users, onClick: () => navigate("/friends"), testId: "dashboard-btn-friends", badgeCount: pendingFriendRequestCount },
     { label: "Bildirimler", icon: Bell, onClick: () => navigate("/notifications"), testId: "dashboard-btn-notifications" },
   ];
