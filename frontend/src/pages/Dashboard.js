@@ -179,7 +179,6 @@ export default function Dashboard() {
   });
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
   const profileMetaLine = getDashboardProfileMeta(profileData.grade_level, profileData.study_field);
-  const hasProfileMeta = Boolean(profileMetaLine);
 
   const getTodayDateString = () => {
     const now = new Date();
@@ -526,7 +525,6 @@ export default function Dashboard() {
   const tasksByDay = groupTasksByDay();
   const progressValue = getProgress();
   const completedTodayCount = todaysTasks.filter((task) => task.completed).length;
-  const totalCompletedTasks = selectedProgram.tasks.filter((task) => task.completed).length;
   const shouldShowStreakReminder =
     profileData.streak_count > 0 && profileData.last_active_date !== getTodayDateString();
 
@@ -550,16 +548,6 @@ export default function Dashboard() {
       emphasis: "primary",
       className: "border-transparent shadow-none hover:shadow-none",
       testId: "dashboard-quick-action-find-room-button",
-    },
-    {
-      label: "Oda Oluştur",
-      description: "Kendi odanı aç ve davet et",
-      icon: Users,
-      onClick: () => navigate("/rooms"),
-      variant: "ghost",
-      emphasis: "secondary",
-      className: "border border-border/45 bg-background/30 text-foreground shadow-none hover:border-border/60 hover:bg-background/60 hover:text-foreground",
-      testId: "dashboard-quick-action-create-room-button",
     },
     {
       label: "Görev Ekle",
@@ -612,7 +600,7 @@ export default function Dashboard() {
               </div>
 
               <div className="w-full max-w-full overflow-x-auto pb-1" data-testid="dashboard-header-nav">
-                <div className="flex items-center gap-1.5 lg:justify-end">
+                <div className="flex items-center gap-2.5 lg:justify-end">
                   {navigationActions.map((action) => {
                     const Icon = action.icon;
                     const badgeLabel = action.badgeCount > 9 ? "9+" : action.badgeCount;
@@ -622,18 +610,18 @@ export default function Dashboard() {
                         variant="ghost"
                         size="sm"
                         onClick={action.onClick}
-                        className="shrink-0 rounded-full border border-transparent px-3 text-muted-foreground shadow-none hover:border-border/50 hover:bg-secondary/50 hover:text-foreground"
+                        className="h-10 shrink-0 rounded-[14px] border border-transparent px-4 text-[13px] font-medium tracking-[0.01em] text-muted-foreground shadow-none [&_svg]:size-[15px] hover:border-border/50 hover:bg-secondary/55 hover:text-foreground active:bg-secondary/65"
                         data-testid={action.testId}
                       >
-                        <span className="relative inline-flex">
-                          <Icon className="h-4 w-4" />
+                        <span className="relative inline-flex items-center justify-center">
+                          <Icon className="h-[15px] w-[15px]" />
                           {action.badgeCount > 0 && (
                             <span className="absolute -right-2 -top-2 inline-flex min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white shadow-sm" data-testid={`${action.testId}-badge`}>
                               {badgeLabel}
                             </span>
                           )}
                         </span>
-                        {action.label}
+                        <span>{action.label}</span>
                       </Button>
                     );
                   })}
@@ -666,7 +654,7 @@ export default function Dashboard() {
             <div className="pointer-events-none absolute bottom-0 right-0 h-32 w-32 rounded-full bg-[radial-gradient(circle,rgba(45,212,191,0.1),transparent_68%)]" />
 
             <div className="relative flex flex-col gap-10 xl:flex-row xl:items-start xl:justify-between">
-              <div className="max-w-3xl space-y-7">
+              <div className="max-w-3xl space-y-5">
                 <div className="space-y-3.5">
                   <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
                     Bugün için net bir düzen
@@ -678,26 +666,6 @@ export default function Dashboard() {
                     <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg" data-testid="dashboard-program-summary">
                       {selectedProgram.exam_goal} hedefin için bugün yapacakların hazır. Günlük {selectedProgram.daily_hours} saat odağınla ritmini koru ve planını ferah bir ekranda yönet.
                     </p>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2.5 text-sm">
-                  {hasProfileMeta && (
-                    <div className="inline-flex items-center gap-2 rounded-full border border-border/45 bg-background/35 px-3.5 py-2 text-muted-foreground" data-testid="dashboard-profile-meta-card">
-                      <User className="h-4 w-4" />
-                      <span className="text-muted-foreground">Profil</span>
-                      <span className="font-medium text-foreground" data-testid="dashboard-profile-meta-value">
-                        {profileMetaLine}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="inline-flex items-center gap-2 rounded-full border border-border/45 bg-background/35 px-3.5 py-2 text-muted-foreground" data-testid="dashboard-streak-summary">
-                    <Flame className="h-4 w-4 text-amber-500" />
-                    <span className="text-muted-foreground">Seri</span>
-                    <span className="font-medium text-foreground" data-testid="dashboard-streak-value">
-                      {profileData.streak_count > 0 ? `${profileData.streak_count} gün` : "Yeni seri başlat"}
-                    </span>
                   </div>
                 </div>
               </div>
@@ -741,7 +709,6 @@ export default function Dashboard() {
                       </p>
                     </div>
                     <div className="text-right text-sm leading-6 text-muted-foreground">
-                      <p>{totalCompletedTasks}/{selectedProgram.tasks.length} görev tamamlandı</p>
                       <p>{completedTodayCount}/{todaysTasks.length || 0} görev bugün bitti</p>
                     </div>
                   </div>
@@ -757,7 +724,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="relative mt-8 grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1.3fr)_repeat(2,minmax(0,1fr))]">
+            <div className="relative mt-8 grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)]">
               {quickActions.map((action) => {
                 const Icon = action.icon;
                 return (
@@ -795,22 +762,11 @@ export default function Dashboard() {
                     </CardDescription>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-3">
-                    <div className="text-right">
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Bugün</p>
-                      <p className="mt-1 text-lg font-semibold text-foreground">
-                        {completedTodayCount}/{todaysTasks.length}
-                      </p>
-                    </div>
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowAddTask(true)}
-                      className="border-border/50 bg-background/55 shadow-none hover:bg-secondary/60"
-                      data-testid="btn-add-task"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Görev Ekle
-                    </Button>
+                  <div className="text-right">
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Bugün</p>
+                    <p className="mt-1 text-lg font-semibold text-foreground">
+                      {completedTodayCount}/{todaysTasks.length}
+                    </p>
                   </div>
                 </div>
               </CardHeader>
