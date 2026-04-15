@@ -11,7 +11,6 @@ import { Play, Pause, RotateCcw, Send, Users, ArrowLeft, Copy, Check, Clock, Mes
 import { startStudySession, updateStudySession, completeStudySession } from "@/lib/studySession";
 import { useAuth } from "@/contexts/AuthContext";
 
-const PARTICIPANTS_PANEL_HEIGHT = "h-[300px] sm:h-[320px] lg:h-[304px]";
 
 export default function RoomPage() {
   const { roomId } = useParams();
@@ -794,7 +793,7 @@ export default function RoomPage() {
         {/* Left: Participants + Timer */}
         <div className="min-w-0 space-y-6 min-h-0 lg:flex lg:h-full lg:flex-col" data-testid="room-left-column">
           {/* Participants */}
-          <Card className={`${PARTICIPANTS_PANEL_HEIGHT} min-h-0 overflow-hidden rounded-2xl border border-border/60 bg-card/90 shadow-[0_22px_48px_-36px_rgba(2,6,23,0.9)] backdrop-blur-sm lg:shrink-0 lg:flex lg:flex-col`} data-testid="participants-card">
+          <Card className="overflow-hidden rounded-2xl border border-border/60 bg-card/90 shadow-[0_22px_48px_-36px_rgba(2,6,23,0.9)] backdrop-blur-sm lg:shrink-0" data-testid="participants-card">
             <CardHeader className="border-b border-border/60 pb-3">
               <div className="flex items-center justify-between gap-3">
                 <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="participants-title">
@@ -813,8 +812,8 @@ export default function RoomPage() {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="min-h-0 flex-1 pb-4 pt-3.5">
-              <ScrollArea className="h-full pr-2" data-testid="participants-list-scroll-area">
+            <CardContent className="pb-4 pt-3.5">
+              <ScrollArea className="max-h-[220px] pr-2 sm:max-h-[236px] lg:max-h-[224px]" data-testid="participants-list-scroll-area">
                 <div className="space-y-2.5 pr-2" data-testid="participants-list">
                   {allParticipants.map((participant) => renderParticipantItem(participant, "card"))}
                 </div>
