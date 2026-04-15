@@ -934,6 +934,15 @@ export default function RoomPage() {
                   >
                     <RotateCcw className="h-5 w-5" />
                   </Button>
+
+                  <Button
+                    onClick={handleToggleBreakMode}
+                    size="lg"
+                    className={`min-w-[172px] rounded-xl px-6 ${isOnBreak ? 'bg-emerald-500 text-white hover:bg-emerald-600 dark:bg-emerald-500 dark:text-white dark:hover:bg-emerald-600' : 'bg-amber-400 text-amber-950 hover:bg-amber-500 dark:bg-amber-400 dark:text-amber-950 dark:hover:bg-amber-300'}`}
+                    data-testid="btn-break-mode-toggle"
+                  >
+                    {isOnBreak ? "🟢 Çalışmaya Dön" : "🟡 Mola Ver"}
+                  </Button>
                 </div>
 
                 </div>
