@@ -681,10 +681,12 @@ export default function Dashboard() {
                   </p>
                   <div className="space-y-3">
                     <h1 className="font-display text-4xl font-semibold tracking-[-0.05em] text-foreground sm:text-5xl lg:text-6xl" data-testid="dashboard-title">
-                      Merhaba, {userName}
+                      Selam İsa
                     </h1>
                     <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg" data-testid="dashboard-program-summary">
-                      {selectedProgram.exam_goal} hedefin için bugün yapacakların hazır. Günlük {selectedProgram.daily_hours} saat odağınla ritmini koru ve planını ferah bir ekranda yönet.
+                      YKS’ye giden yolda bugünü net geçir.
+                      <br />
+                      Küçük adımlar, büyük fark yaratır.
                     </p>
                   </div>
                 </div>
