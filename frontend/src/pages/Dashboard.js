@@ -673,8 +673,8 @@ export default function Dashboard() {
             <div className="pointer-events-none absolute left-0 top-0 h-36 w-36 rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.12),transparent_68%)]" />
             <div className="pointer-events-none absolute bottom-0 right-0 h-32 w-32 rounded-full bg-[radial-gradient(circle,rgba(45,212,191,0.1),transparent_68%)]" />
 
-            <div className="relative flex flex-col gap-10 md:gap-9 xl:flex-row xl:items-start xl:justify-between">
-              <div className="max-w-3xl space-y-6">
+            <div className="relative flex flex-col gap-10 md:gap-10 xl:flex-row xl:items-start xl:justify-between">
+              <div className="w-full space-y-6 xl:max-w-3xl">
                 <div className="space-y-3.5">
                   <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
                     Bugün için net bir düzen
@@ -689,7 +689,7 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="w-full max-w-2xl rounded-[24px] border border-border/40 bg-background/35 px-5 py-4 sm:px-6 sm:py-5 md:max-w-[42rem]">
+                <div className="w-full rounded-[24px] border border-border/40 bg-background/35 px-5 py-4 sm:px-6 sm:py-5 xl:max-w-2xl">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">
                       YKS'ye kalan süre
@@ -715,7 +715,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="w-full md:ml-auto md:max-w-[34rem] xl:max-w-sm">
+              <div className="w-full xl:max-w-sm">
                 <div className="rounded-[24px] border border-border/45 bg-background/45 p-5 sm:p-6" data-testid="dashboard-identity-block">
                   <div className="flex items-center gap-4">
                     <div
@@ -767,7 +767,7 @@ export default function Dashboard() {
                   )}
                 </div>
 
-                <div className="mt-5 md:mt-4 flex justify-end">
+                <div className="mt-6 flex justify-start xl:justify-end">
                   {quickActions.map((action) => {
                     const Icon = action.icon;
                     return (
