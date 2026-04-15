@@ -96,10 +96,12 @@ export default function RoomPage() {
 
   const renderParticipantItem = (participant, variant = "card") => {
     const participantAvatarUrl = getParticipantAvatarUrl(participant);
-    const participantStatusLabel = participant.is_on_break ? "Molada" : "Çalışıyor";
+    const participantStatusLabel = participant.is_on_break ? "Molada" : isRunning ? "Çalışıyor" : "Hazır";
     const participantStatusClasses = participant.is_on_break
-      ? "border-yellow-400/25 bg-yellow-500/10 text-yellow-300"
-      : "border-green-400/25 bg-green-500/10 text-green-300";
+      ? "border-yellow-200 bg-yellow-100 text-yellow-700 dark:border-yellow-500/20 dark:bg-yellow-500/10 dark:text-yellow-400"
+      : isRunning
+        ? "border-green-200 bg-green-100 text-green-700 dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-400"
+        : "border-slate-200 bg-slate-100 text-slate-700 dark:border-slate-500/20 dark:bg-slate-500/10 dark:text-slate-300";
 
     return (
       <div
@@ -898,7 +900,7 @@ export default function RoomPage() {
                 </div>
 
                 {isOnBreak && (
-                  <div className="rounded-2xl border border-amber-300/70 bg-amber-100/80 px-4 py-3 text-sm font-medium text-amber-900 shadow-sm dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-100" data-testid="break-mode-info">
+                  <div className="rounded-2xl border border-yellow-200 bg-yellow-100 px-4 py-3 text-sm font-medium text-yellow-700 shadow-sm dark:border-yellow-500/20 dark:bg-yellow-500/10 dark:text-yellow-400" data-testid="break-mode-info">
                     Moladasın, bu sürede çalışma süren artmaz.
                   </div>
                 )}
@@ -929,7 +931,7 @@ export default function RoomPage() {
                   <Button
                     onClick={handleToggleBreakMode}
                     size="lg"
-                    className={`h-12 w-full justify-center rounded-xl border px-5 shadow-[0_18px_30px_-24px_rgba(2,6,23,0.95)] sm:w-auto sm:min-w-[156px] ${isOnBreak ? 'border-emerald-400/25 bg-emerald-500/14 text-emerald-200 hover:bg-emerald-500/20' : 'border-yellow-400/25 bg-yellow-500/14 text-yellow-200 hover:bg-yellow-500/20'}`}
+                    className={`h-12 w-full justify-center rounded-xl border px-5 shadow-[0_18px_30px_-24px_rgba(2,6,23,0.95)] sm:w-auto sm:min-w-[156px] ${isOnBreak ? 'border-green-200 bg-green-100 text-green-700 hover:bg-green-200 dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-400 dark:hover:bg-green-500/15' : 'border-yellow-200 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:border-yellow-500/20 dark:bg-yellow-500/10 dark:text-yellow-400 dark:hover:bg-yellow-500/15'}`}
                     data-testid="btn-break-mode-toggle"
                   >
                     {isOnBreak ? "Çalışmaya Dön" : "Mola Ver"}
