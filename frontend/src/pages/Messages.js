@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/contexts/AuthContext";
 import { API } from "@/App";
-import { getAvatarFallback, getPublicUsername } from "@/lib/publicProfile";
+import { formatPublicHandle, getAvatarFallback, getPublicUsername } from "@/lib/publicProfile";
 
 const formatMessageTime = (timestamp) => new Date(timestamp).toLocaleTimeString("tr-TR", {
   hour: "2-digit",
@@ -127,6 +127,13 @@ export default function Messages() {
     () => friends.find((friend) => friend.profile_id === selectedFriendId) || null,
     [friends, selectedFriendId]
   );
+  const selectedFriendHandle = useMemo(() => {
+    if (!selectedFriend?.handle) {
+      return "";
+    }
+
+    return formatPublicHandle(selectedFriend.handle_display || selectedFriend.handle);
+  }, [selectedFriend]);
 
   const handleSendMessage = async (event) => {
     event.preventDefault();
@@ -283,9 +290,9 @@ export default function Messages() {
                     <p className="text-lg font-semibold text-slate-900 dark:text-slate-100" data-testid="messages-conversation-title">
                       {getPublicUsername(selectedFriend)}
                     </p>
-                    {selectedFriend.handle && (
+                    {selectedFriendHandle && (
                       <p className="mt-1 text-sm text-slate-500 dark:text-slate-400" data-testid="messages-conversation-handle">
-                        {formatPublicHandle(selectedFriend.handle_display || selectedFriend.handle)}
+                        {selectedFriendHandle}
                       </p>
                     )}
                   </div>
