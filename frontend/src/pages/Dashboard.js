@@ -549,16 +549,6 @@ export default function Dashboard() {
       className: "border-transparent shadow-none hover:shadow-none",
       testId: "dashboard-quick-action-find-room-button",
     },
-    {
-      label: "Görev Ekle",
-      description: "Programına yeni bir çalışma ekle",
-      icon: Plus,
-      onClick: () => setShowAddTask(true),
-      variant: "ghost",
-      emphasis: "secondary",
-      className: "border border-border/45 bg-background/30 text-foreground shadow-none hover:border-border/60 hover:bg-background/60 hover:text-foreground",
-      testId: "dashboard-quick-action-add-task-button",
-    },
   ];
 
   return (
@@ -600,7 +590,7 @@ export default function Dashboard() {
               </div>
 
               <div className="w-full max-w-full overflow-x-auto pb-1" data-testid="dashboard-header-nav">
-                <div className="flex items-center gap-2.5 lg:justify-end">
+                <div className="flex items-center gap-3.5 lg:justify-end">
                   {navigationActions.map((action) => {
                     const Icon = action.icon;
                     const badgeLabel = action.badgeCount > 9 ? "9+" : action.badgeCount;
@@ -610,11 +600,11 @@ export default function Dashboard() {
                         variant="ghost"
                         size="sm"
                         onClick={action.onClick}
-                        className="h-10 shrink-0 rounded-[14px] border border-transparent px-4 text-[13px] font-medium tracking-[0.01em] text-muted-foreground shadow-none [&_svg]:size-[15px] hover:border-border/50 hover:bg-secondary/55 hover:text-foreground active:bg-secondary/65"
+                        className="h-11 shrink-0 rounded-[15px] border border-transparent px-5 text-sm font-semibold tracking-[0.01em] text-muted-foreground shadow-none [&_svg]:size-4 hover:border-border/55 hover:bg-secondary/60 hover:text-foreground active:bg-secondary/70"
                         data-testid={action.testId}
                       >
                         <span className="relative inline-flex items-center justify-center">
-                          <Icon className="h-[15px] w-[15px]" />
+                          <Icon className="h-4 w-4" />
                           {action.badgeCount > 0 && (
                             <span className="absolute -right-2 -top-2 inline-flex min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white shadow-sm" data-testid={`${action.testId}-badge`}>
                               {badgeLabel}
@@ -724,7 +714,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="relative mt-8 grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)]">
+            <div className="relative mt-8 max-w-sm">
               {quickActions.map((action) => {
                 const Icon = action.icon;
                 return (
@@ -762,11 +752,22 @@ export default function Dashboard() {
                     </CardDescription>
                   </div>
 
-                  <div className="text-right">
-                    <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Bugün</p>
-                    <p className="mt-1 text-lg font-semibold text-foreground">
-                      {completedTodayCount}/{todaysTasks.length}
-                    </p>
+                  <div className="flex flex-wrap items-center justify-end gap-3">
+                    <div className="text-right">
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Bugün</p>
+                      <p className="mt-1 text-lg font-semibold text-foreground">
+                        {completedTodayCount}/{todaysTasks.length}
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowAddTask(true)}
+                      className="border-border/50 bg-background/55 shadow-none hover:bg-secondary/60"
+                      data-testid="btn-add-task"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Görev Ekle
+                    </Button>
                   </div>
                 </div>
               </CardHeader>
@@ -992,6 +993,22 @@ export default function Dashboard() {
                   variant="outline"
                   onClick={() => {
                     setShowEditTask(false);
+                    setEditingTask(null);
+                  }}
+                  data-testid="task-edit-cancel-button"
+                >
+                  İptal
+                </Button>
+                <Button onClick={saveEditedTask} data-testid="task-edit-save-button">Kaydet</Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+se);
                     setEditingTask(null);
                   }}
                   data-testid="task-edit-cancel-button"
