@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { API } from "@/App";
-import { Bell, Home, Search, UserPlus, Users } from "lucide-react";
+import { Bell, Home, Search, UserMinus, UserPlus, Users } from "lucide-react";
 import { formatDailyStudyHours, formatPublicHandle, getAvatarFallback, getPublicUsername } from "@/lib/publicProfile";
 
 const getRelationshipLabel = (status) => {
@@ -26,6 +26,7 @@ export default function Friends() {
   const [friendsLoading, setFriendsLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(false);
   const [actionProfileId, setActionProfileId] = useState("");
+  const [removingFriendProfileId, setRemovingFriendProfileId] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -104,6 +105,33 @@ export default function Friends() {
       setError(requestError.response?.data?.detail || "Arkadaşlık isteği gönderilemedi.");
     } finally {
       setActionProfileId("");
+    }
+  };
+
+  const handleRemoveFriend = async (friend) => {
+    if (!window.confirm("Bu kişiyi arkadaş listesinden çıkarmak istiyor musun?")) {
+      return;
+    }
+
+    try {
+      setRemovingFriendProfileId(friend.profile_id);
+      setError("");
+      setSuccess("");
+
+      await axios.delete(`${API}/friends/${friend.profile_id}`, { headers: authHeaders });
+
+      setFriends((previousFriends) => previousFriends.filter((item) => item.profile_id !== friend.profile_id));
+      setSearchResults((previousResults) => previousResults.map((profile) => (
+        profile.profile_id === friend.profile_id
+          ? { ...profile, relationship_status: "none" }
+          : profile
+      )));
+      setSuccess("Arkadaşlık kaldırıldı.");
+    } catch (removeError) {
+      console.error("Error removing friend:", removeError);
+      setError(removeError.response?.data?.detail || "Arkadaşlık kaldırılırken bir hata oluştu.");
+    } finally {
+      setRemovingFriendProfileId("");
     }
   };
 
@@ -229,21 +257,35 @@ export default function Friends() {
                   const handleText = formatPublicHandle(friend.handle_display || friend.handle);
                   return (
                     <div key={friend.profile_id} className="rounded-xl border border-border/70 bg-card p-4 shadow-sm" data-testid={`friends-list-item-${friend.profile_id}`}>
-                      <div className="flex items-start gap-3" data-testid={`friends-list-item-content-${friend.profile_id}`}>
-                        <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-slate-900 text-sm font-bold text-white" data-testid={`friends-list-avatar-${friend.profile_id}`}>
-                          {friend.avatar_url ? (
-                            <img src={friend.avatar_url} alt={`${getPublicUsername(friend)} avatar`} className="h-full w-full object-cover" data-testid={`friends-list-avatar-image-${friend.profile_id}`} />
-                          ) : (
-                            getAvatarFallback(friend)
-                          )}
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between" data-testid={`friends-list-item-content-${friend.profile_id}`}>
+                        <div className="flex items-start gap-3">
+                          <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-slate-900 text-sm font-bold text-white" data-testid={`friends-list-avatar-${friend.profile_id}`}>
+                            {friend.avatar_url ? (
+                              <img src={friend.avatar_url} alt={`${getPublicUsername(friend)} avatar`} className="h-full w-full object-cover" data-testid={`friends-list-avatar-image-${friend.profile_id}`} />
+                            ) : (
+                              getAvatarFallback(friend)
+                            )}
+                          </div>
+
+                          <div className="min-w-0 flex-1 space-y-1" data-testid={`friends-list-details-${friend.profile_id}`}>
+                            <p className="font-semibold text-slate-900 dark:text-slate-100" data-testid={`friends-list-username-${friend.profile_id}`}>{getPublicUsername(friend)}</p>
+                            {handleText && <p className="text-sm text-slate-500 dark:text-slate-400" data-testid={`friends-list-handle-${friend.profile_id}`}>{handleText}</p>}
+                            <p className="text-sm text-slate-600 dark:text-slate-300" data-testid={`friends-list-goal-${friend.profile_id}`}>Hedef: {friend.study_goal || "Belirtilmedi"}</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300" data-testid={`friends-list-hours-${friend.profile_id}`}>Günlük Çalışma: {formatDailyStudyHours(friend.daily_study_hours)}</p>
+                          </div>
                         </div>
 
-                        <div className="min-w-0 flex-1 space-y-1" data-testid={`friends-list-details-${friend.profile_id}`}>
-                          <p className="font-semibold text-slate-900 dark:text-slate-100" data-testid={`friends-list-username-${friend.profile_id}`}>{getPublicUsername(friend)}</p>
-                          {handleText && <p className="text-sm text-slate-500 dark:text-slate-400" data-testid={`friends-list-handle-${friend.profile_id}`}>{handleText}</p>}
-                          <p className="text-sm text-slate-600 dark:text-slate-300" data-testid={`friends-list-goal-${friend.profile_id}`}>Hedef: {friend.study_goal || "Belirtilmedi"}</p>
-                          <p className="text-sm text-slate-600 dark:text-slate-300" data-testid={`friends-list-hours-${friend.profile_id}`}>Günlük Çalışma: {formatDailyStudyHours(friend.daily_study_hours)}</p>
-                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => handleRemoveFriend(friend)}
+                          disabled={removingFriendProfileId === friend.profile_id}
+                          className="h-10 shrink-0 rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-900/60 dark:text-red-300 dark:hover:bg-red-950/30"
+                          data-testid={`friends-remove-action-${friend.profile_id}`}
+                        >
+                          <UserMinus className="mr-2 h-4 w-4" />
+                          {removingFriendProfileId === friend.profile_id ? "Çıkarılıyor..." : "Arkadaşlıktan Çıkar"}
+                        </Button>
                       </div>
                     </div>
                   );

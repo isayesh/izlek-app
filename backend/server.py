@@ -1041,6 +1041,52 @@ async def get_friends(firebase_uid: str = Header(..., alias="X-Firebase-UID")):
     friend_cards = [build_public_profile_card(profile, FRIEND_RELATIONSHIP_FRIENDS) for profile in profile_docs if profile.get("id")]
     return sorted(friend_cards, key=lambda card: ((card.display_name or "").lower(), (card.username or "").lower()))
 
+
+@api_router.delete("/friends/{friend_profile_id}", response_model=FriendActionResponse)
+async def remove_friend(friend_profile_id: str, firebase_uid: str = Header(..., alias="X-Firebase-UID")):
+    friend_profile = await db.profiles.find_one({"id": friend_profile_id}, {"_id": 0, "firebase_uid": 1})
+    if not friend_profile:
+        raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
+
+    friend_uid = friend_profile.get("firebase_uid")
+    if not friend_uid:
+        raise HTTPException(status_code=400, detail="Bu kullanıcı şu anda arkadaş listesinden çıkarılamıyor")
+
+    if friend_uid == firebase_uid:
+        raise HTTPException(status_code=400, detail="Kendini arkadaş listesinden çıkaramazsın")
+
+    existing_friendship = await db.friends.find_one(
+        {
+            "$or": [
+                {"user_uid": firebase_uid, "friend_uid": friend_uid},
+                {"user_uid": friend_uid, "friend_uid": firebase_uid},
+            ]
+        },
+        {"_id": 0, "id": 1},
+    )
+    if not existing_friendship:
+        raise HTTPException(status_code=404, detail="Bu kullanıcı arkadaş listende bulunmuyor")
+
+    await db.friends.delete_many(
+        {
+            "$or": [
+                {"user_uid": firebase_uid, "friend_uid": friend_uid},
+                {"user_uid": friend_uid, "friend_uid": firebase_uid},
+            ]
+        }
+    )
+    await db.friend_requests.delete_many(
+        {
+            "$or": [
+                {"from_uid": firebase_uid, "to_uid": friend_uid},
+                {"from_uid": friend_uid, "to_uid": firebase_uid},
+            ]
+        }
+    )
+
+    return FriendActionResponse(success=True, status=FRIEND_RELATIONSHIP_NONE, detail="Arkadaşlıktan çıkarıldı")
+
+
 # ============ PROGRAM ENDPOINTS ============
 
 @api_router.post("/programs", response_model=Program)
