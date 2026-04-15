@@ -45,8 +45,11 @@ export default function RoomPage() {
   // Study session state
   const [studySessionId, setStudySessionId] = useState(null);
   const [totalStudySeconds, setTotalStudySeconds] = useState(0);
+  const [isOnBreak, setIsOnBreak] = useState(false);
   const autosaveInterval = useRef(null);
   const lastAutosaveSeconds = useRef(0);
+  const studyAccumulationStartedAtRef = useRef(null);
+  const lastStudySessionSavedAtRef = useRef(null);
 
   // Chat auto-scroll refs
   const chatEndRef = useRef(null);
@@ -77,10 +80,10 @@ export default function RoomPage() {
   };
 
   const getLiveStudySeconds = () => {
-    if (!timerStartedAtRef.current) {
+    if (!studyAccumulationStartedAtRef.current) {
       return studySessionBaseSecondsRef.current || totalStudySeconds;
     }
-    return studySessionBaseSecondsRef.current + getElapsedSeconds(timerStartedAtRef.current);
+    return studySessionBaseSecondsRef.current + getElapsedSeconds(studyAccumulationStartedAtRef.current);
   };
 
   const getMessageAvatarUrl = (message) => {
@@ -93,6 +96,10 @@ export default function RoomPage() {
 
   const renderParticipantItem = (participant, variant = "card") => {
     const participantAvatarUrl = getParticipantAvatarUrl(participant);
+    const participantStatusLabel = participant.is_on_break ? "Molada" : "Çalışıyor";
+    const participantStatusClasses = participant.is_on_break
+      ? "border-amber-300/70 bg-amber-100/80 text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200"
+      : "border-emerald-300/70 bg-emerald-100/80 text-emerald-800 dark:border-emerald-500/40 dark:bg-emerald-500/15 dark:text-emerald-200";
 
     return (
       <div
@@ -119,11 +126,16 @@ export default function RoomPage() {
             <p className="mt-0.5 text-xs text-muted-foreground" data-testid={`${variant}-participant-study-field-${participant.id}`}>{participant.study_field}</p>
           )}
         </div>
-        {participant.id === room.owner_id && (
-          <span className="rounded-full border border-border/70 bg-secondary/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground" data-testid={`${variant}-participant-owner-badge-${participant.id}`}>
-            Sahip
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+          <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${participantStatusClasses}`} data-testid={`${variant}-participant-status-badge-${participant.id}`}>
+            {participantStatusLabel}
           </span>
-        )}
+          {participant.id === room.owner_id && (
+            <span className="rounded-full border border-border/70 bg-secondary/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground" data-testid={`${variant}-participant-owner-badge-${participant.id}`}>
+              Sahip
+            </span>
+          )}
+        </div>
       </div>
     );
   };
@@ -250,9 +262,10 @@ export default function RoomPage() {
         // Only save if we've accumulated new seconds since last save
         if (totalStudySeconds > lastAutosaveSeconds.current) {
           try {
-            await updateStudySession(studySessionId, totalStudySeconds);
-            lastAutosaveSeconds.current = totalStudySeconds;
-            console.log(`Auto-saved: ${totalStudySeconds} seconds`);
+            const updatedSession = await updateStudySession(studySessionId, totalStudySeconds);
+            lastAutosaveSeconds.current = updatedSession?.accumulated_seconds ?? totalStudySeconds;
+            lastStudySessionSavedAtRef.current = updatedSession?.last_saved_at || new Date().toISOString();
+            console.log(`Auto-saved: ${lastAutosaveSeconds.current} seconds`);
           } catch (error) {
             console.error('Autosave failed:', error);
           }
@@ -291,6 +304,9 @@ export default function RoomPage() {
       console.log('✅ LOADING: false');
 
       const currentParticipant = res.data.participants?.find((participant) => participant.id === currentUserId);
+      const currentParticipantOnBreak = Boolean(currentParticipant?.is_on_break);
+      setIsOnBreak(currentParticipantOnBreak);
+
       if (currentParticipant?.name) {
         localStorage.setItem("userName", currentParticipant.name);
       }
@@ -318,6 +334,9 @@ export default function RoomPage() {
             timerStartingSecondsRef.current = syncedRemainingSeconds;
             timerStartedAtRef.current = res.data.timer_state.started_at;
             studySessionBaseSecondsRef.current = lastAutosaveSeconds.current || totalStudySeconds;
+            studyAccumulationStartedAtRef.current = currentParticipantOnBreak
+              ? null
+              : (lastStudySessionSavedAtRef.current || res.data.timer_state.started_at);
 
             const remaining = getLiveRemainingSeconds();
             setRemainingSeconds(remaining);
@@ -329,6 +348,7 @@ export default function RoomPage() {
           } else {
             timerStartingSecondsRef.current = syncedRemainingSeconds;
             timerStartedAtRef.current = null;
+            studyAccumulationStartedAtRef.current = null;
             setRemainingSeconds(syncedRemainingSeconds);
             setIsRunning(false);
             isRunningRef.current = false;
@@ -379,8 +399,11 @@ export default function RoomPage() {
         // Restore session state
         setStudySessionId(session.id);
         setTotalStudySeconds(restoredSeconds);
+        setIsOnBreak(Boolean(session.is_on_break));
         lastAutosaveSeconds.current = restoredSeconds;
         studySessionBaseSecondsRef.current = restoredSeconds;
+        studyAccumulationStartedAtRef.current = null;
+        lastStudySessionSavedAtRef.current = session.last_saved_at || session.started_at || null;
         
         console.log(`✅ Session restored: ${restoredSeconds}s accumulated`);
         console.log('ℹ️ Timer will continue from where you left off on next start');
@@ -443,6 +466,7 @@ export default function RoomPage() {
     timerStartingSecondsRef.current = startingSeconds;
     timerStartedAtRef.current = startedAt;
     studySessionBaseSecondsRef.current = totalStudySeconds;
+    studyAccumulationStartedAtRef.current = isOnBreak ? null : startedAt;
     setRemainingSeconds(startingSeconds);
     setIsRunning(true);
     isRunningRef.current = true; // Set ref immediately
@@ -456,13 +480,18 @@ export default function RoomPage() {
           // No existing session - create new one or restore an active one
           const session = await startStudySession(firebaseUid, roomId);
           const restoredSeconds = session.accumulated_seconds || 0;
+          const sessionBreakState = Boolean(session.is_on_break) || isOnBreak;
           setStudySessionId(session.id);
           setTotalStudySeconds(restoredSeconds);
+          setIsOnBreak(sessionBreakState);
           lastAutosaveSeconds.current = restoredSeconds;
           studySessionBaseSecondsRef.current = restoredSeconds;
+          studyAccumulationStartedAtRef.current = sessionBreakState ? null : startedAt;
+          lastStudySessionSavedAtRef.current = session.last_saved_at || session.started_at || startedAt;
           console.log('✅ Study session ready:', session.id);
         } else {
           // Existing session - continue tracking
+          studyAccumulationStartedAtRef.current = isOnBreak ? null : startedAt;
           console.log('✅ Continuing existing session:', studySessionId);
           console.log(`📊 Current accumulated time: ${totalStudySeconds}s`);
           console.log('ℹ️ New timer countdown will ADD to existing accumulated time');
@@ -490,6 +519,7 @@ export default function RoomPage() {
     timerStartingSecondsRef.current = 0;
     timerStartedAtRef.current = null;
     studySessionBaseSecondsRef.current = finalStudySeconds;
+    studyAccumulationStartedAtRef.current = null;
     canResumeTimerRef.current = false;
     hasLocalFreshDurationOverrideRef.current = false;
 
@@ -507,8 +537,9 @@ export default function RoomPage() {
     // Complete the study session
     if (studySessionId && firebaseUid) {
       try {
-        await completeStudySession(studySessionId, finalStudySeconds);
-        console.log(`✅ Study session completed: ${finalStudySeconds} seconds`);
+        const completedSession = await completeStudySession(studySessionId, finalStudySeconds);
+        lastStudySessionSavedAtRef.current = completedSession?.last_saved_at || new Date().toISOString();
+        console.log(`✅ Study session completed: ${completedSession?.accumulated_seconds ?? finalStudySeconds} seconds`);
         setStudySessionId(null);
       } catch (error) {
         console.error('❌ Error completing study session:', error);
@@ -530,13 +561,15 @@ export default function RoomPage() {
     timerStartingSecondsRef.current = currentRemainingSeconds;
     timerStartedAtRef.current = null;
     studySessionBaseSecondsRef.current = currentStudySeconds;
+    studyAccumulationStartedAtRef.current = null;
     
     // Save current progress when pausing
     if (studySessionId && currentStudySeconds > lastAutosaveSeconds.current) {
       try {
-        await updateStudySession(studySessionId, currentStudySeconds);
-        lastAutosaveSeconds.current = currentStudySeconds;
-        console.log('✅ Progress saved on pause:', currentStudySeconds, 'seconds');
+        const updatedSession = await updateStudySession(studySessionId, currentStudySeconds);
+        lastAutosaveSeconds.current = updatedSession?.accumulated_seconds ?? currentStudySeconds;
+        lastStudySessionSavedAtRef.current = updatedSession?.last_saved_at || new Date().toISOString();
+        console.log('✅ Progress saved on pause:', lastAutosaveSeconds.current, 'seconds');
       } catch (error) {
         console.error('❌ Error saving progress on pause:', error);
       }
@@ -551,6 +584,56 @@ export default function RoomPage() {
       });
     } catch (error) {
       console.error("Error pausing timer:", error);
+    }
+  };
+
+  const handleToggleBreakMode = async () => {
+    if (!roomId || !currentUserId) {
+      return;
+    }
+
+    const nextIsOnBreak = !isOnBreak;
+    const currentStudySeconds = getLiveStudySeconds();
+    let persistedStudySeconds = currentStudySeconds;
+
+    try {
+      if (nextIsOnBreak) {
+        setTotalStudySeconds(currentStudySeconds);
+        studySessionBaseSecondsRef.current = currentStudySeconds;
+        studyAccumulationStartedAtRef.current = null;
+
+        if (studySessionId && currentStudySeconds > lastAutosaveSeconds.current) {
+          const updatedSession = await updateStudySession(studySessionId, currentStudySeconds);
+          persistedStudySeconds = updatedSession?.accumulated_seconds ?? currentStudySeconds;
+          lastAutosaveSeconds.current = persistedStudySeconds;
+          lastStudySessionSavedAtRef.current = updatedSession?.last_saved_at || new Date().toISOString();
+          setTotalStudySeconds(persistedStudySeconds);
+          studySessionBaseSecondsRef.current = persistedStudySeconds;
+        }
+      }
+
+      const response = await axios.put(`${API}/rooms/${roomId}/break-mode`, {
+        participant_id: currentUserId,
+        firebase_uid: firebaseUid,
+        is_on_break: nextIsOnBreak
+      });
+
+      setRoom(response.data);
+      setIsOnBreak(nextIsOnBreak);
+
+      if (nextIsOnBreak) {
+        studyAccumulationStartedAtRef.current = null;
+      } else if (isRunning) {
+        const resumedAt = new Date().toISOString();
+        studySessionBaseSecondsRef.current = persistedStudySeconds;
+        studyAccumulationStartedAtRef.current = resumedAt;
+        setTotalStudySeconds(persistedStudySeconds);
+      } else {
+        studySessionBaseSecondsRef.current = persistedStudySeconds;
+        studyAccumulationStartedAtRef.current = null;
+      }
+    } catch (error) {
+      console.error('❌ Error toggling break mode:', error);
     }
   };
 
@@ -587,11 +670,13 @@ export default function RoomPage() {
     timerStartingSecondsRef.current = totalSeconds;
     timerStartedAtRef.current = null;
     studySessionBaseSecondsRef.current = 0;
+    studyAccumulationStartedAtRef.current = null;
     setRemainingSeconds(totalSeconds);
     setTotalStudySeconds(0);
     
     // Reset study tracking
     lastAutosaveSeconds.current = 0;
+    lastStudySessionSavedAtRef.current = null;
     setStudySessionId(null);
 
     try {
@@ -810,6 +895,12 @@ export default function RoomPage() {
                   </div>
                 </div>
 
+                {isOnBreak && (
+                  <div className="rounded-2xl border border-amber-300/70 bg-amber-100/80 px-4 py-3 text-sm font-medium text-amber-900 shadow-sm dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-100" data-testid="break-mode-info">
+                    Moladasın, bu sürede çalışma süren artmaz.
+                  </div>
+                )}
+
                 <div className="flex flex-wrap items-center justify-center gap-3.5 pt-1" data-testid="timer-controls">
                   {!isRunning ? (
                     <Button
@@ -980,3 +1071,4 @@ export default function RoomPage() {
     </div>
   );
 }
+

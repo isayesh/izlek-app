@@ -45,6 +45,21 @@ backend:
         agent: "testing"
         comment: "✓ PASSED: Message API working correctly. POST /api/messages creates messages with proper user data, GET /api/messages/{room_id} returns message list. Chat functionality backend is operational."
 
+  - task: "Break Mode: RoomPage break toggle + participant status + personal study-time accumulation filter"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Testing Break Mode backend implementation - new PUT /api/rooms/{room_id}/break-mode endpoint, participant break status persistence, and conditional study session accumulation filter"
+      - working: true
+        agent: "testing"
+        comment: "✓ PASSED: Break Mode backend fully functional. ALL TESTS PASSED (23/23): (1) Room setup: 2 users can join same room successfully. (2) Global timer persistence: Room timer continues working normally during break mode operations. (3) Break Mode endpoint: PUT /api/rooms/{room_id}/break-mode correctly updates participant break status (User A on break=true, User B unaffected=false). (4) Study session accumulation filter: User A on break stops accumulating time (300→300 seconds), User B continues normally (300→600 seconds), User A resumes accumulation after break (300→900 seconds). (5) No regression: All existing room/timer/message endpoints working correctly. Break mode implementation preserves existing functionality while adding personal study-time filtering based on break status."
+
 frontend:
   - task: "Auth bypass for preview/development environment"
     implemented: true
@@ -136,7 +151,8 @@ metadata:
   test_sequence: 3
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Break Mode: RoomPage break toggle + participant status + personal study-time accumulation filter"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -166,3 +182,7 @@ agent_communication:
     message: "✓ MINIMAL BACKEND SMOKE TEST COMPLETE: Verified all RoomPage-dependent APIs after UI cleanup. All 8/8 room-specific tests passed: room creation (POST /api/rooms), retrieval (GET /api/rooms/{id}, GET /api/rooms/code/{code}), join/leave flow (POST /api/rooms/join, POST /api/rooms/{id}/leave), timer updates (PUT /api/rooms/{id}/timer), and message functionality (POST/GET /api/messages). Backend is clear - UI-only cleanup did not affect any backend functionality."
   - agent: "testing"
     message: "✓ ROOMPAGE UI CLEANUP VERIFICATION COMPLETE: All 7/7 tests passed. Tablet responsiveness fix remains intact (768px, 820px single-column with Participants→Timer→Chat order, no overlap/overflow). Desktop layout unchanged (1024px, 1280px show 3-column grid). Mobile smoke test passed (390px no overflow). Timer helper text 'Kronometre tüm katılımcılar için senkronize' successfully removed. Chat seen indicator '• görüldü' successfully removed (timestamp shows only time). No UI regressions detected. UI cleanup successful - ready for main agent to summarize and finish."
+  - agent: "main"
+    message: "Requesting backend verification for Break Mode only. Scope: keep existing room/auth/routes/global timer sync unchanged, verify new PUT /api/rooms/{room_id}/break-mode, participant break status persistence, and conditional study-session accumulation while on break / after resume in the same room."
+  - agent: "testing"
+    message: "✓ BREAK MODE BACKEND VERIFICATION COMPLETE: All 23/23 tests passed including comprehensive 2-user scenario testing. REGRESSION CHECK: All existing room/timer/message endpoints working correctly (8/8 tests passed). BREAK MODE FEATURE: (1) Room setup: 2 users successfully join same room. (2) Global timer persistence: Room timer continues working normally during break operations. (3) Break endpoint validation: PUT /api/rooms/{room_id}/break-mode correctly updates participant break status - User A on break (is_on_break=true), User B unaffected (is_on_break=false). (4) Study session accumulation filter: User A on break stops accumulating time (stayed at 300 seconds), User B continues normally (300→600 seconds), User A resumes accumulation after break (300→900 seconds). (5) Personal study-time filtering working correctly based on break status. No regression detected in existing functionality. Break Mode feature fully operational."

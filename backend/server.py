@@ -455,6 +455,7 @@ class RoomParticipant(BaseModel):
     name: str
     avatar_url: Optional[str] = None
     study_field: Optional[str] = None
+    is_on_break: bool = False
 
 class TimerState(BaseModel):
     is_running: bool = False
@@ -493,6 +494,11 @@ class RoomJoin(BaseModel):
 class RoomLeave(BaseModel):
     user_id: str
     user_name: Optional[str] = None
+
+class RoomBreakModeUpdate(BaseModel):
+    participant_id: str
+    firebase_uid: Optional[str] = None
+    is_on_break: bool
 
 async def create_system_room_message(room_id: str, content: str):
     message_obj = Message(
@@ -1154,6 +1160,9 @@ async def join_room(input: RoomJoin):
         study_field=await resolve_profile_study_field(input.user_id)
     ).model_dump()
 
+    if existing_index is not None:
+        participant_doc["is_on_break"] = bool(participants[existing_index].get("is_on_break", False))
+
     participant_added = existing_index is None
     if participant_added:
         participants.append(participant_doc)
@@ -1204,6 +1213,47 @@ async def get_room_by_code(room_code: str):
     if not room:
         raise HTTPException(status_code=404, detail="Oda bulunamadı")
     return format_room_document(room)
+
+@api_router.put("/rooms/{room_id}/break-mode", response_model=Room)
+async def update_room_break_mode(room_id: str, input: RoomBreakModeUpdate):
+    room = await db.rooms.find_one({"id": room_id}, {"_id": 0})
+    if not room:
+        raise HTTPException(status_code=404, detail="Oda bulunamadı")
+
+    participants = room.get("participants", [])
+    participant_found = False
+
+    for participant in participants:
+        if participant.get("id") == input.participant_id:
+            participant["is_on_break"] = bool(input.is_on_break)
+            participant_found = True
+            break
+
+    if not participant_found:
+        raise HTTPException(status_code=404, detail="Katılımcı bulunamadı")
+
+    await db.rooms.update_one(
+        {"id": room_id},
+        {"$set": {"participants": participants}}
+    )
+
+    if input.firebase_uid:
+        await db.study_sessions.update_many(
+            {
+                "firebase_uid": input.firebase_uid,
+                "room_id": room_id,
+                "is_completed": False,
+            },
+            {
+                "$set": {
+                    "is_on_break": bool(input.is_on_break),
+                    "last_saved_at": datetime.now(timezone.utc),
+                }
+            }
+        )
+
+    updated_room = await db.rooms.find_one({"id": room_id}, {"_id": 0})
+    return format_room_document(updated_room)
 
 @api_router.put("/rooms/{room_id}/timer")
 async def update_timer(room_id: str, timer_state: TimerState):
@@ -1296,6 +1346,7 @@ async def start_study_session(session_data: StudySessionStart):
         })
         
         if existing_session:
+            existing_session.setdefault("is_on_break", False)
             # Remove MongoDB _id before returning
             if '_id' in existing_session:
                 del existing_session['_id']
@@ -1318,11 +1369,19 @@ async def start_study_session(session_data: StudySessionStart):
 async def update_study_session(session_id: str, update_data: StudySessionUpdate):
     """Auto-save study session progress"""
     try:
+        existing_session = await db.study_sessions.find_one({"id": session_id})
+        if not existing_session:
+            return {"error": "Session not found"}
+
+        next_accumulated_seconds = int(existing_session.get("accumulated_seconds") or 0)
+        if not existing_session.get("is_on_break"):
+            next_accumulated_seconds = update_data.accumulated_seconds
+
         await db.study_sessions.update_one(
             {"id": session_id},
             {
                 "$set": {
-                    "accumulated_seconds": update_data.accumulated_seconds,
+                    "accumulated_seconds": next_accumulated_seconds,
                     "last_saved_at": datetime.now(timezone.utc)
                 }
             }
@@ -1332,6 +1391,7 @@ async def update_study_session(session_id: str, update_data: StudySessionUpdate)
         if not updated_session:
             return {"error": "Session not found"}
         
+        updated_session.setdefault("is_on_break", False)
         # Remove MongoDB _id
         if '_id' in updated_session:
             del updated_session['_id']
@@ -1346,11 +1406,19 @@ async def update_study_session(session_id: str, update_data: StudySessionUpdate)
 async def complete_study_session(session_id: str, complete_data: StudySessionComplete):
     """Mark study session as completed"""
     try:
+        existing_session = await db.study_sessions.find_one({"id": session_id})
+        if not existing_session:
+            return {"error": "Session not found"}
+
+        final_accumulated_seconds = int(existing_session.get("accumulated_seconds") or 0)
+        if not existing_session.get("is_on_break"):
+            final_accumulated_seconds = complete_data.accumulated_seconds
+
         await db.study_sessions.update_one(
             {"id": session_id},
             {
                 "$set": {
-                    "accumulated_seconds": complete_data.accumulated_seconds,
+                    "accumulated_seconds": final_accumulated_seconds,
                     "is_completed": True,
                     "last_saved_at": datetime.now(timezone.utc)
                 }
@@ -1361,6 +1429,7 @@ async def complete_study_session(session_id: str, complete_data: StudySessionCom
         if not completed_session:
             return {"error": "Session not found"}
 
+        completed_session.setdefault("is_on_break", False)
         if int(completed_session.get("accumulated_seconds") or 0) > 0:
             await update_profile_streak(completed_session.get("firebase_uid"))
         

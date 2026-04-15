@@ -6,7 +6,7 @@ import json
 from datetime import datetime
 
 class DashboardAPITester:
-    def __init__(self, base_url="https://room-tablet-adjust.preview.emergentagent.com"):
+    def __init__(self, base_url="https://study-break-toggle.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.tests_run = 0
@@ -339,29 +339,347 @@ class DashboardAPITester:
             data=leave_data
         )
 
+    # ============ BREAK MODE TESTS ============
+    
+    def test_break_mode_room_setup(self):
+        """Test creating room and adding 2 users for break mode testing"""
+        # Create room
+        room_data = {
+            "name": "Break Mode Test Room",
+            "owner_name": "User A",
+            "owner_id": "user-a-break-test",
+            "owner_avatar_url": None,
+            "room_type": "public"
+        }
+        
+        success, response_data = self.run_test(
+            "Create Break Mode Test Room", 
+            "POST", 
+            "rooms", 
+            200,
+            data=room_data
+        )
+        
+        if success and response_data:
+            self.break_room_id = response_data.get('id')
+            self.break_room_code = response_data.get('code')
+            print(f"   Break test room ID: {self.break_room_id}")
+            print(f"   Break test room code: {self.break_room_code}")
+        
+        return success, response_data
+
+    def test_break_mode_second_user_join(self):
+        """Test second user joining the break mode test room"""
+        if not self.break_room_code:
+            print("   Skipping - no break room code available")
+            return True, {}
+            
+        join_data = {
+            "room_code": self.break_room_code,
+            "user_id": "user-b-break-test",
+            "user_name": "User B",
+            "user_avatar_url": None
+        }
+        
+        return self.run_test(
+            "User B Join Break Room", 
+            "POST", 
+            "rooms/join", 
+            200,
+            data=join_data
+        )
+
+    def test_break_mode_timer_persistence(self):
+        """Test that global room timer works normally with break mode"""
+        if not self.break_room_id:
+            print("   Skipping - no break room ID available")
+            return True, {}
+            
+        timer_data = {
+            "is_running": True,
+            "duration_minutes": 25,
+            "remaining_seconds": 1200,
+            "started_at": datetime.now().isoformat()
+        }
+        
+        return self.run_test(
+            "Break Mode Timer Update", 
+            "PUT", 
+            f"rooms/{self.break_room_id}/timer", 
+            200,
+            data=timer_data
+        )
+
+    def test_break_mode_endpoint_user_a_on_break(self):
+        """Test PUT /api/rooms/{room_id}/break-mode - User A goes on break"""
+        if not self.break_room_id:
+            print("   Skipping - no break room ID available")
+            return True, {}
+            
+        break_data = {
+            "participant_id": "user-a-break-test",
+            "firebase_uid": "user-a-break-test",
+            "is_on_break": True
+        }
+        
+        return self.run_test(
+            "User A Enter Break Mode", 
+            "PUT", 
+            f"rooms/{self.break_room_id}/break-mode", 
+            200,
+            data=break_data
+        )
+
+    def test_break_mode_verify_user_a_break_status(self):
+        """Verify User A is marked as on break, User B is not affected"""
+        if not self.break_room_id:
+            print("   Skipping - no break room ID available")
+            return True, {}
+            
+        success, response_data = self.run_test(
+            "Verify Break Status After User A Break", 
+            "GET", 
+            f"rooms/{self.break_room_id}", 
+            200
+        )
+        
+        if success and response_data:
+            participants = response_data.get('participants', [])
+            user_a_break = None
+            user_b_break = None
+            
+            for participant in participants:
+                if participant.get('id') == 'user-a-break-test':
+                    user_a_break = participant.get('is_on_break')
+                elif participant.get('id') == 'user-b-break-test':
+                    user_b_break = participant.get('is_on_break')
+            
+            print(f"   User A break status: {user_a_break}")
+            print(f"   User B break status: {user_b_break}")
+            
+            if user_a_break is True and user_b_break is False:
+                print("✅ Break status correctly set - User A on break, User B not affected")
+                return True, response_data
+            else:
+                print("❌ Break status incorrect")
+                return False, response_data
+        
+        return success, response_data
+
+    def test_break_mode_endpoint_user_a_off_break(self):
+        """Test User A coming back from break"""
+        if not self.break_room_id:
+            print("   Skipping - no break room ID available")
+            return True, {}
+            
+        break_data = {
+            "participant_id": "user-a-break-test",
+            "firebase_uid": "user-a-break-test",
+            "is_on_break": False
+        }
+        
+        return self.run_test(
+            "User A Exit Break Mode", 
+            "PUT", 
+            f"rooms/{self.break_room_id}/break-mode", 
+            200,
+            data=break_data
+        )
+
+    def test_study_session_user_a_start(self):
+        """Test starting study session for User A"""
+        if not self.break_room_id:
+            print("   Skipping - no break room ID available")
+            return True, {}
+            
+        session_data = {
+            "firebase_uid": "user-a-break-test",
+            "room_id": self.break_room_id
+        }
+        
+        success, response_data = self.run_test(
+            "Start Study Session User A", 
+            "POST", 
+            "study-sessions/start", 
+            200,
+            data=session_data
+        )
+        
+        if success and response_data:
+            self.user_a_session_id = response_data.get('id')
+            print(f"   User A session ID: {self.user_a_session_id}")
+        
+        return success, response_data
+
+    def test_study_session_user_b_start(self):
+        """Test starting study session for User B"""
+        if not self.break_room_id:
+            print("   Skipping - no break room ID available")
+            return True, {}
+            
+        session_data = {
+            "firebase_uid": "user-b-break-test",
+            "room_id": self.break_room_id
+        }
+        
+        success, response_data = self.run_test(
+            "Start Study Session User B", 
+            "POST", 
+            "study-sessions/start", 
+            200,
+            data=session_data
+        )
+        
+        if success and response_data:
+            self.user_b_session_id = response_data.get('id')
+            print(f"   User B session ID: {self.user_b_session_id}")
+        
+        return success, response_data
+
+    def test_study_session_normal_accumulation(self):
+        """Test normal time accumulation for both users when active"""
+        tests_passed = 0
+        total_tests = 2
+        
+        # Test User A accumulation (should work when not on break)
+        if self.user_a_session_id:
+            update_data = {"accumulated_seconds": 300}  # 5 minutes
+            success, response_data = self.run_test(
+                "User A Normal Accumulation", 
+                "PUT", 
+                f"study-sessions/{self.user_a_session_id}/update", 
+                200,
+                data=update_data
+            )
+            if success and response_data.get('accumulated_seconds') == 300:
+                tests_passed += 1
+                print("✅ User A normal accumulation working")
+            else:
+                print("❌ User A normal accumulation failed")
+        
+        # Test User B accumulation (should always work)
+        if self.user_b_session_id:
+            update_data = {"accumulated_seconds": 300}  # 5 minutes
+            success, response_data = self.run_test(
+                "User B Normal Accumulation", 
+                "PUT", 
+                f"study-sessions/{self.user_b_session_id}/update", 
+                200,
+                data=update_data
+            )
+            if success and response_data.get('accumulated_seconds') == 300:
+                tests_passed += 1
+                print("✅ User B normal accumulation working")
+            else:
+                print("❌ User B normal accumulation failed")
+        
+        return tests_passed == total_tests, {}
+
+    def test_study_session_break_accumulation_filter(self):
+        """Test that User A on break doesn't accumulate time, User B continues"""
+        # First put User A on break
+        if self.break_room_id:
+            break_data = {
+                "participant_id": "user-a-break-test",
+                "firebase_uid": "user-a-break-test",
+                "is_on_break": True
+            }
+            self.run_test(
+                "Put User A on Break for Session Test", 
+                "PUT", 
+                f"rooms/{self.break_room_id}/break-mode", 
+                200,
+                data=break_data
+            )
+        
+        tests_passed = 0
+        total_tests = 2
+        
+        # Test User A accumulation (should NOT increase when on break)
+        if self.user_a_session_id:
+            update_data = {"accumulated_seconds": 600}  # Try to update to 10 minutes
+            success, response_data = self.run_test(
+                "User A Break Accumulation Filter", 
+                "PUT", 
+                f"study-sessions/{self.user_a_session_id}/update", 
+                200,
+                data=update_data
+            )
+            # Should still be 300 (previous value) because user is on break
+            if success and response_data.get('accumulated_seconds') == 300:
+                tests_passed += 1
+                print("✅ User A break accumulation filter working - time not increased")
+            else:
+                print(f"❌ User A break accumulation filter failed - got {response_data.get('accumulated_seconds')}, expected 300")
+        
+        # Test User B accumulation (should continue to work normally)
+        if self.user_b_session_id:
+            update_data = {"accumulated_seconds": 600}  # Update to 10 minutes
+            success, response_data = self.run_test(
+                "User B Continues During A's Break", 
+                "PUT", 
+                f"study-sessions/{self.user_b_session_id}/update", 
+                200,
+                data=update_data
+            )
+            if success and response_data.get('accumulated_seconds') == 600:
+                tests_passed += 1
+                print("✅ User B continues accumulating during User A's break")
+            else:
+                print("❌ User B accumulation affected by User A's break")
+        
+        return tests_passed == total_tests, {}
+
+    def test_study_session_resume_after_break(self):
+        """Test that User A can accumulate time again after coming back from break"""
+        # First take User A off break
+        if self.break_room_id:
+            break_data = {
+                "participant_id": "user-a-break-test",
+                "firebase_uid": "user-a-break-test",
+                "is_on_break": False
+            }
+            self.run_test(
+                "Take User A Off Break for Resume Test", 
+                "PUT", 
+                f"rooms/{self.break_room_id}/break-mode", 
+                200,
+                data=break_data
+            )
+        
+        # Test User A can accumulate again
+        if self.user_a_session_id:
+            update_data = {"accumulated_seconds": 900}  # Update to 15 minutes
+            success, response_data = self.run_test(
+                "User A Resume Accumulation After Break", 
+                "PUT", 
+                f"study-sessions/{self.user_a_session_id}/update", 
+                200,
+                data=update_data
+            )
+            if success and response_data.get('accumulated_seconds') == 900:
+                print("✅ User A can accumulate time after returning from break")
+                return True, response_data
+            else:
+                print(f"❌ User A cannot accumulate after break - got {response_data.get('accumulated_seconds')}, expected 900")
+                return False, response_data
+        
+        return True, {}
+
 def main():
-    print("🚀 Starting Backend Smoke Tests...")
+    print("🚀 Starting İzlek Break Mode Backend Tests...")
     print("=" * 50)
     
     tester = DashboardAPITester()
     
-    # Run basic health tests first
-    basic_tests = [
-        tester.test_api_health,
-        tester.test_cors_headers,
-    ]
+    # Initialize break mode test variables
+    tester.break_room_id = None
+    tester.break_room_code = None
+    tester.user_a_session_id = None
+    tester.user_b_session_id = None
     
-    print("\n📋 BASIC HEALTH TESTS")
-    print("-" * 30)
-    for test in basic_tests:
-        try:
-            test()
-        except Exception as e:
-            print(f"❌ Test failed with exception: {str(e)}")
-            tester.tests_run += 1
-    
-    # Run room smoke tests (critical for RoomPage)
-    room_tests = [
+    # Run existing room smoke tests first (regression check)
+    existing_room_tests = [
         tester.test_create_room,
         tester.test_get_room_by_id,
         tester.test_get_room_by_code,
@@ -372,26 +690,33 @@ def main():
         tester.test_leave_room,
     ]
     
-    print("\n🏠 ROOM SMOKE TESTS (RoomPage Critical)")
-    print("-" * 40)
-    for test in room_tests:
+    print("\n🏠 EXISTING ROOM SMOKE TESTS (Regression Check)")
+    print("-" * 50)
+    for test in existing_room_tests:
         try:
             test()
         except Exception as e:
             print(f"❌ Test failed with exception: {str(e)}")
             tester.tests_run += 1
     
-    # Run dashboard tests (existing functionality)
-    dashboard_tests = [
-        tester.test_get_profile,
-        tester.test_get_programs,
-        tester.test_update_program_tasks,
-        tester.test_create_task,
+    # Run break mode specific tests
+    break_mode_tests = [
+        tester.test_break_mode_room_setup,
+        tester.test_break_mode_second_user_join,
+        tester.test_break_mode_timer_persistence,
+        tester.test_break_mode_endpoint_user_a_on_break,
+        tester.test_break_mode_verify_user_a_break_status,
+        tester.test_break_mode_endpoint_user_a_off_break,
+        tester.test_study_session_user_a_start,
+        tester.test_study_session_user_b_start,
+        tester.test_study_session_normal_accumulation,
+        tester.test_study_session_break_accumulation_filter,
+        tester.test_study_session_resume_after_break,
     ]
     
-    print("\n📊 DASHBOARD TESTS (Existing)")
-    print("-" * 30)
-    for test in dashboard_tests:
+    print("\n🔄 BREAK MODE TESTS (New Feature)")
+    print("-" * 40)
+    for test in break_mode_tests:
         try:
             test()
         except Exception as e:
@@ -402,21 +727,30 @@ def main():
     print("\n" + "=" * 50)
     print(f"📊 Test Results: {tester.tests_passed}/{tester.tests_run} passed")
     
-    # Specific analysis for RoomPage
-    room_critical_count = 8  # Number of room tests
-    room_passed = min(tester.tests_passed - 2, room_critical_count)  # Subtract basic tests
+    # Specific analysis for break mode
+    existing_room_count = 8  # Number of existing room tests
+    break_mode_count = 11   # Number of break mode tests
     
-    print(f"🏠 Room Tests (RoomPage Critical): {max(0, room_passed)}/{room_critical_count}")
+    existing_passed = min(tester.tests_passed, existing_room_count)
+    break_mode_passed = max(0, tester.tests_passed - existing_room_count)
     
-    if tester.tests_passed == tester.tests_run:
-        print("🎉 All tests passed! RoomPage backend flows are working.")
+    print(f"🏠 Existing Room Tests (Regression): {existing_passed}/{existing_room_count}")
+    print(f"🔄 Break Mode Tests (New Feature): {break_mode_passed}/{break_mode_count}")
+    
+    # Determine success criteria
+    regression_ok = existing_passed >= 6  # At least 75% of existing tests pass
+    break_mode_ok = break_mode_passed >= 8  # At least 73% of break mode tests pass
+    
+    if regression_ok and break_mode_ok:
+        print("🎉 Break Mode feature working! No regression in existing functionality.")
         return 0
-    elif room_passed >= 6:  # At least 75% of room tests pass
-        print("✅ Core RoomPage backend flows are working (some minor issues may exist)")
-        return 0
+    elif regression_ok:
+        print("✅ No regression detected, but Break Mode has issues")
+        print("⚠️  Break Mode feature needs fixes")
+        return 1
     else:
-        print(f"⚠️  {tester.tests_run - tester.tests_passed} tests failed")
-        print("❌ Critical RoomPage backend issues detected!")
+        print("❌ Regression detected in existing room functionality!")
+        print("❌ Critical issues found!")
         return 1
 
 if __name__ == "__main__":
