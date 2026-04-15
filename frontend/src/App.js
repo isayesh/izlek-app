@@ -17,6 +17,7 @@ import Leaderboard from "@/pages/Leaderboard";
 import Profile from "@/pages/Profile";
 import Friends from "@/pages/Friends";
 import Notifications from "@/pages/Notifications";
+import Messages from "@/pages/Messages";
 
 // Use REACT_APP_BACKEND_URL when available, but allow the landing page to render without it.
 const backendUrl = process.env.REACT_APP_BACKEND_URL || "";
@@ -123,6 +124,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Notifications />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/messages"
+              element={
+                <ProtectedRoute>
+                  <Messages />
                 </ProtectedRoute>
               }
             />

@@ -10,6 +10,7 @@ import {
   Flame,
   Home,
   LogOut,
+  MessageSquare,
   Plus,
   Search,
   Trash2,
@@ -516,6 +517,7 @@ export default function Dashboard() {
     { label: "Odalar", icon: Users, onClick: () => navigate("/rooms"), testId: "btn-rooms" },
     { label: "Liderlik", icon: Trophy, onClick: () => navigate("/leaderboard"), testId: "btn-leaderboard" },
     { label: "Profil", icon: User, onClick: () => navigate("/profile"), testId: "dashboard-btn-profile" },
+    { label: "DM Kutum", icon: MessageSquare, onClick: () => navigate("/messages"), testId: "dashboard-btn-messages" },
     { label: "Arkadaşlar", icon: Users, onClick: () => navigate("/friends"), testId: "dashboard-btn-friends", badgeCount: pendingFriendRequestCount },
     { label: "Bildirimler", icon: Bell, onClick: () => navigate("/notifications"), testId: "dashboard-btn-notifications" },
   ];
