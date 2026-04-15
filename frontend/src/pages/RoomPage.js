@@ -11,7 +11,7 @@ import { Play, Pause, RotateCcw, Send, Users, ArrowLeft, Copy, Check, Clock, Mes
 import { startStudySession, updateStudySession, completeStudySession } from "@/lib/studySession";
 import { useAuth } from "@/contexts/AuthContext";
 
-const MAX_VISIBLE_PARTICIPANTS = 2;
+const PARTICIPANTS_PANEL_HEIGHT = "h-[300px] sm:h-[320px] lg:h-[304px]";
 
 export default function RoomPage() {
   const { roomId } = useParams();
@@ -91,8 +91,7 @@ export default function RoomPage() {
     return failedMessageAvatars[message.id] ? "" : resolvedAvatarUrl;
   };
 
-  const visibleParticipants = room?.participants?.slice(0, MAX_VISIBLE_PARTICIPANTS) || [];
-  const hiddenParticipantsCount = Math.max((room?.participants?.length || 0) - MAX_VISIBLE_PARTICIPANTS, 0);
+  const allParticipants = room?.participants || [];
 
   const renderParticipantItem = (participant, variant = "card") => {
     const participantAvatarUrl = getParticipantAvatarUrl(participant);
@@ -795,34 +794,36 @@ export default function RoomPage() {
         {/* Left: Participants + Timer */}
         <div className="min-w-0 space-y-6 min-h-0 lg:flex lg:h-full lg:flex-col" data-testid="room-left-column">
           {/* Participants */}
-          <Card className="overflow-hidden rounded-2xl border border-border/60 bg-card/90 shadow-[0_22px_48px_-36px_rgba(2,6,23,0.9)] backdrop-blur-sm lg:max-h-[272px] lg:shrink-0" data-testid="participants-card">
+          <Card className={`${PARTICIPANTS_PANEL_HEIGHT} min-h-0 overflow-hidden rounded-2xl border border-border/60 bg-card/90 shadow-[0_22px_48px_-36px_rgba(2,6,23,0.9)] backdrop-blur-sm lg:shrink-0 lg:flex lg:flex-col`} data-testid="participants-card">
             <CardHeader className="border-b border-border/60 pb-3">
-              <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="participants-title">
-                <Users className="h-5 w-5 text-accent" />
-                Katılımcılar ({room.participants.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3.5 pb-4 pt-3.5">
-              <div className="space-y-2.5" data-testid="participants-list">
-                {visibleParticipants.map((participant) => renderParticipantItem(participant, "card"))}
-              </div>
-
-              {hiddenParticipantsCount > 0 && (
+              <div className="flex items-center justify-between gap-3">
+                <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="participants-title">
+                  <Users className="h-5 w-5 text-accent" />
+                  Katılımcılar ({room.participants.length})
+                </CardTitle>
                 <Button
                   type="button"
                   variant="ghost"
+                  size="sm"
                   onClick={() => setShowParticipantsModal(true)}
-                  className="h-auto w-full justify-start rounded-2xl border border-dashed border-border/60 bg-background/35 px-4 py-3 text-sm font-medium text-muted-foreground hover:bg-background/50"
+                  className="h-8 shrink-0 rounded-full border border-border/60 bg-background/35 px-3 text-xs font-semibold text-muted-foreground hover:bg-background/50 hover:text-foreground"
                   data-testid="participants-show-more-button"
                 >
-                  +{hiddenParticipantsCount} kişi daha · Tümünü gör
+                  Tümünü Gör
                 </Button>
-              )}
+              </div>
+            </CardHeader>
+            <CardContent className="min-h-0 flex-1 pb-4 pt-3.5">
+              <ScrollArea className="h-full pr-2" data-testid="participants-list-scroll-area">
+                <div className="space-y-2.5 pr-2" data-testid="participants-list">
+                  {allParticipants.map((participant) => renderParticipantItem(participant, "card"))}
+                </div>
+              </ScrollArea>
             </CardContent>
           </Card>
 
           <Dialog open={showParticipantsModal} onOpenChange={setShowParticipantsModal}>
-            <DialogContent className="max-w-xl rounded-2xl border border-border/60 bg-card/95 p-0 shadow-[0_28px_60px_-40px_rgba(2,6,23,0.95)] backdrop-blur-sm [&>button]:hidden" data-testid="participants-modal">
+            <DialogContent className="flex w-[90vw] max-w-xl max-h-[70vh] flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/95 p-0 shadow-[0_28px_60px_-40px_rgba(2,6,23,0.95)] backdrop-blur-sm [&>button]:hidden" data-testid="participants-modal">
               <DialogHeader className="border-b border-border/60 px-6 py-4">
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -830,7 +831,7 @@ export default function RoomPage() {
                       Tüm Katılımcılar ({room.participants.length})
                     </DialogTitle>
                     <DialogDescription className="mt-1 text-sm text-muted-foreground" data-testid="participants-modal-description">
-                      Odadaki tüm katılımcıları avatarları ve rol bilgileriyle birlikte görüntüle.
+                      Odadaki tüm katılımcıları daha rahat bir görünümle inceleyebilirsin.
                     </DialogDescription>
                   </div>
                   <Button
@@ -845,9 +846,11 @@ export default function RoomPage() {
                   </Button>
                 </div>
               </DialogHeader>
-              <div className="max-h-[70vh] space-y-3 overflow-y-auto px-6 py-5" data-testid="participants-modal-list">
-                {room.participants.map((participant) => renderParticipantItem(participant, "modal"))}
-              </div>
+              <ScrollArea className="min-h-0 flex-1 px-6 py-5" data-testid="participants-modal-list-scroll-area">
+                <div className="space-y-2.5 pr-3" data-testid="participants-modal-list">
+                  {allParticipants.map((participant) => renderParticipantItem(participant, "modal"))}
+                </div>
+              </ScrollArea>
             </DialogContent>
           </Dialog>
 
