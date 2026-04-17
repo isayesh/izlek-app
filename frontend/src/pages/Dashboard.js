@@ -601,11 +601,11 @@ export default function Dashboard() {
             <button
               type="button"
               onClick={() => navigate("/dashboard")}
-              className="inline-flex w-fit items-center pl-1 sm:pl-2"
+              className="inline-flex h-10 w-fit items-center"
               data-testid="dashboard-header-brand"
               aria-label="Dashboard"
             >
-              <AppLogo className="sm:scale-[1.04]" />
+              <AppLogo />
             </button>
 
             <div className="flex flex-col gap-3 xl:items-end">

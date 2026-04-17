@@ -294,11 +294,11 @@ export default function Rooms() {
             <button
               type="button"
               onClick={() => navigate("/dashboard")}
-              className="inline-flex w-fit items-center"
+              className="inline-flex h-10 w-fit items-center"
               data-testid="rooms-header-brand"
               aria-label="Dashboard"
             >
-              <AppLogo className="sm:scale-[1.04]" />
+              <AppLogo />
             </button>
 
             <div className="flex items-center justify-end gap-2" data-testid="rooms-theme-toggle-wrap">
