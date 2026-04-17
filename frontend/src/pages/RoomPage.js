@@ -919,17 +919,17 @@ export default function RoomPage() {
                 {/* Timer Display */}
                 <div className="flex w-full justify-center" data-testid="timer-display-row">
                   <div className="relative mx-auto flex w-full max-w-[320px] min-w-0 items-center justify-center overflow-hidden rounded-2xl border border-border/60 bg-background/45 px-4 py-5 shadow-[0_18px_36px_-30px_rgba(2,6,23,0.95)] sm:px-8 sm:py-5.5" data-testid="timer-display-wrap">
-                    <div className={`min-w-0 max-w-full overflow-hidden text-ellipsis font-mono text-center text-[clamp(2.75rem,8vw,4.25rem)] font-semibold leading-none tracking-tight text-foreground transition-opacity duration-200 ${isOnBreak ? 'opacity-30' : 'opacity-100'}`} data-testid="timer-display">
+                    <div className={`min-w-0 max-w-full overflow-hidden text-ellipsis font-mono text-center text-[clamp(2.75rem,8vw,4.25rem)] font-semibold leading-none tracking-tight text-foreground transition-all duration-200 ${isOnBreak ? 'scale-[0.985] opacity-[0.22] blur-[1.5px]' : 'scale-100 opacity-100 blur-0'}`} data-testid="timer-display">
                       {formatTime(remainingSeconds)}
                     </div>
 
                     {isOnBreak && (
-                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center" data-testid="break-mode-overlay">
-                        <div className="max-w-[85%] rounded-2xl border border-yellow-400/20 bg-yellow-500/10 px-4 py-3 text-center text-yellow-100 shadow-[0_16px_40px_-24px_rgba(250,204,21,0.45)] backdrop-blur-md">
-                          <div className="text-sm font-semibold leading-tight text-yellow-100 sm:text-[0.95rem]">
+                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-[inherit] border border-slate-200/70 bg-white/72 px-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-sm dark:border-amber-400/15 dark:bg-amber-500/10 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]" data-testid="break-mode-overlay">
+                        <div className="mx-auto flex max-w-[16rem] flex-col items-center justify-center">
+                          <div className="text-sm font-semibold leading-tight tracking-tight text-slate-700 sm:text-[0.95rem] dark:text-amber-100">
                             Moladasın
                           </div>
-                          <div className="mt-1 text-[11px] font-medium leading-snug text-yellow-100/80 sm:text-xs">
+                          <div className="mt-1.5 text-[11px] font-medium leading-snug text-slate-500 sm:text-xs dark:text-amber-100/70">
                             Bu sürede çalışma süren artmaz
                           </div>
                         </div>
