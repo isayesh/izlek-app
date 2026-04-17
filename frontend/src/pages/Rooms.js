@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import ThemeToggle from "@/components/ThemeToggle";
 import axios from "axios";
 import { API } from "@/App";
-import { Home, Plus, LogIn, Trophy, Search } from "lucide-react";
+import { Home, Plus, LogIn, Trophy } from "lucide-react";
 import { saveRoom } from "@/lib/storage";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -335,24 +335,7 @@ export default function Rooms() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3" data-testid="rooms-quick-actions">
-                <Button
-                  size="lg"
-                  onClick={() => focusFormsSection("join")}
-                  className="hover-lift h-auto items-start justify-between whitespace-normal rounded-2xl px-5 py-4 text-left"
-                  data-testid="rooms-quick-find-button"
-                >
-                  <div>
-                    <div className="flex items-center gap-2 text-sm font-semibold">
-                      <Search className="h-4 w-4" />
-                      Oda Bul
-                    </div>
-                    <p className="mt-1 text-xs font-medium text-primary-foreground/80 sm:text-sm">
-                      Kodla katılma akışına doğrudan geç.
-                    </p>
-                  </div>
-                </Button>
-
+              <div className="grid grid-cols-1 gap-3 sm:max-w-3xl sm:grid-cols-2" data-testid="rooms-quick-actions">
                 <Button
                   variant="secondary"
                   size="lg"
