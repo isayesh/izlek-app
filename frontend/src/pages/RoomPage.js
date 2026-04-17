@@ -924,12 +924,12 @@ export default function RoomPage() {
                     </div>
 
                     {isOnBreak && (
-                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-[inherit] border border-slate-200/70 bg-white/72 px-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-sm dark:border-amber-400/15 dark:bg-amber-500/10 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]" data-testid="break-mode-overlay">
+                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-[inherit] border border-slate-200/70 bg-white/72 px-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-sm dark:border-white/10 dark:bg-slate-950/58 dark:ring-1 dark:ring-amber-200/5 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] dark:backdrop-blur-md" data-testid="break-mode-overlay">
                         <div className="mx-auto flex max-w-[16rem] flex-col items-center justify-center">
-                          <div className="text-sm font-semibold leading-tight tracking-tight text-slate-700 sm:text-[0.95rem] dark:text-amber-100">
+                          <div className="text-sm font-semibold leading-tight tracking-tight text-slate-700 sm:text-[0.95rem] dark:text-slate-50">
                             Moladasın
                           </div>
-                          <div className="mt-1.5 text-[11px] font-medium leading-snug text-slate-500 sm:text-xs dark:text-amber-100/70">
+                          <div className="mt-1.5 text-[11px] font-medium leading-snug text-slate-500 sm:text-xs dark:text-slate-300/70">
                             Bu sürede çalışma süren artmaz
                           </div>
                         </div>
