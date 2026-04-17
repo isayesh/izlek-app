@@ -918,18 +918,20 @@ export default function RoomPage() {
 
                 {/* Timer Display */}
                 <div className="flex w-full justify-center" data-testid="timer-display-row">
-                  <div className="mx-auto flex w-full max-w-[320px] min-w-0 items-center justify-center overflow-hidden rounded-2xl border border-border/60 bg-background/45 px-4 py-5 shadow-[0_18px_36px_-30px_rgba(2,6,23,0.95)] sm:px-8 sm:py-5.5" data-testid="timer-display-wrap">
-                    <div className="min-w-0 max-w-full overflow-hidden text-ellipsis font-mono text-center text-[clamp(2.75rem,8vw,4.25rem)] font-semibold leading-none tracking-tight text-foreground" data-testid="timer-display">
+                  <div className="relative mx-auto flex w-full max-w-[320px] min-w-0 items-center justify-center overflow-hidden rounded-2xl border border-border/60 bg-background/45 px-4 py-5 shadow-[0_18px_36px_-30px_rgba(2,6,23,0.95)] sm:px-8 sm:py-5.5" data-testid="timer-display-wrap">
+                    <div className={`min-w-0 max-w-full overflow-hidden text-ellipsis font-mono text-center text-[clamp(2.75rem,8vw,4.25rem)] font-semibold leading-none tracking-tight text-foreground transition-opacity duration-200 ${isOnBreak ? 'opacity-40' : 'opacity-100'}`} data-testid="timer-display">
                       {formatTime(remainingSeconds)}
                     </div>
+
+                    {isOnBreak && (
+                      <div className="pointer-events-none absolute inset-x-3 bottom-3 flex justify-center" data-testid="break-mode-overlay">
+                        <div className="max-w-[85%] rounded-full border border-yellow-200/80 bg-yellow-100/92 px-3.5 py-1.5 text-center text-xs font-medium leading-snug text-yellow-700 shadow-[0_12px_28px_-20px_rgba(202,138,4,0.85)] backdrop-blur-sm sm:text-sm dark:border-yellow-500/20 dark:bg-yellow-500/12 dark:text-yellow-300">
+                          Moladasın, bu sürede çalışma süren artmaz.
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-
-                {isOnBreak && (
-                  <div className="w-full max-w-full break-words rounded-2xl border border-yellow-200 bg-yellow-100 px-4 py-3 text-sm font-medium text-yellow-700 shadow-sm dark:border-yellow-500/20 dark:bg-yellow-500/10 dark:text-yellow-400" data-testid="break-mode-info">
-                    Moladasın, bu sürede çalışma süren artmaz.
-                  </div>
-                )}
 
                 <div className="flex w-full max-w-full flex-wrap items-stretch justify-center gap-3 overflow-hidden pt-1" data-testid="timer-controls">
                   {!isRunning ? (
