@@ -918,18 +918,18 @@ export default function RoomPage() {
 
                 {/* Timer Display */}
                 <div className="flex w-full justify-center" data-testid="timer-display-row">
-                  <div className="relative mx-auto flex w-full max-w-[320px] min-w-0 items-center justify-center overflow-hidden rounded-2xl border border-border/60 bg-background/45 px-4 py-5 shadow-[0_18px_36px_-30px_rgba(2,6,23,0.95)] sm:px-8 sm:py-5.5" data-testid="timer-display-wrap">
-                    <div className={`min-w-0 max-w-full overflow-hidden text-ellipsis font-mono text-center text-[clamp(2.75rem,8vw,4.25rem)] font-semibold leading-none tracking-tight text-foreground transition-all duration-200 ${isOnBreak ? 'scale-[0.985] opacity-[0.22] blur-[1.5px]' : 'scale-100 opacity-100 blur-0'}`} data-testid="timer-display">
+                  <div className="relative mx-auto flex w-full max-w-[320px] min-w-0 items-center justify-center overflow-hidden rounded-2xl border border-border/60 bg-background/45 px-4 py-5 shadow-[0_18px_36px_-30px_rgba(2,6,23,0.95)] sm:px-8 sm:py-5.5 md:max-w-[420px] md:px-10 md:py-7 lg:max-w-[320px] lg:px-8 lg:py-5.5" data-testid="timer-display-wrap">
+                    <div className={`min-w-0 max-w-full overflow-hidden text-ellipsis font-mono text-center text-[clamp(2.75rem,8vw,4.25rem)] font-semibold leading-none tracking-tight text-foreground transition-all duration-200 md:text-[clamp(3.15rem,7vw,4.75rem)] lg:text-[clamp(2.75rem,8vw,4.25rem)] ${isOnBreak ? 'scale-[0.985] opacity-[0.22] blur-[1.5px]' : 'scale-100 opacity-100 blur-0'}`} data-testid="timer-display">
                       {formatTime(remainingSeconds)}
                     </div>
 
                     {isOnBreak && (
-                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-[inherit] border border-slate-200/70 bg-white/72 px-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-sm dark:border-white/10 dark:bg-slate-950/58 dark:ring-1 dark:ring-amber-200/5 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] dark:backdrop-blur-md" data-testid="break-mode-overlay">
-                        <div className="mx-auto flex max-w-[16rem] flex-col items-center justify-center">
-                          <div className="text-sm font-semibold leading-tight tracking-tight text-slate-700 sm:text-[0.95rem] dark:text-slate-50">
+                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-[inherit] border border-slate-200/70 bg-white/72 px-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-sm md:px-7 lg:px-5 dark:border-white/10 dark:bg-slate-950/58 dark:ring-1 dark:ring-amber-200/5 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] dark:backdrop-blur-md" data-testid="break-mode-overlay">
+                        <div className="mx-auto flex max-w-[16rem] flex-col items-center justify-center md:max-w-[20rem] lg:max-w-[16rem]">
+                          <div className="text-sm font-semibold leading-tight tracking-tight text-slate-700 sm:text-[0.95rem] md:text-base lg:text-[0.95rem] dark:text-slate-50">
                             Moladasın
                           </div>
-                          <div className="mt-1.5 text-[11px] font-medium leading-snug text-slate-500 sm:text-xs dark:text-slate-300/70">
+                          <div className="mt-1.5 text-[11px] font-medium leading-snug text-slate-500 sm:text-xs md:text-sm lg:text-xs dark:text-slate-300/70">
                             Bu sürede çalışma süren artmaz
                           </div>
                         </div>
