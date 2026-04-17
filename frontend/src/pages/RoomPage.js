@@ -820,7 +820,7 @@ export default function RoomPage() {
         </div>
       </div>
 
-      <div className="grid w-full min-w-0 grid-cols-1 gap-6 md:gap-4 md:grid-cols-[minmax(25.5rem,1.18fr)_minmax(0,0.82fr)] lg:h-full lg:min-h-0 lg:flex-1 lg:overflow-hidden lg:gap-6 lg:grid-cols-3" data-testid="room-main-grid">
+      <div className="grid w-full min-w-0 grid-cols-1 gap-6 md:gap-4 md:grid-cols-[minmax(25.5rem,1.18fr)_minmax(0,0.82fr)] md:items-start lg:h-full lg:min-h-0 lg:flex-1 lg:items-stretch lg:overflow-hidden lg:gap-6 lg:grid-cols-3" data-testid="room-main-grid">
         {/* Left: Participants + Timer */}
         <div className="min-h-0 min-w-0 space-y-6 md:min-w-[25.5rem] lg:min-w-0 lg:flex lg:h-full lg:flex-col" data-testid="room-left-column">
           {/* Participants */}
