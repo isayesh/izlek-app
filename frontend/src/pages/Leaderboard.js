@@ -8,6 +8,12 @@ import { API } from "@/App";
 import { Home, Users, Trophy } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
+const LEADERBOARD_PERIODS = [
+  { key: "daily", label: "Günlük", subtitle: "Bugünkü çalışma sürelerine göre sıralama", metricLabel: "Bugün" },
+  { key: "weekly", label: "Haftalık", subtitle: "Bu haftaki çalışma sürelerine göre sıralama", metricLabel: "Bu hafta" },
+  { key: "all", label: "Genel", subtitle: "Toplam çalışma sürelerine göre global sıralama", metricLabel: "Toplam" },
+];
+
 export default function Leaderboard() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
@@ -15,17 +21,19 @@ export default function Leaderboard() {
   const [entries, setEntries] = useState([]);
   const [error, setError] = useState("");
   const [failedAvatars, setFailedAvatars] = useState({});
+  const [activePeriod, setActivePeriod] = useState("all");
   const currentUserId = currentUser?.uid || localStorage.getItem("userId") || localStorage.getItem("currentUserId");
+  const periodConfig = LEADERBOARD_PERIODS.find((period) => period.key === activePeriod) || LEADERBOARD_PERIODS[2];
 
   useEffect(() => {
-    loadLeaderboard();
-  }, []);
+    loadLeaderboard(activePeriod);
+  }, [activePeriod]);
 
-  const loadLeaderboard = async () => {
+  const loadLeaderboard = async (period = activePeriod) => {
     try {
       setLoading(true);
       setError("");
-      const res = await axios.get(`${API}/leaderboard`);
+      const res = await axios.get(`${API}/leaderboard`, { params: { period } });
       setEntries(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error("Error loading leaderboard:", err);
@@ -82,13 +90,34 @@ export default function Leaderboard() {
         <Card className="rounded-2xl border border-border/70 bg-card shadow-[0_18px_36px_-28px_rgba(15,23,42,0.16)]" data-testid="leaderboard-header-card">
           <CardContent className="p-6 sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4">
-              <div>
-                <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl lg:text-6xl" data-testid="leaderboard-title">
-                  Liderlik Tablosu
-                </h1>
-                <p className="mt-2 text-base text-slate-600 dark:text-slate-300 md:text-lg" data-testid="leaderboard-subtitle">
-                  Toplam çalışma sürelerine göre global sıralama
-                </p>
+              <div className="space-y-4">
+                <div>
+                  <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl lg:text-6xl" data-testid="leaderboard-title">
+                    Liderlik Tablosu
+                  </h1>
+                  <p className="mt-2 text-base text-slate-600 dark:text-slate-300 md:text-lg" data-testid="leaderboard-subtitle">
+                    {periodConfig.subtitle}
+                  </p>
+                </div>
+
+                <div className="inline-flex flex-wrap items-center gap-2 rounded-2xl border border-border/70 bg-background/70 p-1" data-testid="leaderboard-period-tabs">
+                  {LEADERBOARD_PERIODS.map((period) => {
+                    const isActive = period.key === activePeriod;
+
+                    return (
+                      <Button
+                        key={period.key}
+                        type="button"
+                        variant={isActive ? "default" : "ghost"}
+                        onClick={() => setActivePeriod(period.key)}
+                        className={`h-10 rounded-xl px-4 text-sm font-semibold ${isActive ? "bg-slate-900 text-white shadow-sm hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200" : "text-slate-600 hover:bg-secondary dark:text-slate-300 dark:hover:bg-slate-800"}`}
+                        data-testid={`leaderboard-period-${period.key}`}
+                      >
+                        {period.label}
+                      </Button>
+                    );
+                  })}
+                </div>
               </div>
 
               <div className="flex items-center gap-2" data-testid="leaderboard-header-actions">
@@ -129,7 +158,7 @@ export default function Leaderboard() {
                     <p className="text-lg font-bold text-slate-900 dark:text-slate-100" data-testid="my-rank-value">#{myEntry.rank}</p>
                   </div>
                   <div className="text-right" data-testid="my-time-value-wrap">
-                    <p className="text-xs text-slate-500 dark:text-slate-400" data-testid="my-time-label">Toplam Süre</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400" data-testid="my-time-label">{periodConfig.metricLabel}</p>
                     <p className="text-lg font-semibold text-slate-900 dark:text-slate-100" data-testid="my-time-value">
                       {formatStudyTime(myEntry.total_seconds)}
                     </p>
@@ -144,7 +173,7 @@ export default function Leaderboard() {
           <CardHeader className="border-b border-border/70 pb-4">
             <CardTitle className="flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-slate-100" data-testid="leaderboard-list-title">
               <Trophy className="h-5 w-5 text-slate-800 dark:text-slate-200" />
-              Sıralama
+              {periodConfig.label} Sıralama
             </CardTitle>
           </CardHeader>
 
@@ -159,7 +188,7 @@ export default function Leaderboard() {
               </p>
             ) : entries.length === 0 ? (
               <p className="py-10 text-center text-slate-600 dark:text-slate-300" data-testid="leaderboard-empty-text">
-                Henüz leaderboard verisi bulunmuyor.
+                Bu dönem için henüz leaderboard verisi bulunmuyor.
               </p>
             ) : (
               <div className="space-y-3" data-testid="leaderboard-list">

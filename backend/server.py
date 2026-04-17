@@ -1811,10 +1811,25 @@ async def complete_study_session(session_id: str, complete_data: StudySessionCom
 
 
 @api_router.get("/leaderboard", response_model=List[LeaderboardEntry])
-async def get_leaderboard():
-    """Return global leaderboard ranked by total accumulated study time"""
+async def get_leaderboard(period: str = Query("all", pattern="^(daily|weekly|all)$")):
+    """Return leaderboard ranked by accumulated study time for the selected period."""
     try:
-        aggregation_pipeline = [
+        period_key = (period or "all").lower()
+        now = datetime.now(timezone.utc)
+        period_match = None
+
+        if period_key == "daily":
+            period_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            period_match = {"last_saved_at": {"$gte": period_start, "$lt": now}}
+        elif period_key == "weekly":
+            week_start = (now - timedelta(days=now.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
+            period_match = {"last_saved_at": {"$gte": week_start, "$lt": now}}
+
+        aggregation_pipeline = []
+        if period_match:
+            aggregation_pipeline.append({"$match": period_match})
+
+        aggregation_pipeline.extend([
             {
                 "$group": {
                     "_id": "$firebase_uid",
@@ -1822,7 +1837,7 @@ async def get_leaderboard():
                 }
             },
             {"$sort": {"total_seconds": -1}}
-        ]
+        ])
 
         grouped_results = await db.study_sessions.aggregate(aggregation_pipeline).to_list(1000)
 
