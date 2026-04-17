@@ -29,6 +29,7 @@ export default function RoomPage() {
 
   // Timer state
   const [duration, setDuration] = useState(25);
+  const [durationInput, setDurationInput] = useState("25");
   const [isRunning, setIsRunning] = useState(false);
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const [roomAccessChecked, setRoomAccessChecked] = useState(false);
@@ -64,6 +65,16 @@ export default function RoomPage() {
   const getParticipantAvatarUrl = (participant) => {
     const resolvedAvatarUrl = participant.avatar_url || (participant.id === currentUserId ? currentProfileAvatarUrl : "");
     return failedParticipantAvatars[participant.id] ? "" : resolvedAvatarUrl;
+  };
+
+  const normalizeDurationValue = (rawValue, fallback = 25) => {
+    const parsedDuration = Number(rawValue);
+
+    if (!Number.isFinite(parsedDuration) || parsedDuration <= 0) {
+      return fallback;
+    }
+
+    return Math.min(180, Math.max(1, Math.floor(parsedDuration)));
   };
 
   const getElapsedSeconds = (startedAt) => {
@@ -317,11 +328,13 @@ export default function RoomPage() {
         const syncedDuration = res.data.timer_state.duration_minutes || 25;
         const syncedRemainingSeconds = res.data.timer_state.remaining_seconds || 0;
         const isSyncedTimerRunning = Boolean(res.data.timer_state.is_running && res.data.timer_state.started_at);
+        const shouldPreserveLocalDuration = !isSyncedTimerRunning && hasLocalFreshDurationOverrideRef.current && !canResumeTimerRef.current;
 
-        if (!isSyncedTimerRunning && hasLocalFreshDurationOverrideRef.current && !canResumeTimerRef.current) {
+        if (shouldPreserveLocalDuration) {
           console.log('⏭️ Skipping paused timer sync - local fresh duration override active');
         } else {
           setDuration(syncedDuration);
+          setDurationInput(String(syncedDuration));
 
           if (isSyncedTimerRunning) {
             timerStartingSecondsRef.current = syncedRemainingSeconds;
@@ -452,10 +465,13 @@ export default function RoomPage() {
   };
 
   const handleStartTimer = async () => {
-    const totalSeconds = duration * 60;
+    const normalizedDuration = normalizeDurationValue(durationInput, duration);
+    const totalSeconds = normalizedDuration * 60;
     const startingSeconds = canResumeTimerRef.current && remainingSeconds > 0 ? remainingSeconds : totalSeconds;
     const startedAt = new Date().toISOString();
-    console.log(`🟢 TIMER START: ${duration} minutes (${startingSeconds} seconds remaining)`);
+    console.log(`🟢 TIMER START: ${normalizedDuration} minutes (${startingSeconds} seconds remaining)`);
+    setDuration(normalizedDuration);
+    setDurationInput(String(normalizedDuration));
     timerStartingSecondsRef.current = startingSeconds;
     timerStartedAtRef.current = startedAt;
     studySessionBaseSecondsRef.current = totalStudySeconds;
@@ -494,7 +510,7 @@ export default function RoomPage() {
       // Update room timer state
       await axios.put(`${API}/rooms/${roomId}/timer`, {
         is_running: true,
-        duration_minutes: duration,
+        duration_minutes: normalizedDuration,
         remaining_seconds: startingSeconds,
         started_at: startedAt
       });
@@ -655,11 +671,14 @@ export default function RoomPage() {
 
   const handleResetTimer = async () => {
     console.log('🔄 TIMER RESET');
+    const normalizedDuration = normalizeDurationValue(durationInput, duration);
+    setDuration(normalizedDuration);
+    setDurationInput(String(normalizedDuration));
     setIsRunning(false);
     isRunningRef.current = false; // Update ref
     canResumeTimerRef.current = false;
     hasLocalFreshDurationOverrideRef.current = false;
-    const totalSeconds = duration * 60;
+    const totalSeconds = normalizedDuration * 60;
     timerStartingSecondsRef.current = totalSeconds;
     timerStartedAtRef.current = null;
     studySessionBaseSecondsRef.current = 0;
@@ -675,7 +694,7 @@ export default function RoomPage() {
     try {
       await axios.put(`${API}/rooms/${roomId}/timer`, {
         is_running: false,
-        duration_minutes: duration,
+        duration_minutes: normalizedDuration,
         remaining_seconds: totalSeconds,
         started_at: null
       });
@@ -685,11 +704,23 @@ export default function RoomPage() {
   };
 
   const handleDurationChange = (e) => {
-    const nextDuration = Number(e.target.value);
-    const normalizedDuration = Number.isFinite(nextDuration) && nextDuration > 0 ? nextDuration : 25;
-    setDuration(normalizedDuration);
+    const nextDurationInput = e.target.value;
+    setDurationInput(nextDurationInput);
+
+    if (nextDurationInput === "") {
+      if (!isRunning && !canResumeTimerRef.current) {
+        hasLocalFreshDurationOverrideRef.current = true;
+      }
+      return;
+    }
+
+    const parsedDuration = Number(nextDurationInput);
+    if (!Number.isFinite(parsedDuration) || parsedDuration <= 0) {
+      return;
+    }
 
     if (!isRunning && !canResumeTimerRef.current) {
+      const normalizedDuration = normalizeDurationValue(parsedDuration, duration);
       const nextTotalSeconds = normalizedDuration * 60;
       hasLocalFreshDurationOverrideRef.current = true;
       timerStartingSecondsRef.current = nextTotalSeconds;
@@ -875,7 +906,7 @@ export default function RoomPage() {
                       type="number"
                       min="1"
                       max="180"
-                      value={duration}
+                      value={durationInput}
                       onChange={handleDurationChange}
                       disabled={isRunning}
                       className="h-14 w-28 rounded-2xl border border-border/60 bg-background/50 text-center text-2xl font-semibold leading-none text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] focus:ring-2 focus:ring-ring focus:ring-offset-0 disabled:opacity-60"
@@ -1077,4 +1108,3 @@ export default function RoomPage() {
     </div>
   );
 }
-
