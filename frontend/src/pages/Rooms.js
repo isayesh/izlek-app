@@ -289,19 +289,7 @@ export default function Rooms() {
     <div className="min-h-screen bg-background text-foreground" data-testid="rooms-page">
       <div className="px-4 pb-10 pt-6 sm:px-6 sm:pb-12 lg:px-10 xl:px-12">
         <div className="space-y-8 sm:space-y-10">
-          <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div className="space-y-1 pl-1 sm:pl-2">
-              <button
-                type="button"
-                onClick={() => navigate("/dashboard")}
-                className="font-display text-left text-[2rem] font-semibold tracking-[0.06em] text-foreground sm:text-[2.45rem] dark:bg-gradient-to-r dark:from-slate-50 dark:via-white dark:to-cyan-200 dark:bg-clip-text dark:text-transparent"
-                data-testid="rooms-header-brand"
-              >
-                izlek
-              </button>
-              <p className="text-sm text-muted-foreground">odaklı çalışma alanın</p>
-            </div>
-
+          <header className="flex items-center justify-end gap-2">
             <div className="flex items-center justify-end gap-2" data-testid="rooms-theme-toggle-wrap">
               <ThemeToggle
                 dataTestId="theme-toggle"

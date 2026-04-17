@@ -596,19 +596,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="px-4 pb-10 pt-6 sm:px-6 sm:pb-12 lg:px-10 xl:px-12">
         <div className="space-y-8 sm:space-y-10">
-          <header className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-            <div className="space-y-1.5 pl-1 sm:pl-2">
-              <button
-                type="button"
-                onClick={() => navigate("/dashboard")}
-                className="font-display text-left text-[1.9rem] font-semibold tracking-[-0.04em] text-foreground sm:text-[2.3rem] dark:bg-gradient-to-r dark:from-slate-50 dark:via-white dark:to-cyan-200 dark:bg-clip-text dark:text-transparent"
-                data-testid="dashboard-header-brand"
-              >
-                izlek
-              </button>
-              <p className="text-xs text-muted-foreground/80 sm:text-sm">odaklı çalışma alanın</p>
-            </div>
-
+          <header className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-end">
             <div className="flex flex-col gap-3 xl:items-end">
               <div className="flex items-center justify-end gap-2" data-testid="dashboard-theme-toggle">
                 <ThemeToggle
