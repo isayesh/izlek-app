@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 240" fill="none">
+  <g transform="translate(38 24)">
+    <path fill="#6D5EF7" d="M58 0C39.22 0 24 15.22 24 34c0 24.95 28.54 54.62 32.28 58.42a2.5 2.5 0 0 0 3.44 0C63.46 88.62 92 58.95 92 34 92 15.22 76.78 0 58 0Zm0 48a14 14 0 1 1 0-28 14 14 0 0 1 0 28Z"/>
+    <text x="0" y="190" fill="#090D25" font-family="Inter, Avenir Next, Arial, sans-serif" font-size="176" font-weight="500" letter-spacing="-8">izlek</text>
+  </g>
+</svg>
