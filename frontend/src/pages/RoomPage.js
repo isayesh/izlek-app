@@ -938,12 +938,12 @@ export default function RoomPage() {
                   </div>
                 </div>
 
-                <div className="flex w-full max-w-full flex-wrap items-stretch justify-center gap-3 overflow-hidden pt-1" data-testid="timer-controls">
+                <div className="flex flex-wrap items-stretch justify-center gap-3 pt-1" data-testid="timer-controls">
                   {!isRunning ? (
                     <Button
                       onClick={handleStartTimer}
                       size="lg"
-                      className="h-12 min-w-0 flex-1 basis-[11rem] justify-center rounded-xl border border-primary/25 bg-primary px-5 text-primary-foreground shadow-[0_18px_30px_-22px_rgba(59,130,246,0.75)] hover:bg-primary/90 hover:shadow-[0_20px_34px_-22px_rgba(59,130,246,0.85)]"
+                      className="h-12 w-full justify-center rounded-xl border border-primary/25 bg-primary px-5 text-primary-foreground shadow-[0_18px_30px_-22px_rgba(59,130,246,0.75)] hover:bg-primary/90 hover:shadow-[0_20px_34px_-22px_rgba(59,130,246,0.85)] sm:w-auto sm:min-w-[156px]"
                       data-testid="btn-timer-start"
                     >
                       <Play className="h-5 w-5" />
@@ -953,7 +953,7 @@ export default function RoomPage() {
                     <Button
                       onClick={handlePauseTimer}
                       size="lg"
-                      className="h-12 min-w-0 flex-1 basis-[11rem] justify-center rounded-xl border border-primary/25 bg-primary px-5 text-primary-foreground shadow-[0_18px_30px_-22px_rgba(59,130,246,0.75)] hover:bg-primary/90 hover:shadow-[0_20px_34px_-22px_rgba(59,130,246,0.85)]"
+                      className="h-12 w-full justify-center rounded-xl border border-primary/25 bg-primary px-5 text-primary-foreground shadow-[0_18px_30px_-22px_rgba(59,130,246,0.75)] hover:bg-primary/90 hover:shadow-[0_20px_34px_-22px_rgba(59,130,246,0.85)] sm:w-auto sm:min-w-[156px]"
                       data-testid="btn-timer-pause"
                     >
                       <Pause className="h-5 w-5" />
@@ -964,7 +964,7 @@ export default function RoomPage() {
                   <Button
                     onClick={handleToggleBreakMode}
                     size="lg"
-                    className={`h-12 min-w-0 flex-1 basis-[11rem] justify-center rounded-xl border px-5 shadow-[0_18px_30px_-24px_rgba(2,6,23,0.95)] ${isOnBreak ? 'border-green-200 bg-green-100 text-green-700 hover:bg-green-200 dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-400 dark:hover:bg-green-500/15' : 'border-yellow-200 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:border-yellow-500/20 dark:bg-yellow-500/10 dark:text-yellow-400 dark:hover:bg-yellow-500/15'}`}
+                    className={`h-12 w-full justify-center rounded-xl border px-5 shadow-[0_18px_30px_-24px_rgba(2,6,23,0.95)] sm:w-auto sm:min-w-[156px] ${isOnBreak ? 'border-green-200 bg-green-100 text-green-700 hover:bg-green-200 dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-400 dark:hover:bg-green-500/15' : 'border-yellow-200 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:border-yellow-500/20 dark:bg-yellow-500/10 dark:text-yellow-400 dark:hover:bg-yellow-500/15'}`}
                     data-testid="btn-break-mode-toggle"
                   >
                     {isOnBreak ? "Çalışmaya Dön" : "Mola Ver"}
@@ -974,7 +974,7 @@ export default function RoomPage() {
                     onClick={handleResetTimer}
                     variant="outline"
                     size="lg"
-                    className="h-12 min-w-0 flex-1 basis-[11rem] justify-center rounded-xl border border-border/70 bg-background/45 px-5 text-foreground hover:border-border hover:bg-background/60"
+                    className="h-12 w-full justify-center rounded-xl border border-border/70 bg-background/45 px-5 text-foreground hover:border-border hover:bg-background/60 sm:w-auto sm:min-w-[156px]"
                     data-testid="btn-timer-reset"
                   >
                     <RotateCcw className="h-5 w-5" />
