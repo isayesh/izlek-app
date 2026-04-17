@@ -924,8 +924,8 @@ export default function RoomPage() {
                     </div>
 
                     {isOnBreak && (
-                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-[inherit] border border-slate-200/70 bg-white/72 px-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-sm md:px-7 lg:px-5 dark:border-white/10 dark:bg-slate-950/58 dark:ring-1 dark:ring-amber-200/5 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] dark:backdrop-blur-md" data-testid="break-mode-overlay">
-                        <div className="mx-auto flex max-w-[16rem] flex-col items-center justify-center md:max-w-[20rem] lg:max-w-[16rem]">
+                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-[inherit] border border-slate-200/70 bg-white/72 px-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-sm md:px-7 lg:px-5 dark:border-white/10 dark:bg-slate-950/58 dark:ring-1 dark:ring-amber-200/5 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] dark:backdrop-blur-md" data-testid="break-mode-overlay" aria-hidden="true">
+                        <div className="pointer-events-none mx-auto flex max-w-[16rem] flex-col items-center justify-center md:max-w-[20rem] lg:max-w-[16rem]">
                           <div className="text-sm font-semibold leading-tight tracking-tight text-slate-700 sm:text-[0.95rem] md:text-base lg:text-[0.95rem] dark:text-slate-50">
                             Moladasın
                           </div>
