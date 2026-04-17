@@ -776,7 +776,7 @@ export default function RoomPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background px-4 py-6 sm:px-6 lg:px-10 xl:px-12 flex flex-col lg:h-screen lg:overflow-hidden" data-testid="room-page">
+    <div className="min-h-screen bg-background px-4 py-6 sm:px-6 md:px-4 lg:px-10 xl:px-12 flex flex-col lg:h-screen lg:overflow-hidden" data-testid="room-page">
       {/* Header */}
       <div className="mb-8 w-full shrink-0" data-testid="room-header-wrapper">
         <div className="rounded-2xl border border-border/60 bg-card/90 p-5 shadow-[0_22px_48px_-36px_rgba(2,6,23,0.9)] backdrop-blur-sm sm:p-6" data-testid="room-header-card">
@@ -894,7 +894,7 @@ export default function RoomPage() {
                   Kronometre
                 </CardTitle>
               </CardHeader>
-              <CardContent className="min-w-0 px-6 pb-6 pt-6 lg:flex lg:flex-1 lg:flex-col lg:justify-center">
+              <CardContent className="min-w-0 px-6 pb-6 pt-6 md:px-5 md:pb-7 md:pt-6 lg:flex lg:flex-1 lg:flex-col lg:justify-center lg:px-6 lg:pb-6 lg:pt-6">
                 <div className="flex min-w-0 flex-col gap-6 overflow-hidden text-center" data-testid="timer-panel">
                 {/* Timer Input */}
                 <div className="space-y-3.5" data-testid="timer-input-group">
@@ -918,14 +918,14 @@ export default function RoomPage() {
 
                 {/* Timer Display */}
                 <div className="flex w-full justify-center" data-testid="timer-display-row">
-                  <div className="relative mx-auto flex w-full max-w-[320px] min-w-0 items-center justify-center overflow-hidden rounded-2xl border border-border/60 bg-background/45 px-4 py-5 shadow-[0_18px_36px_-30px_rgba(2,6,23,0.95)] sm:px-8 sm:py-5.5 md:max-w-[420px] md:px-10 md:py-7 lg:max-w-[320px] lg:px-8 lg:py-5.5" data-testid="timer-display-wrap">
-                    <div className={`min-w-0 max-w-full overflow-hidden text-ellipsis font-mono text-center text-[clamp(2.75rem,8vw,4.25rem)] font-semibold leading-none tracking-tight text-foreground transition-all duration-200 md:text-[clamp(3.15rem,7vw,4.75rem)] lg:text-[clamp(2.75rem,8vw,4.25rem)] ${isOnBreak ? 'scale-[0.985] opacity-[0.22] blur-[1.5px]' : 'scale-100 opacity-100 blur-0'}`} data-testid="timer-display">
+                  <div className="relative mx-auto flex w-full max-w-[320px] min-w-0 items-center justify-center overflow-hidden rounded-2xl border border-border/60 bg-background/45 px-4 py-5 shadow-[0_18px_36px_-30px_rgba(2,6,23,0.95)] sm:px-8 sm:py-5.5 md:max-w-[32rem] md:px-8 md:py-6 lg:max-w-[320px] lg:px-8 lg:py-5.5" data-testid="timer-display-wrap">
+                    <div className={`min-w-0 max-w-full overflow-hidden text-ellipsis font-mono text-center text-[clamp(2.75rem,8vw,4.25rem)] font-semibold leading-none tracking-tight text-foreground transition-all duration-200 md:text-[clamp(2.9rem,6vw,4.25rem)] lg:text-[clamp(2.75rem,8vw,4.25rem)] ${isOnBreak ? 'scale-[0.985] opacity-[0.22] blur-[1.5px]' : 'scale-100 opacity-100 blur-0'}`} data-testid="timer-display">
                       {formatTime(remainingSeconds)}
                     </div>
 
                     {isOnBreak && (
-                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-[inherit] border border-slate-200/70 bg-white/72 px-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-sm md:px-7 lg:px-5 dark:border-white/10 dark:bg-slate-950/58 dark:ring-1 dark:ring-amber-200/5 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] dark:backdrop-blur-md" data-testid="break-mode-overlay" aria-hidden="true">
-                        <div className="pointer-events-none mx-auto flex max-w-[16rem] flex-col items-center justify-center md:max-w-[20rem] lg:max-w-[16rem]">
+                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-[inherit] border border-slate-200/70 bg-white/72 px-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-sm md:px-8 lg:px-5 dark:border-white/10 dark:bg-slate-950/58 dark:ring-1 dark:ring-amber-200/5 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] dark:backdrop-blur-md" data-testid="break-mode-overlay" aria-hidden="true">
+                        <div className="pointer-events-none mx-auto flex max-w-[16rem] flex-col items-center justify-center md:max-w-[22rem] lg:max-w-[16rem]">
                           <div className="text-sm font-semibold leading-tight tracking-tight text-slate-700 sm:text-[0.95rem] md:text-base lg:text-[0.95rem] dark:text-slate-50">
                             Moladasın
                           </div>
@@ -943,7 +943,7 @@ export default function RoomPage() {
                     <Button
                       onClick={handleStartTimer}
                       size="lg"
-                      className="h-12 min-w-0 flex-1 basis-[11rem] justify-center rounded-xl border border-primary/25 bg-primary px-5 text-primary-foreground shadow-[0_18px_30px_-22px_rgba(59,130,246,0.75)] hover:bg-primary/90 hover:shadow-[0_20px_34px_-22px_rgba(59,130,246,0.85)]"
+                      className="h-12 min-w-0 flex-1 basis-[11rem] md:basis-[10.25rem] lg:basis-[11rem] justify-center rounded-xl border border-primary/25 bg-primary px-5 text-primary-foreground shadow-[0_18px_30px_-22px_rgba(59,130,246,0.75)] hover:bg-primary/90 hover:shadow-[0_20px_34px_-22px_rgba(59,130,246,0.85)]"
                       data-testid="btn-timer-start"
                     >
                       <Play className="h-5 w-5" />
@@ -953,7 +953,7 @@ export default function RoomPage() {
                     <Button
                       onClick={handlePauseTimer}
                       size="lg"
-                      className="h-12 min-w-0 flex-1 basis-[11rem] justify-center rounded-xl border border-primary/25 bg-primary px-5 text-primary-foreground shadow-[0_18px_30px_-22px_rgba(59,130,246,0.75)] hover:bg-primary/90 hover:shadow-[0_20px_34px_-22px_rgba(59,130,246,0.85)]"
+                      className="h-12 min-w-0 flex-1 basis-[11rem] md:basis-[10.25rem] lg:basis-[11rem] justify-center rounded-xl border border-primary/25 bg-primary px-5 text-primary-foreground shadow-[0_18px_30px_-22px_rgba(59,130,246,0.75)] hover:bg-primary/90 hover:shadow-[0_20px_34px_-22px_rgba(59,130,246,0.85)]"
                       data-testid="btn-timer-pause"
                     >
                       <Pause className="h-5 w-5" />
@@ -964,7 +964,7 @@ export default function RoomPage() {
                   <Button
                     onClick={handleToggleBreakMode}
                     size="lg"
-                    className={`h-12 min-w-0 flex-1 basis-[11rem] justify-center rounded-xl border px-5 shadow-[0_18px_30px_-24px_rgba(2,6,23,0.95)] ${isOnBreak ? 'border-green-200 bg-green-100 text-green-700 hover:bg-green-200 dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-400 dark:hover:bg-green-500/15' : 'border-yellow-200 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:border-yellow-500/20 dark:bg-yellow-500/10 dark:text-yellow-400 dark:hover:bg-yellow-500/15'}`}
+                    className={`h-12 min-w-0 flex-1 basis-[11rem] md:basis-[10.25rem] lg:basis-[11rem] justify-center rounded-xl border px-5 shadow-[0_18px_30px_-24px_rgba(2,6,23,0.95)] ${isOnBreak ? 'border-green-200 bg-green-100 text-green-700 hover:bg-green-200 dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-400 dark:hover:bg-green-500/15' : 'border-yellow-200 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:border-yellow-500/20 dark:bg-yellow-500/10 dark:text-yellow-400 dark:hover:bg-yellow-500/15'}`}
                     data-testid="btn-break-mode-toggle"
                   >
                     {isOnBreak ? "Çalışmaya Dön" : "Mola Ver"}
@@ -974,7 +974,7 @@ export default function RoomPage() {
                     onClick={handleResetTimer}
                     variant="outline"
                     size="lg"
-                    className="h-12 min-w-0 flex-1 basis-[11rem] justify-center rounded-xl border border-border/70 bg-background/45 px-5 text-foreground hover:border-border hover:bg-background/60"
+                    className="h-12 min-w-0 flex-1 basis-[11rem] md:basis-[10.25rem] lg:basis-[11rem] justify-center rounded-xl border border-border/70 bg-background/45 px-5 text-foreground hover:border-border hover:bg-background/60"
                     data-testid="btn-timer-reset"
                   >
                     <RotateCcw className="h-5 w-5" />
