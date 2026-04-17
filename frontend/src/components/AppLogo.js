@@ -4,13 +4,13 @@ export default function AppLogo({ className = "", alt = "Izlek" }) {
       <img
         src="/logo-light.svg"
         alt={alt}
-        className="h-10 w-auto object-contain dark:hidden"
+        className="h-12 w-auto shrink-0 object-contain dark:hidden"
         draggable="false"
       />
       <img
         src="/logo-dark.svg"
         alt={alt}
-        className="hidden h-10 w-auto object-contain dark:block"
+        className="hidden h-12 w-auto shrink-0 object-contain dark:block"
         draggable="false"
       />
     </span>
