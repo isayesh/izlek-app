@@ -19,6 +19,7 @@ import {
 
 import { API } from "@/App";
 import ThemeToggle from "@/components/ThemeToggle";
+import AppLogo from "@/components/AppLogo";
 import { useAuth } from "@/contexts/AuthContext";
 import { getStoredPrograms, savePrograms } from "@/lib/storage";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -596,7 +597,17 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="px-4 pb-10 pt-6 sm:px-6 sm:pb-12 lg:px-10 xl:px-12">
         <div className="space-y-8 sm:space-y-10">
-          <header className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-end">
+          <header className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+            <button
+              type="button"
+              onClick={() => navigate("/dashboard")}
+              className="inline-flex w-fit items-center pl-1 sm:pl-2"
+              data-testid="dashboard-header-brand"
+              aria-label="Dashboard"
+            >
+              <AppLogo className="sm:scale-[1.04]" />
+            </button>
+
             <div className="flex flex-col gap-3 xl:items-end">
               <div className="flex items-center justify-end gap-2" data-testid="dashboard-theme-toggle">
                 <ThemeToggle

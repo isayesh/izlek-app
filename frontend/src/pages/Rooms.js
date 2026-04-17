@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import ThemeToggle from "@/components/ThemeToggle";
+import AppLogo from "@/components/AppLogo";
 import axios from "axios";
 import { API } from "@/App";
 import { Home, Plus, LogIn, Trophy } from "lucide-react";
@@ -289,7 +290,17 @@ export default function Rooms() {
     <div className="min-h-screen bg-background text-foreground" data-testid="rooms-page">
       <div className="px-4 pb-10 pt-6 sm:px-6 sm:pb-12 lg:px-10 xl:px-12">
         <div className="space-y-8 sm:space-y-10">
-          <header className="flex items-center justify-end gap-2">
+          <header className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <button
+              type="button"
+              onClick={() => navigate("/dashboard")}
+              className="inline-flex w-fit items-center"
+              data-testid="rooms-header-brand"
+              aria-label="Dashboard"
+            >
+              <AppLogo className="sm:scale-[1.04]" />
+            </button>
+
             <div className="flex items-center justify-end gap-2" data-testid="rooms-theme-toggle-wrap">
               <ThemeToggle
                 dataTestId="theme-toggle"
