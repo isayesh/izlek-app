@@ -804,7 +804,7 @@ export default function RoomPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background px-4 py-6 sm:px-6 lg:px-10 xl:px-12 flex flex-col lg:h-screen lg:overflow-hidden" data-testid="room-page">
+    <div className="min-h-screen bg-background px-4 py-6 sm:px-6 xl:px-10 2xl:px-12 flex flex-col xl:h-screen xl:overflow-hidden" data-testid="room-page">
       {/* Header */}
       <div className="mb-8 w-full shrink-0" data-testid="room-header-wrapper">
         <div className="rounded-2xl border border-border/60 bg-card/90 p-5 shadow-[0_22px_48px_-36px_rgba(2,6,23,0.9)] backdrop-blur-sm sm:p-6" data-testid="room-header-card">
@@ -848,11 +848,11 @@ export default function RoomPage() {
         </div>
       </div>
 
-      <div className="grid w-full flex-1 grid-cols-1 min-w-0 gap-6 lg:h-full lg:min-h-0 lg:overflow-hidden lg:grid-cols-3" data-testid="room-main-grid">
+      <div className="grid w-full flex-1 grid-cols-1 min-w-0 gap-6 xl:h-full xl:min-h-0 xl:overflow-hidden xl:grid-cols-3" data-testid="room-main-grid">
         {/* Left: Participants + Timer */}
-        <div className="min-w-0 space-y-6 min-h-0 lg:flex lg:h-full lg:flex-col" data-testid="room-left-column">
+        <div className="min-w-0 space-y-6 min-h-0 xl:flex xl:h-full xl:flex-col" data-testid="room-left-column">
           {/* Participants */}
-          <Card className="overflow-hidden rounded-2xl border border-border/60 bg-card/90 shadow-[0_22px_48px_-36px_rgba(2,6,23,0.9)] backdrop-blur-sm lg:shrink-0" data-testid="participants-card">
+          <Card className="overflow-hidden rounded-2xl border border-border/60 bg-card/90 shadow-[0_22px_48px_-36px_rgba(2,6,23,0.9)] backdrop-blur-sm xl:shrink-0" data-testid="participants-card">
             <CardHeader className="border-b border-border/60 pb-3">
               <div className="flex items-center justify-between gap-3">
                 <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="participants-title">
@@ -907,16 +907,16 @@ export default function RoomPage() {
           </Dialog>
 
           {/* Timer */}
-          <div className="lg:flex lg:min-h-0 lg:flex-1" data-testid="timer-sticky-wrap">
-            <div className="lg:sticky lg:top-5 lg:z-10 lg:flex lg:h-full lg:w-full" data-testid="timer-sticky-inner">
-              <Card className="min-w-0 overflow-hidden rounded-2xl border border-border/60 bg-card/90 shadow-[0_22px_48px_-36px_rgba(2,6,23,0.9)] backdrop-blur-sm lg:flex lg:h-full lg:w-full lg:flex-1 lg:flex-col" data-testid="timer-card">
+         <div className="xl:flex xl:min-h-0 xl:flex-1" data-testid="timer-sticky-wrap">
+  <div className="xl:sticky xl:top-5 xl:z-10 xl:flex xl:h-full xl:w-full" data-testid="timer-sticky-inner">
+    <Card className="min-w-0 overflow-hidden rounded-2xl border border-border/60 bg-card/90 shadow-[0_22px_48px_-36px_rgba(2,6,23,0.9)] backdrop-blur-sm xl:flex xl:h-full xl:w-full xl:flex-1 xl:flex-col" data-testid="timer-card">
               <CardHeader className="border-b border-border/60 pb-3">
                 <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="timer-title">
                   <Clock className="h-5 w-5 text-accent" />
                   Kronometre
                 </CardTitle>
               </CardHeader>
-              <CardContent className="min-w-0 px-6 pb-6 pt-6 lg:flex lg:flex-1 lg:flex-col lg:justify-center lg:px-6 lg:pb-6 lg:pt-6">
+              <CardContent className="min-w-0 px-6 pb-6 pt-6 xl:flex xl:flex-1 xl:flex-col xl:justify-center xl:px-6 xl:pb-6 xl:pt-6">
                 <div className="flex min-w-0 flex-col gap-6 overflow-hidden text-center" data-testid="timer-panel">
                 {/* Timer Input */}
                 <div className="space-y-3.5" data-testid="timer-input-group">
@@ -1012,7 +1012,7 @@ export default function RoomPage() {
         </div>
 
         {/* Right: Chat */}
-        <Card className="min-w-0 flex h-[560px] min-h-0 flex-col rounded-2xl border border-border/60 bg-card/90 shadow-[0_22px_48px_-36px_rgba(2,6,23,0.9)] backdrop-blur-sm lg:col-span-2 lg:h-full" data-testid="chat-card">
+        <Card className="min-w-0 flex h-[560px] min-h-0 flex-col rounded-2xl border border-border/60 bg-card/90 shadow-[0_22px_48px_-36px_rgba(2,6,23,0.9)] backdrop-blur-sm xl:col-span-2 xl:h-full" data-testid="chat-card">
           <CardHeader className="border-b border-border/60 pb-4">
             <div className="flex items-center justify-between gap-3">
               <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="chat-title">
