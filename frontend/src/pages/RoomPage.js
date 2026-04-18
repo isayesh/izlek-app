@@ -804,7 +804,7 @@ export default function RoomPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background px-4 py-6 sm:px-6 xl:px-10 2xl:px-12 flex flex-col xl:h-screen xl:overflow-hidden" data-testid="room-page">
+    <div className="min-h-screen bg-background px-4 py-6 sm:px-6 xl:px-8 2xl:px-10 flex flex-col" data-testid="room-page">
       {/* Header */}
       <div className="mb-8 w-full shrink-0" data-testid="room-header-wrapper">
         <div className="rounded-2xl border border-border/60 bg-card/90 p-5 shadow-[0_22px_48px_-36px_rgba(2,6,23,0.9)] backdrop-blur-sm sm:p-6" data-testid="room-header-card">
@@ -848,7 +848,7 @@ export default function RoomPage() {
         </div>
       </div>
 
-      <div className="grid w-full flex-1 grid-cols-1 min-w-0 gap-6 lg:grid-cols-[380px_minmax(0,1fr)]" data-testid="room-main-grid">
+      <div className="grid w-full flex-1 grid-cols-1 min-w-0 gap-6 lg:grid-cols-[380px_minmax(0,1fr)] xl:grid-cols-[420px_minmax(0,1fr)] 2xl:grid-cols-[460px_minmax(0,1fr)]" data-testid="room-main-grid">
         {/* Left: Participants + Timer */}
         <div className="min-w-0 space-y-6" data-testid="room-left-column">
           {/* Participants */}
