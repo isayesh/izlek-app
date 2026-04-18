@@ -872,7 +872,7 @@ export default function RoomPage() {
               </div>
             </CardHeader>
             <CardContent className="pb-4 pt-3.5">
-              <ScrollArea className="h-[220px] pr-2 sm:h-[236px] lg:h-[224px]" data-testid="participants-list-scroll-area">
+              <ScrollArea className="max-h-[220px] pr-2 sm:max-h-[236px] lg:max-h-[224px]" data-testid="participants-list-scroll-area">
                 <div className="space-y-2.5 pr-2" data-testid="participants-list">
                   {allParticipants.map((participant) => renderParticipantItem(participant, "card"))}
                 </div>
