@@ -872,12 +872,13 @@ export default function RoomPage() {
               </div>
             </CardHeader>
             <CardContent className="pb-4 pt-3.5">
-              <ScrollArea className="max-h-[220px] pr-2 sm:max-h-[236px] lg:max-h-[224px]" data-testid="participants-list-scroll-area">
-                <div className="space-y-2.5 pr-2" data-testid="participants-list">
-                  {allParticipants.map((participant) => renderParticipantItem(participant, "card"))}
-                </div>
-              </ScrollArea>
-            </CardContent>
+  <div
+    className="flex items-center justify-center rounded-xl border border-dashed border-border/40 bg-muted/20 py-6 text-sm text-muted-foreground"
+    data-testid="participants-summary"
+  >
+    Katılımcıları görmek için "Tümünü Gör"e bas
+  </div>
+</CardContent>
           </Card>
 
           <Dialog open={showParticipantsModal} onOpenChange={setShowParticipantsModal}>
