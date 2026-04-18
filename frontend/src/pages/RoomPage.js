@@ -1068,10 +1068,10 @@ export default function RoomPage() {
 
                         return (
                           <div
-                            key={message.id}
-                            className={`flex gap-2 ${isOwnMessage ? 'flex-row-reverse' : ''} ${isGrouped ? 'mt-1.5' : 'mt-4'}`}
-                            data-testid={`message-${message.id}`}
-                          >
+  key={message.id}
+  className={`flex gap-2 ${isOwnMessage ? 'justify-end' : 'justify-start'} ${isGrouped ? 'mt-1.5' : 'mt-4'}`}
+  data-testid={`message-${message.id}`}
+>
                             {!isGrouped ? (
                               <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-secondary text-xs font-semibold text-foreground shadow-sm ring-1 ring-border/60" data-testid={`message-avatar-${message.id}`}>
                                 {messageAvatarUrl ? (
@@ -1090,7 +1090,7 @@ export default function RoomPage() {
                               <div className="w-8 flex-shrink-0"></div>
                             )}
 
-                            <div className={`flex-1 ${widthClass} ${isOwnMessage ? 'text-right' : ''}`}>
+                            <div className={`${widthClass} ${isOwnMessage ? 'text-right' : ''}`}>
                               {/* Sender name: only show if not grouped (first message of sender) */}
                               {!isGrouped && (
                                 <div className={`flex items-center gap-2 mb-1 ${isOwnMessage ? 'justify-end' : ''}`} data-testid={`message-meta-${message.id}`}>
