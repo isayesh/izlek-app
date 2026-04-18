@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { ScrollArea } from "@/components/ui/scroll-area";
 import axios from "axios";
 import { API } from "@/App";
-import { Play, Pause, RotateCcw, Send, Users, ArrowLeft, Copy, Check, Clock, MessageCircle, X } from "lucide-react";
+import { Play, Pause, RotateCcw, Send, Users, ArrowLeft, Copy, Check, Clock, MessageCircle, X, Lock } from "lucide-react";
 import { startStudySession, updateStudySession, completeStudySession } from "@/lib/studySession";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -450,7 +450,7 @@ export default function RoomPage() {
       return;
     }
 
-    if (!chatEnabled && !isOwner) {
+    if (!chatEnabled) {
       return;
     }
 
@@ -1038,7 +1038,7 @@ export default function RoomPage() {
               )}
             </div>
           </CardHeader>
-          <CardContent className="p-0 flex-1 min-h-0">
+          <CardContent className="relative p-0 flex-1 min-h-0">
             <div className="flex h-full min-h-0 flex-col" data-testid="chat-panel">
               <div className="min-h-0 flex-1 overflow-hidden px-5 pt-5" data-testid="chat-messages-wrapper">
                 <ScrollArea className="h-full pr-3" ref={chatContainerRef} data-testid="chat-scroll-area">
@@ -1138,24 +1138,19 @@ export default function RoomPage() {
               </div>
 
               {/* Message Input */}
-              {!chatEnabled && !isOwner && (
-                <div className="border-t border-border/60 bg-background/45 px-5 py-3 text-center text-xs text-muted-foreground backdrop-blur-sm" data-testid="chat-disabled-notice">
-                  Sohbet şu anda oda sahibi tarafından kapatıldı.
-                </div>
-              )}
               <div className="flex items-center gap-3 border-t border-border/60 bg-background/45 px-5 py-4 backdrop-blur-sm" data-testid="chat-input-row">
                 <Input
-                  placeholder={(!chatEnabled && !isOwner) ? "Sohbet kapalı" : "Mesajını yaz..."}
+                  placeholder={!chatEnabled ? "Sohbet kapalı" : "Mesajını yaz..."}
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                  disabled={!chatEnabled && !isOwner}
+                  disabled={!chatEnabled}
                   className="h-11 border border-border/60 bg-background/50 text-foreground placeholder:text-muted-foreground shadow-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60"
                   data-testid="input-message"
                 />
                 <Button
                   onClick={sendMessage}
-                  disabled={!chatEnabled && !isOwner}
+                  disabled={!chatEnabled}
                   className="h-11 px-4 rounded-xl disabled:cursor-not-allowed disabled:opacity-60"
                   data-testid="btn-send-message"
                 >
@@ -1163,6 +1158,22 @@ export default function RoomPage() {
                 </Button>
               </div>
             </div>
+
+            {/* Locked glass overlay when chat is disabled */}
+            {!chatEnabled && (
+              <div
+                className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 rounded-b-2xl bg-background/50 px-6 text-center backdrop-blur-md dark:bg-slate-950/55"
+                data-testid="chat-locked-overlay"
+                aria-live="polite"
+              >
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-background/70 shadow-sm ring-1 ring-border/60 backdrop-blur-sm">
+                  <Lock className="h-5 w-5 text-muted-foreground" data-testid="chat-locked-icon" />
+                </div>
+                <p className="max-w-xs text-base font-medium leading-relaxed text-foreground/90" data-testid="chat-locked-message">
+                  Sohbet şu anda oda sahibi tarafından kapatıldı
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

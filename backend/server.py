@@ -1422,12 +1422,13 @@ async def create_message(input: MessageCreate):
     if not input.content or input.content.strip() == "":
         return {"error": "Mesaj boş olamaz"}
 
-    # Enforce chat_enabled: only room owner (and system) can send when chat is disabled
+    # Enforce chat_enabled: when chat is closed, no user (including owner) may send new messages.
+    # System messages (e.g. status notifications) remain allowed.
     if input.user_id != "system":
         room = await db.rooms.find_one({"id": input.room_id}, {"_id": 0, "owner_id": 1, "chat_enabled": 1})
         if room is not None:
             chat_enabled = room.get("chat_enabled", True)
-            if chat_enabled is False and room.get("owner_id") != input.user_id:
+            if chat_enabled is False:
                 raise HTTPException(status_code=403, detail="Sohbet şu anda oda sahibi tarafından kapatıldı.")
 
     message_payload = input.model_dump()
