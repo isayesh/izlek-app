@@ -484,6 +484,9 @@ export default function RoomPage() {
         chat_enabled: nextChatEnabled,
       });
       setRoom(response.data);
+      // Refresh messages so the newly inserted system status message shows up immediately
+      await loadMessages();
+      setTimeout(() => scrollToBottom(), 100);
     } catch (error) {
       console.error("Error toggling chat enabled:", error);
     }

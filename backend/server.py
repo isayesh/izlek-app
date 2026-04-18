@@ -1388,10 +1388,21 @@ async def update_room_chat_enabled(room_id: str, input: RoomChatToggleUpdate):
     if room.get("owner_id") != input.owner_id:
         raise HTTPException(status_code=403, detail="Bu işlemi sadece oda sahibi yapabilir")
 
+    previous_chat_enabled = room.get("chat_enabled", True) is not False
+    next_chat_enabled = bool(input.chat_enabled)
+
     await db.rooms.update_one(
         {"id": room_id},
-        {"$set": {"chat_enabled": bool(input.chat_enabled)}}
+        {"$set": {"chat_enabled": next_chat_enabled}}
     )
+
+    if previous_chat_enabled != next_chat_enabled:
+        status_message = (
+            "Sohbet tekrar açıldı."
+            if next_chat_enabled
+            else "Sohbet oda sahibi tarafından kapatıldı."
+        )
+        await create_system_room_message(room_id, status_message)
 
     updated_room = await db.rooms.find_one({"id": room_id}, {"_id": 0})
     return format_room_document(updated_room)
