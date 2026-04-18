@@ -476,6 +476,7 @@ class Room(BaseModel):
     is_private: bool = False
     participants: List[RoomParticipant] = []
     timer_state: TimerState = Field(default_factory=TimerState)
+    chat_enabled: bool = True
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class RoomCreate(BaseModel):
@@ -501,6 +502,10 @@ class RoomBreakModeUpdate(BaseModel):
     participant_id: str
     firebase_uid: Optional[str] = None
     is_on_break: bool
+
+class RoomChatToggleUpdate(BaseModel):
+    owner_id: str
+    chat_enabled: bool
 
 async def create_system_room_message(room_id: str, content: str):
     message_obj = Message(
@@ -1374,6 +1379,23 @@ async def update_room_break_mode(room_id: str, input: RoomBreakModeUpdate):
     updated_room = await db.rooms.find_one({"id": room_id}, {"_id": 0})
     return format_room_document(updated_room)
 
+@api_router.patch("/rooms/{room_id}/chat", response_model=Room)
+async def update_room_chat_enabled(room_id: str, input: RoomChatToggleUpdate):
+    room = await db.rooms.find_one({"id": room_id}, {"_id": 0})
+    if not room:
+        raise HTTPException(status_code=404, detail="Oda bulunamadı")
+
+    if room.get("owner_id") != input.owner_id:
+        raise HTTPException(status_code=403, detail="Bu işlemi sadece oda sahibi yapabilir")
+
+    await db.rooms.update_one(
+        {"id": room_id},
+        {"$set": {"chat_enabled": bool(input.chat_enabled)}}
+    )
+
+    updated_room = await db.rooms.find_one({"id": room_id}, {"_id": 0})
+    return format_room_document(updated_room)
+
 @api_router.put("/rooms/{room_id}/timer")
 async def update_timer(room_id: str, timer_state: TimerState):
     await db.rooms.update_one(
@@ -1388,6 +1410,14 @@ async def update_timer(room_id: str, timer_state: TimerState):
 async def create_message(input: MessageCreate):
     if not input.content or input.content.strip() == "":
         return {"error": "Mesaj boş olamaz"}
+
+    # Enforce chat_enabled: only room owner (and system) can send when chat is disabled
+    if input.user_id != "system":
+        room = await db.rooms.find_one({"id": input.room_id}, {"_id": 0, "owner_id": 1, "chat_enabled": 1})
+        if room is not None:
+            chat_enabled = room.get("chat_enabled", True)
+            if chat_enabled is False and room.get("owner_id") != input.user_id:
+                raise HTTPException(status_code=403, detail="Sohbet şu anda oda sahibi tarafından kapatıldı.")
 
     message_payload = input.model_dump()
     message_payload["user_study_field"] = await resolve_profile_study_field(input.user_id) or input.user_study_field

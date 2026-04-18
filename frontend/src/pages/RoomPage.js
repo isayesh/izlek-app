@@ -62,6 +62,11 @@ export default function RoomPage() {
 
   const getInitial = (name) => (name || "İ").trim().charAt(0).toUpperCase();
 
+  const isOwner = Boolean(
+    room && (room.owner_id === currentUserId || room.owner_id === firebaseUid)
+  );
+  const chatEnabled = room?.chat_enabled !== false;
+
   const getParticipantAvatarUrl = (participant) => {
     const resolvedAvatarUrl = participant.avatar_url || (participant.id === currentUserId ? currentProfileAvatarUrl : "");
     return failedParticipantAvatars[participant.id] ? "" : resolvedAvatarUrl;
@@ -445,6 +450,10 @@ export default function RoomPage() {
       return;
     }
 
+    if (!chatEnabled && !isOwner) {
+      return;
+    }
+
     try {
       await axios.post(`${API}/messages`, {
         room_id: roomId,
@@ -461,6 +470,22 @@ export default function RoomPage() {
       setTimeout(() => scrollToBottom(), 100);
     } catch (error) {
       console.error("Error sending message:", error);
+    }
+  };
+
+  const handleToggleChatEnabled = async () => {
+    if (!isOwner || !room) {
+      return;
+    }
+    const nextChatEnabled = !chatEnabled;
+    try {
+      const response = await axios.patch(`${API}/rooms/${roomId}/chat`, {
+        owner_id: room.owner_id,
+        chat_enabled: nextChatEnabled,
+      });
+      setRoom(response.data);
+    } catch (error) {
+      console.error("Error toggling chat enabled:", error);
     }
   };
 
@@ -992,10 +1017,23 @@ export default function RoomPage() {
         {/* Right: Chat */}
         <Card className="min-w-0 flex h-[560px] min-h-0 flex-col rounded-2xl border border-border/60 bg-card/90 shadow-[0_22px_48px_-36px_rgba(2,6,23,0.9)] backdrop-blur-sm lg:col-span-2 lg:h-full" data-testid="chat-card">
           <CardHeader className="border-b border-border/60 pb-4">
-            <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="chat-title">
-              <MessageCircle className="h-5 w-5 text-accent" />
-              Sohbet
-            </CardTitle>
+            <div className="flex items-center justify-between gap-3">
+              <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="chat-title">
+                <MessageCircle className="h-5 w-5 text-accent" />
+                Sohbet
+              </CardTitle>
+              {isOwner && (
+                <Button
+                  onClick={handleToggleChatEnabled}
+                  variant="outline"
+                  size="sm"
+                  className="h-8 rounded-lg border-border/70 bg-background/45 px-3 text-xs font-medium text-foreground hover:bg-background/70"
+                  data-testid="btn-toggle-chat-enabled"
+                >
+                  {chatEnabled ? "Sohbeti Kapat" : "Sohbeti Aç"}
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent className="p-0 flex-1 min-h-0">
             <div className="flex h-full min-h-0 flex-col" data-testid="chat-panel">
@@ -1097,16 +1135,27 @@ export default function RoomPage() {
               </div>
 
               {/* Message Input */}
+              {!chatEnabled && !isOwner && (
+                <div className="border-t border-border/60 bg-background/45 px-5 py-3 text-center text-xs text-muted-foreground backdrop-blur-sm" data-testid="chat-disabled-notice">
+                  Sohbet şu anda oda sahibi tarafından kapatıldı.
+                </div>
+              )}
               <div className="flex items-center gap-3 border-t border-border/60 bg-background/45 px-5 py-4 backdrop-blur-sm" data-testid="chat-input-row">
                 <Input
-                  placeholder="Mesajını yaz..."
+                  placeholder={(!chatEnabled && !isOwner) ? "Sohbet kapalı" : "Mesajını yaz..."}
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                  className="h-11 border border-border/60 bg-background/50 text-foreground placeholder:text-muted-foreground shadow-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0"
+                  disabled={!chatEnabled && !isOwner}
+                  className="h-11 border border-border/60 bg-background/50 text-foreground placeholder:text-muted-foreground shadow-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60"
                   data-testid="input-message"
                 />
-                <Button onClick={sendMessage} className="h-11 px-4 rounded-xl" data-testid="btn-send-message">
+                <Button
+                  onClick={sendMessage}
+                  disabled={!chatEnabled && !isOwner}
+                  className="h-11 px-4 rounded-xl disabled:cursor-not-allowed disabled:opacity-60"
+                  data-testid="btn-send-message"
+                >
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
