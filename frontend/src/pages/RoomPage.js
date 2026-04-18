@@ -871,14 +871,7 @@ export default function RoomPage() {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="pb-4 pt-3.5">
-  <div
-    className="flex items-center justify-center rounded-xl border border-dashed border-border/40 bg-muted/20 py-6 text-sm text-muted-foreground"
-    data-testid="participants-summary"
-  >
-    Katılımcıları görmek için "Tümünü Gör"e bas
-  </div>
-</CardContent>
+            <CardContent className="pb-3 pt-2"></CardContent>
           </Card>
 
           <Dialog open={showParticipantsModal} onOpenChange={setShowParticipantsModal}>
