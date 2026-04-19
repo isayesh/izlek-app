@@ -682,19 +682,11 @@ export default function Dashboard() {
               <div className="w-full space-y-7 xl:max-w-3xl">
                 <div className="max-w-2xl space-y-4">
                   <h1 className="font-display text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl" data-testid="dashboard-title">
-                    {heroGreetingName}, odak ritmini koru
+                    Merhaba, {heroGreetingName}
                   </h1>
                   <p className="text-base leading-7 text-muted-foreground sm:text-lg" data-testid="dashboard-program-summary">
-                    Bugünün planını netleştir, görevlerini tamamla ve ivmeni koru.
+                    Bugünün planını netleştir ve çalışmaya başla.
                   </p>
-                  <div className="pt-1">
-                    <div className="flex flex-wrap items-center gap-3 border-t border-border/60 pt-3" data-testid="dashboard-top-anchor">
-                      <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">Bugün</span>
-                      <span className="text-sm font-medium text-foreground">
-                        {completedTodayCount}/{todaysTasks.length || 0} görev tamamlandı
-                      </span>
-                    </div>
-                  </div>
                 </div>
 
                 <div className="w-full rounded-[24px] border border-border/40 bg-background/35 px-5 py-4 sm:px-6 sm:py-5 xl:max-w-2xl">
