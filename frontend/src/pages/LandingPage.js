@@ -110,30 +110,33 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#F7F7F7] text-[#111111]" data-testid="landing-page">
-      <nav className="sticky top-0 z-50 border-b border-[#E5E7EB] bg-[#F7F7F7]/95 backdrop-blur" data-testid="landing-nav">
-        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white" data-testid="landing-nav">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="text-left transition-opacity duration-200 hover:opacity-80"
+            className="flex items-center gap-2.5 text-left transition-opacity duration-200 hover:opacity-90"
             data-testid="landing-brand-button"
           >
-            <p className="font-display text-[1.35rem] font-semibold tracking-tight text-[#111111]" data-testid="landing-brand-name">izlek</p>
-            <p className="text-xs text-[#6B7280]" data-testid="landing-brand-tagline">birlikte odaklanma alanı</p>
+            <span className="h-2 w-2 rounded-full bg-indigo-500" aria-hidden="true" />
+            <div className="leading-tight">
+              <p className="font-display text-[1.35rem] font-bold tracking-tight text-[#111111]" data-testid="landing-brand-name">izlek</p>
+              <p className="mt-1 text-xs text-gray-400" data-testid="landing-brand-tagline">birlikte odaklanma alanı</p>
+            </div>
           </button>
 
-          <div className="flex items-center gap-2" data-testid="landing-nav-actions">
+          <div className="flex items-center gap-8" data-testid="landing-nav-actions">
             <Button
               variant="ghost"
               onClick={() => navigate("/login")}
-              className="text-[#374151] transition-colors duration-200 hover:bg-[#FFFFFF]"
+              className="font-medium text-gray-700 transition-colors duration-200 hover:bg-transparent hover:text-black"
               data-testid="landing-nav-login-button"
             >
               Giriş Yap
             </Button>
             <Button
               onClick={() => navigate("/register")}
-              className="bg-[#4F46E5] text-white transition-colors duration-200 hover:bg-[#4338CA]"
+              className="rounded-xl bg-indigo-600 px-5 py-2.5 text-white font-medium shadow-sm transition-all duration-200 hover:bg-indigo-700 hover:shadow-md"
               data-testid="landing-nav-register-button"
             >
               Hemen Başla
