@@ -125,13 +125,13 @@ export default function RoomPage() {
         key={`${variant}-${participant.id}`}
         className={
           isPanelVariant
-            ? "group flex flex-col items-center rounded-xl border border-border/55 bg-background/65 px-3 py-3 text-center transition-colors duration-200 hover:bg-indigo-50/45"
+            ? "group flex flex-col items-center px-2 py-2.5 text-center transition-colors duration-200 hover:bg-indigo-50/35"
             : "flex items-center gap-3.5 rounded-2xl border border-border/50 bg-background/45 px-4 py-3.5 shadow-[0_18px_38px_-34px_rgba(2,6,23,0.95)] transition-[background-color,border-color,box-shadow] duration-200 hover:border-border/60 hover:bg-white/5 hover:shadow-[0_22px_42px_-34px_rgba(2,6,23,1)]"
         }
         data-testid={`${variant}-participant-${participant.id}`}
       >
         <div
-          className={`${isPanelVariant ? `${avatarSizeClass} rounded-xl` : "h-[52px] w-[52px] rounded-2xl"} flex shrink-0 items-center justify-center overflow-hidden bg-primary/10 text-base font-semibold text-foreground ring-1 ring-primary/20`}
+          className={`${isPanelVariant ? `${avatarSizeClass} rounded-full ring-1 ring-border/40` : "h-[52px] w-[52px] rounded-2xl"} flex shrink-0 items-center justify-center overflow-hidden bg-primary/10 text-base font-semibold text-foreground ring-1 ring-primary/20`}
           data-testid={`${variant}-participant-avatar-${participant.id}`}
         >
           {participantAvatarUrl ? (
@@ -883,7 +883,7 @@ export default function RoomPage() {
             </CardHeader>
             <CardContent className="pt-4 pb-4">
               {allParticipants.length > 0 ? (
-                <div className={`grid gap-3 ${allParticipants.length <= 4 ? "grid-cols-2 sm:grid-cols-3" : allParticipants.length <= 8 ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4" : "grid-cols-3 sm:grid-cols-4 lg:grid-cols-5"}`} data-testid="participants-panel-grid">
+                <div className={`grid gap-x-3 gap-y-4 ${allParticipants.length <= 4 ? "grid-cols-2 sm:grid-cols-3" : allParticipants.length <= 8 ? "grid-cols-3 sm:grid-cols-4" : "grid-cols-3 sm:grid-cols-4 lg:grid-cols-5"}`} data-testid="participants-panel-grid">
                   {allParticipants.map((participant) => renderParticipantItem(participant, "panel"))}
                 </div>
               ) : (
@@ -934,10 +934,10 @@ export default function RoomPage() {
                   Kronometre
                 </CardTitle>
               </CardHeader>
-              <CardContent className="min-w-0 px-6 pb-6 pt-6">
-                <div className="flex min-w-0 flex-col gap-6 overflow-hidden text-center" data-testid="timer-panel">
+              <CardContent className="min-w-0 px-6 pb-7 pt-7">
+                <div className="flex min-w-0 flex-col gap-7 overflow-hidden text-center" data-testid="timer-panel">
                 {/* Timer Input */}
-                <div className="space-y-3.5" data-testid="timer-input-group">
+                <div className="space-y-2.5" data-testid="timer-input-group">
                   <label className="block text-sm font-medium tracking-tight text-foreground/90" data-testid="timer-minutes-label">
                     Çalışma Süresi (dakika)
                   </label>
@@ -949,7 +949,7 @@ export default function RoomPage() {
                       value={durationInput}
                       onChange={handleDurationChange}
                       disabled={isRunning}
-                      className="h-14 w-28 rounded-2xl border border-border/60 bg-background/50 text-center text-2xl font-semibold leading-none text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] focus:ring-2 focus:ring-ring focus:ring-offset-0 disabled:opacity-60"
+                      className="h-11 w-20 rounded-xl border border-border/50 bg-background/50 text-center text-xl font-semibold leading-none text-foreground shadow-none focus:ring-2 focus:ring-ring focus:ring-offset-0 disabled:opacity-60"
                       data-testid="input-timer-minutes"
                     />
                     <span className="min-w-[62px] text-left text-base font-medium tracking-tight text-muted-foreground" data-testid="timer-minutes-unit">dakika</span>
@@ -958,8 +958,8 @@ export default function RoomPage() {
 
                 {/* Timer Display */}
                 <div className="flex w-full justify-center" data-testid="timer-display-row">
-                  <div className="relative mx-auto flex w-full max-w-[420px] min-w-0 items-center justify-center overflow-hidden rounded-2xl border border-border/60 bg-background px-6 py-8 shadow-sm sm:px-10" data-testid="timer-display-wrap">
-                    <div className={`min-w-0 max-w-full overflow-hidden text-ellipsis font-mono text-center text-[clamp(3.2rem,9vw,5.8rem)] font-semibold leading-none tracking-tight text-foreground transition-all duration-200 ${isOnBreak ? 'scale-[0.985] opacity-[0.22] blur-[1.5px]' : 'scale-100 opacity-100 blur-0'}`} data-testid="timer-display">
+                  <div className="relative mx-auto flex w-full max-w-[520px] min-w-0 items-center justify-center overflow-hidden rounded-2xl border border-border/40 bg-background px-6 py-10 shadow-sm sm:px-10" data-testid="timer-display-wrap">
+                    <div className={`min-w-0 max-w-full overflow-hidden text-ellipsis font-mono text-center text-[clamp(3.6rem,10vw,6.4rem)] font-bold leading-none tracking-[0.03em] text-foreground transition-all duration-200 ${isOnBreak ? 'scale-[0.985] opacity-[0.22] blur-[1.5px]' : 'scale-100 opacity-100 blur-0'}`} data-testid="timer-display">
                       {formatTime(remainingSeconds)}
                     </div>
 
@@ -978,12 +978,12 @@ export default function RoomPage() {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-stretch justify-center gap-3 pt-1" data-testid="timer-controls">
+                <div className="grid w-full grid-cols-1 gap-3 pt-1 sm:grid-cols-3" data-testid="timer-controls">
                   {!isRunning ? (
                     <Button
                       onClick={handleStartTimer}
                       size="lg"
-                      className="h-12 w-full justify-center rounded-xl border border-primary/25 bg-primary px-5 text-primary-foreground shadow-[0_18px_30px_-22px_rgba(59,130,246,0.75)] hover:bg-primary/90 hover:shadow-[0_20px_34px_-22px_rgba(59,130,246,0.85)] sm:w-auto sm:min-w-[156px]"
+                      className="h-11 w-full justify-center rounded-xl border border-indigo-600 bg-indigo-600 px-4 text-white shadow-sm transition-all duration-200 hover:bg-indigo-700 hover:border-indigo-700"
                       data-testid="btn-timer-start"
                     >
                       <Play className="h-5 w-5" />
@@ -993,7 +993,7 @@ export default function RoomPage() {
                     <Button
                       onClick={handlePauseTimer}
                       size="lg"
-                      className="h-12 w-full justify-center rounded-xl border border-primary/25 bg-primary px-5 text-primary-foreground shadow-[0_18px_30px_-22px_rgba(59,130,246,0.75)] hover:bg-primary/90 hover:shadow-[0_20px_34px_-22px_rgba(59,130,246,0.85)] sm:w-auto sm:min-w-[156px]"
+                      className="h-11 w-full justify-center rounded-xl border border-indigo-600 bg-indigo-600 px-4 text-white shadow-sm transition-all duration-200 hover:bg-indigo-700 hover:border-indigo-700"
                       data-testid="btn-timer-pause"
                     >
                       <Pause className="h-5 w-5" />
@@ -1004,7 +1004,7 @@ export default function RoomPage() {
                   <Button
                     onClick={handleToggleBreakMode}
                     size="lg"
-                    className={`h-12 w-full justify-center rounded-xl border px-5 shadow-[0_18px_30px_-24px_rgba(2,6,23,0.95)] sm:w-auto sm:min-w-[156px] ${isOnBreak ? 'border-green-200 bg-green-100 text-green-700 hover:bg-green-200    ' : 'border-yellow-200 bg-yellow-100 text-yellow-700 hover:bg-yellow-200    '}`}
+                    className={`h-11 w-full justify-center rounded-xl border px-4 transition-all duration-200 ${isOnBreak ? 'border-amber-200 bg-amber-100/70 text-amber-700 hover:bg-amber-100' : 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100/80'}`}
                     data-testid="btn-break-mode-toggle"
                   >
                     {isOnBreak ? "Çalışmaya Dön" : "Mola Ver"}
@@ -1014,7 +1014,7 @@ export default function RoomPage() {
                     onClick={handleResetTimer}
                     variant="outline"
                     size="lg"
-                    className="h-12 w-full justify-center rounded-xl border border-border/70 bg-background/45 px-5 text-foreground hover:border-border hover:bg-background/60 sm:w-auto sm:min-w-[156px]"
+                    className="h-11 w-full justify-center rounded-xl border border-transparent bg-transparent px-4 text-muted-foreground hover:border-border/60 hover:bg-background/55 hover:text-foreground"
                     data-testid="btn-timer-reset"
                   >
                     <RotateCcw className="h-5 w-5" />
