@@ -57,16 +57,23 @@ const OTHER_FEATURES = [
 function FocusRoomMockup({ timerValue = "24:32", className = "" }) {
   return (
     <div
-      className={`mx-auto w-full max-w-[560px] rounded-2xl border border-[#E5E7EB] bg-[#FFFFFF] px-6 py-7 shadow-sm ${className}`.trim()}
+      className={`relative mx-auto w-full max-w-[580px] rounded-2xl border border-[#E5E7EB] bg-[#FFFFFF] px-7 py-8 shadow-sm lg:scale-[1.06] ${className}`.trim()}
       data-testid="landing-room-mockup"
     >
+      <div className="pointer-events-none absolute -inset-4 -z-10 rounded-[28px] bg-[#4F46E5]/6 blur-3xl" />
+
+      <span className="absolute right-5 top-5 inline-flex items-center gap-1.5 rounded-full border border-[#E5E7EB] bg-white px-2.5 py-1 text-[11px] font-medium text-[#6B7280]">
+        <span className="h-1.5 w-1.5 rounded-full bg-[#4F46E5]" />
+        Canlı • 18 kişi
+      </span>
+
       <div className="text-center">
         <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#6B7280]">Ortak Timer</p>
-        <p className="mt-3 text-[86px] font-bold leading-[0.95] tracking-tight text-[#111111] sm:text-[96px]">{timerValue}</p>
+        <p className="mt-3 text-[88px] font-bold leading-[0.95] tracking-tight text-[#111111] sm:text-[100px]">{timerValue}</p>
         <p className="mt-3 text-sm text-[#6B7280]">Odak modundasın</p>
       </div>
 
-      <div className="mt-7 flex items-center justify-center gap-2" data-testid="landing-mockup-participants">
+      <div className="mt-7 flex items-center justify-center gap-2.5" data-testid="landing-mockup-participants">
         {["A", "B", "C", "+15"].map((item, index) => (
           <span
             key={`${item}-${index}`}
@@ -105,18 +112,28 @@ export default function LandingPage() {
     <div className="min-h-screen bg-[#F7F7F7] text-[#111111]" data-testid="landing-page">
       <nav className="sticky top-0 z-50 border-b border-[#E5E7EB] bg-[#F7F7F7]/95 backdrop-blur" data-testid="landing-nav">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <button type="button" onClick={() => navigate("/")} className="text-left" data-testid="landing-brand-button">
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="text-left transition-opacity duration-200 hover:opacity-80"
+            data-testid="landing-brand-button"
+          >
             <p className="font-display text-[1.35rem] font-semibold tracking-tight text-[#111111]" data-testid="landing-brand-name">izlek</p>
             <p className="text-xs text-[#6B7280]" data-testid="landing-brand-tagline">birlikte odaklanma alanı</p>
           </button>
 
           <div className="flex items-center gap-2" data-testid="landing-nav-actions">
-            <Button variant="ghost" onClick={() => navigate("/login")} className="text-[#374151] hover:bg-[#FFFFFF]" data-testid="landing-nav-login-button">
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/login")}
+              className="text-[#374151] transition-colors duration-200 hover:bg-[#FFFFFF]"
+              data-testid="landing-nav-login-button"
+            >
               Giriş Yap
             </Button>
             <Button
               onClick={() => navigate("/register")}
-              className="bg-[#4F46E5] text-white hover:bg-[#4338CA]"
+              className="bg-[#4F46E5] text-white transition-colors duration-200 hover:bg-[#4338CA]"
               data-testid="landing-nav-register-button"
             >
               Hemen Başla
@@ -126,8 +143,11 @@ export default function LandingPage() {
       </nav>
 
       <main>
-        <section className="px-4 py-32 sm:px-6 lg:px-8" data-testid="landing-hero-section">
-          <div className="mx-auto grid w-full max-w-7xl items-center gap-16 lg:grid-cols-[1fr_minmax(0,560px)] lg:gap-24">
+        <section className="relative overflow-hidden border-b border-[#E5E7EB] bg-[#F7F7F7] px-4 py-32 sm:px-6 lg:px-8" data-testid="landing-hero-section">
+          <div className="pointer-events-none absolute -left-20 top-16 h-44 w-44 rounded-full bg-[#4F46E5]/6 blur-3xl" />
+          <div className="pointer-events-none absolute right-0 top-10 h-36 w-36 rounded-full bg-[#111111]/[0.03] blur-3xl" />
+
+          <div className="relative mx-auto grid w-full max-w-7xl items-center gap-16 lg:grid-cols-[1fr_minmax(0,580px)] lg:gap-24">
             <div>
               <h1 className="font-display text-4xl font-bold leading-tight tracking-tight text-[#111111] sm:text-5xl lg:text-6xl" data-testid="hero-title">
                 Birlikte odaklan, gerçekten ilerle.
@@ -140,35 +160,43 @@ export default function LandingPage() {
                 <Button
                   size="lg"
                   onClick={() => navigate("/rooms")}
-                  className="h-12 rounded-xl bg-[#4F46E5] px-8 text-sm font-medium text-white hover:bg-[#4338CA]"
+                  className="h-12 rounded-xl bg-[#4F46E5] px-8 text-sm font-medium text-white transition-colors duration-200 hover:bg-[#4338CA]"
                   data-testid="hero-create-room-button"
                 >
                   Hemen başla
                 </Button>
               </div>
+
+              <p className="mt-5 text-sm text-[#6B7280]" data-testid="hero-trust-line">Şu anda 120+ kişi odaklanıyor</p>
             </div>
 
             <FocusRoomMockup />
           </div>
         </section>
 
-        <section className="px-4 py-32 sm:px-6 lg:px-8" data-testid="how-it-works-section">
+        <section className="border-b border-[#E5E7EB] bg-[#FFFFFF] px-4 py-32 sm:px-6 lg:px-8" data-testid="how-it-works-section">
           <div className="mx-auto w-full max-w-7xl">
             <div className="max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#4F46E5]">Nasıl çalışır</p>
               <h2 className="mt-5 font-display text-3xl font-bold tracking-tight text-[#111111] sm:text-4xl">Üç adımda odak ritmi</h2>
             </div>
 
-            <div className="mt-14 grid gap-10 md:grid-cols-3" data-testid="how-it-works-grid">
+            <div className="mt-14 grid gap-8 md:grid-cols-3" data-testid="how-it-works-grid">
               {HOW_IT_WORKS_STEPS.map((step, index) => {
                 const Icon = step.icon;
+                const number = String(index + 1).padStart(2, "0");
                 return (
-                  <div key={step.title} className="space-y-4" data-testid={`how-it-works-item-${index}`}>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#EEF2FF] text-[#4F46E5]">
-                      <Icon className="h-5 w-5" />
+                  <div
+                    key={step.title}
+                    className="rounded-xl px-1 py-2 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm"
+                    data-testid={`how-it-works-item-${index}`}
+                  >
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#9CA3AF]">{number}</p>
+                    <div className="mt-3 flex h-11 w-11 items-center justify-center rounded-lg border border-[#E5E7EB] bg-[#FAFAFA] text-[#4F46E5]">
+                      <Icon className="h-[22px] w-[22px]" />
                     </div>
-                    <h3 className="text-lg font-semibold text-[#111111]">{step.title}</h3>
-                    <p className="text-sm leading-7 text-[#6B7280]">{step.description}</p>
+                    <h3 className="mt-4 text-lg font-semibold text-[#111111]">{step.title}</h3>
+                    <p className="mt-2 text-sm leading-7 text-[#6B7280]">{step.description}</p>
                   </div>
                 );
               })}
@@ -176,24 +204,37 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="px-4 py-32 sm:px-6 lg:px-8" data-testid="room-experience-section">
+        <section className="border-b border-[#E5E7EB] bg-[#FAFAFA] px-4 py-32 sm:px-6 lg:px-8" data-testid="room-experience-section">
           <div className="mx-auto grid w-full max-w-7xl items-center gap-14 lg:grid-cols-[1.02fr_0.98fr]">
-            <FocusRoomMockup timerValue="24:10" className="max-w-[540px]" />
+            <div>
+              <FocusRoomMockup timerValue="24:10" className="max-w-[540px]" />
+              <div className="mt-6 flex flex-wrap gap-2" data-testid="room-experience-chips">
+                {[
+                  "Gerçek zamanlı",
+                  "Senkron",
+                  "Dikkat dağıtmaz",
+                ].map((chip) => (
+                  <span key={chip} className="rounded-full border border-[#E5E7EB] bg-white px-3 py-1 text-xs text-[#6B7280]">
+                    {chip}
+                  </span>
+                ))}
+              </div>
+            </div>
 
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#4F46E5]">Ürünü göster</p>
               <h2 className="mt-5 font-display text-3xl font-bold tracking-tight text-[#111111] sm:text-4xl">Oda deneyimi tek bakışta net</h2>
-              <ul className="mt-8 space-y-3 text-base text-[#6B7280]">
+              <ul className="mt-8 space-y-3 text-lg leading-8 text-[#6B7280]">
                 <li className="flex items-center gap-2">
-                  <Timer className="h-4 w-4 text-[#4F46E5]" />
+                  <Timer className="h-[18px] w-[18px] text-[#4F46E5]" />
                   Ortak timer ile senkron odak
                 </li>
                 <li className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-[#4F46E5]" />
+                  <Users className="h-[18px] w-[18px] text-[#4F46E5]" />
                   Katılımcı görünürlüğü
                 </li>
                 <li className="flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4 text-[#4F46E5]" />
+                  <MessageSquare className="h-[18px] w-[18px] text-[#4F46E5]" />
                   Dikkat dağıtmayan sade chat
                 </li>
               </ul>
@@ -201,23 +242,27 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="px-4 py-32 sm:px-6 lg:px-8" data-testid="other-features-section">
+        <section className="border-b border-[#E5E7EB] bg-[#FFFFFF] px-4 py-32 sm:px-6 lg:px-8" data-testid="other-features-section">
           <div className="mx-auto w-full max-w-7xl">
             <div className="max-w-3xl">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#4F46E5]">Diğer özellikler</p>
               <h2 className="mt-5 font-display text-3xl font-bold tracking-tight text-[#111111] sm:text-4xl">İzlek sadece odalardan ibaret değil</h2>
             </div>
 
-            <div className="mt-14 grid gap-10 sm:grid-cols-2" data-testid="other-features-grid">
+            <div className="mt-14 grid gap-5 sm:grid-cols-2" data-testid="other-features-grid">
               {OTHER_FEATURES.map((feature, index) => {
                 const Icon = feature.icon;
                 return (
-                  <div key={feature.title} className="space-y-3" data-testid={`other-feature-${index}`}>
+                  <div
+                    key={feature.title}
+                    className="rounded-xl border border-[#E5E7EB] bg-[#FFFFFF] px-5 py-5 transition-colors duration-200 hover:bg-[#FAFAFA]"
+                    data-testid={`other-feature-${index}`}
+                  >
                     <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#EEF2FF] text-[#4F46E5]">
-                      <Icon className="h-4.5 w-4.5" />
+                      <Icon className="h-[18px] w-[18px]" />
                     </div>
-                    <h3 className="text-base font-semibold text-[#111111]">{feature.title}</h3>
-                    <p className="text-sm leading-7 text-[#6B7280]">{feature.description}</p>
+                    <h3 className="mt-4 text-base font-semibold text-[#111111]">{feature.title}</h3>
+                    <p className="mt-2 text-sm leading-7 text-[#6B7280]">{feature.description}</p>
                   </div>
                 );
               })}
@@ -225,16 +270,17 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="px-4 py-32 sm:px-6 lg:px-8" data-testid="final-cta-section">
-          <div className="mx-auto w-full max-w-5xl rounded-2xl border border-[#E5E7EB] bg-[#FAFAFA] px-8 py-14 text-center">
-            <h2 className="font-display text-3xl font-bold tracking-tight text-[#111111] sm:text-4xl" data-testid="final-cta-title">
+        <section className="bg-[#FAFAFA] px-4 py-32 sm:px-6 lg:px-8" data-testid="final-cta-section">
+          <div className="mx-auto w-full max-w-6xl rounded-2xl border border-[#E5E7EB] bg-[#FFFFFF] px-8 py-14 text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#6B7280]">Bugün başla</p>
+            <h2 className="mt-5 font-display text-3xl font-bold tracking-tight text-[#111111] sm:text-4xl" data-testid="final-cta-title">
               Hazırsan, odaklanmaya başla.
             </h2>
             <div className="mt-9" data-testid="final-cta-actions">
               <Button
                 size="lg"
                 onClick={() => navigate("/rooms")}
-                className="h-12 rounded-xl bg-[#4F46E5] px-8 text-sm font-medium text-white hover:bg-[#4338CA]"
+                className="h-14 rounded-xl bg-[#4F46E5] px-10 text-sm font-medium text-white shadow-sm transition-colors duration-200 hover:bg-[#4338CA]"
                 data-testid="final-cta-create-room-button"
               >
                 Oda oluştur
@@ -244,7 +290,7 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="px-4 pb-8 sm:px-6 lg:px-8" data-testid="landing-footer">
+      <footer className="bg-[#FAFAFA] px-4 pb-8 sm:px-6 lg:px-8" data-testid="landing-footer">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between border-t border-[#E5E7EB] pt-5 text-xs text-[#9CA3AF]">
           <p>© 2026 İzlek</p>
           <p>Odaklanmak için birlikte.</p>
