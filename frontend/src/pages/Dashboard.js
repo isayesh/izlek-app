@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 
 import { API } from "@/App";
-import AppLogo from "@/components/AppLogo";
 import { useAuth } from "@/contexts/AuthContext";
 import { getStoredPrograms, savePrograms } from "@/lib/storage";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -603,7 +602,7 @@ export default function Dashboard() {
               data-testid="dashboard-header-brand"
               aria-label="Dashboard"
             >
-              <AppLogo />
+              <span className="font-display text-xl font-bold tracking-tight text-gray-900">izlek</span>
             </button>
 
             <div className="flex flex-col gap-3 xl:items-end">
@@ -856,9 +855,8 @@ export default function Dashboard() {
                       </p>
                     </div>
                     <Button
-                      variant="outline"
                       onClick={() => setShowAddTask(true)}
-                      className="border-border/50 bg-background/55 text-foreground shadow-none hover:border-indigo-200 hover:bg-indigo-50/70 hover:text-indigo-700"
+                      className="h-auto rounded-lg bg-indigo-600 px-3 py-1.5 text-white shadow-sm transition-all duration-200 hover:bg-indigo-700 hover:shadow-md"
                       data-testid="btn-add-task"
                     >
                       <Plus className="h-4 w-4" />
