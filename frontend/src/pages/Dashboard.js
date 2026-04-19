@@ -11,6 +11,7 @@ import {
   MessageSquare,
   Plus,
   Search,
+  Star,
   Trash2,
   Trophy,
   User,
@@ -195,6 +196,8 @@ export default function Dashboard() {
   });
   const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
   const [yksCountdown, setYksCountdown] = useState(() => getYksCountdown());
+  const [dailyRating, setDailyRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
   const profileMetaLine = getDashboardProfileMeta(profileData.grade_level, profileData.study_field);
 
   const getTodayDateString = () => {
@@ -554,6 +557,7 @@ export default function Dashboard() {
   const completedTodayCount = todaysTasks.filter((task) => task.completed).length;
   const progressValue = todaysTasks.length === 0 ? 0 : Math.round((completedTodayCount / todaysTasks.length) * 100);
   const isDailyGoalCompleted = todaysTasks.length > 0 && progressValue === 100;
+  const activeRating = hoverRating || dailyRating;
   const shouldShowStreakReminder =
     profileData.streak_count > 0 && profileData.last_active_date !== getTodayDateString();
 
@@ -739,22 +743,47 @@ export default function Dashboard() {
 
                   <div className="my-5 h-px bg-border/60" />
 
-                  <div
-                    className={`flex gap-4 ${
-                      isDailyGoalCompleted ? "items-start justify-start" : "items-end justify-between"
-                    }`}
-                    data-testid="dashboard-progress-summary"
-                  >
+                  <div className="flex items-start justify-between gap-4" data-testid="dashboard-progress-summary">
                     <div>
                       <p className="text-sm text-muted-foreground">Günlük ilerlemen</p>
-                      <p
-                        className={`mt-1 text-3xl tracking-[-0.03em] ${
-                          isDailyGoalCompleted ? "font-bold text-indigo-700" : "font-semibold text-foreground"
-                        }`}
-                        data-testid="progress-percentage"
-                      >
-                        %{progressValue}
-                      </p>
+                      <div className={`mt-1 flex items-start ${isDailyGoalCompleted ? "gap-4" : ""}`}>
+                        <p
+                          className={`text-3xl tracking-[-0.03em] ${
+                            isDailyGoalCompleted ? "font-bold text-indigo-700" : "font-semibold text-foreground"
+                          }`}
+                          data-testid="progress-percentage"
+                        >
+                          %{progressValue}
+                        </p>
+
+                        {isDailyGoalCompleted && (
+                          <div className="pt-1" data-testid="daily-rating-widget">
+                            <div className="flex items-center gap-1">
+                              {[1, 2, 3, 4, 5].map((value) => {
+                                const isFilled = value <= activeRating;
+                                return (
+                                  <button
+                                    key={value}
+                                    type="button"
+                                    onClick={() => setDailyRating(value)}
+                                    onMouseEnter={() => setHoverRating(value)}
+                                    onMouseLeave={() => setHoverRating(0)}
+                                    className="inline-flex items-center justify-center text-indigo-500"
+                                    aria-label={`Günü ${value} yıldız ile değerlendir`}
+                                    data-testid={`daily-rating-star-${value}`}
+                                  >
+                                    <Star className={`h-4 w-4 ${isFilled ? "fill-indigo-500" : "fill-transparent"}`} />
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            {dailyRating > 0 && (
+                              <p className="mt-1 text-xs text-muted-foreground">Bugününü değerlendirdin: {dailyRating}/5</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
                       {isDailyGoalCompleted && (
                         <p className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600">
                           <span className="text-indigo-700" aria-hidden="true">✓</span>
@@ -762,6 +791,7 @@ export default function Dashboard() {
                         </p>
                       )}
                     </div>
+
                     {!isDailyGoalCompleted && (
                       <div className="text-right text-sm leading-6 text-muted-foreground">
                         <p>{completedTodayCount}/{todaysTasks.length || 0} görev bugün bitti</p>
