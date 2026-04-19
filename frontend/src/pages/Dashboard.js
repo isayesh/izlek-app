@@ -877,8 +877,10 @@ export default function Dashboard() {
                         {todaysTasks.map((task) => (
                           <div
                             key={task.id}
-                            className={`group px-4 py-4 transition-colors duration-200 sm:px-5 ${
-                              task.completed ? "bg-indigo-50/35 hover:bg-indigo-50/55" : "hover:bg-indigo-50/50"
+                            className={`group rounded-lg px-4 py-4 transition-all duration-200 sm:px-5 ${
+                              task.completed
+                                ? "bg-indigo-50/45 hover:bg-indigo-50/60"
+                                : "hover:-translate-y-[1px] hover:bg-indigo-50/55 hover:shadow-[0_10px_22px_-18px_rgba(79,70,229,0.5)]"
                             }`}
                             data-testid={`task-${task.id}`}
                           >
@@ -886,7 +888,7 @@ export default function Dashboard() {
                               <Checkbox
                                 checked={task.completed}
                                 onCheckedChange={() => toggleTaskComplete(task.id)}
-                                className="mt-1 border-border/70 data-[state=checked]:border-indigo-300 data-[state=checked]:bg-indigo-50 data-[state=checked]:text-indigo-600"
+                                className="mt-1 border-border/70 data-[state=checked]:border-indigo-500 data-[state=checked]:bg-indigo-100 data-[state=checked]:text-indigo-700 data-[state=checked]:shadow-[0_0_0_1px_rgba(79,70,229,0.18)]"
                                 data-testid={`checkbox-${task.id}`}
                               />
 
@@ -918,7 +920,7 @@ export default function Dashboard() {
                                   size="icon"
                                   onClick={() => editTask(task)}
                                   aria-label="Görevi düzenle"
-                                  className="rounded-md text-slate-500 hover:bg-slate-100/80 hover:text-slate-700"
+                                  className="rounded-md text-slate-500 transition-all duration-200 hover:-translate-y-[1px] hover:bg-slate-100/85 hover:text-slate-700"
                                   data-testid={`edit-${task.id}`}
                                 >
                                   <Edit className="h-4 w-4" />
@@ -928,7 +930,7 @@ export default function Dashboard() {
                                   size="icon"
                                   onClick={() => deleteTask(task.id)}
                                   aria-label="Görevi sil"
-                                  className="rounded-md text-red-500 hover:bg-red-50 hover:text-red-600"
+                                  className="rounded-md text-red-500 transition-all duration-200 hover:-translate-y-[1px] hover:bg-red-50 hover:text-red-600"
                                   data-testid={`delete-${task.id}`}
                                 >
                                   <Trash2 className="h-4 w-4" />
