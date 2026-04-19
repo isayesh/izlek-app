@@ -115,14 +115,10 @@ export default function LandingPage() {
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="flex items-center gap-2.5 text-left transition-opacity duration-200 hover:opacity-90"
+            className="flex items-center text-left transition-opacity duration-200 hover:opacity-90"
             data-testid="landing-brand-button"
           >
-            <span className="h-2 w-2 rounded-full bg-indigo-500" aria-hidden="true" />
-            <div className="leading-tight">
-              <p className="font-display text-[1.35rem] font-bold tracking-tight text-[#111111]" data-testid="landing-brand-name">izlek</p>
-              <p className="mt-1 text-xs text-gray-400" data-testid="landing-brand-tagline">birlikte odaklanma alanı</p>
-            </div>
+            <p className="font-display text-xl font-bold tracking-tight text-gray-900" data-testid="landing-brand-name">izlek</p>
           </button>
 
           <div className="flex items-center gap-8" data-testid="landing-nav-actions">
