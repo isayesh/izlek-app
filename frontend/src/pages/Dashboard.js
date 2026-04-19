@@ -592,64 +592,62 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="px-4 pb-10 pt-6 sm:px-6 sm:pb-12 lg:px-10 xl:px-12">
+      <div className="px-4 pb-10 pt-4 sm:px-6 sm:pb-12 lg:px-10 xl:px-12">
         <div className="space-y-8 sm:space-y-10">
-          <header className="flex flex-col gap-4 py-1 sm:py-2 xl:flex-row xl:items-center xl:justify-between">
+          <header className="flex flex-col gap-3 border-b border-border/60 pb-4 xl:flex-row xl:items-center xl:gap-4">
             <button
               type="button"
               onClick={() => navigate("/dashboard")}
-              className="mr-8 inline-flex h-12 w-fit shrink-0 items-center px-1 xl:mr-10"
+              className="inline-flex h-12 w-fit shrink-0 items-center px-1"
               data-testid="dashboard-header-brand"
               aria-label="Dashboard"
             >
               <span className="font-display text-4xl font-bold tracking-tight leading-none text-gray-900">izlek</span>
             </button>
 
-            <div className="flex flex-col gap-3 xl:items-end">
-              <div className="flex items-center justify-end gap-2" data-testid="dashboard-theme-toggle">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={async () => {
-                    await logout();
-                    navigate("/");
-                  }}
-                  className="shrink-0 border-border/50 bg-background/70 text-foreground shadow-none hover:border-indigo-200 hover:bg-indigo-50/70 hover:text-indigo-700"
-                  data-testid="btn-logout"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Çıkış
-                </Button>
+            <div className="w-full max-w-full flex-1 overflow-x-auto pb-1 xl:pb-0" data-testid="dashboard-header-nav">
+              <div className="flex items-center gap-2.5 lg:gap-3 xl:justify-center xl:gap-3.5">
+                {navigationActions.map((action) => {
+                  const Icon = action.icon;
+                  const badgeLabel = action.badgeCount > 9 ? "9+" : action.badgeCount;
+                  return (
+                    <Button
+                      key={action.label}
+                      variant="ghost"
+                      size="sm"
+                      onClick={action.onClick}
+                      className="h-11 shrink-0 rounded-[15px] border border-transparent px-5 text-sm font-semibold tracking-[0.01em] text-muted-foreground shadow-none [&_svg]:size-4 hover:border-indigo-100 hover:bg-indigo-50/70 hover:text-indigo-700 active:bg-indigo-100/70"
+                      data-testid={action.testId}
+                    >
+                      <span className="relative inline-flex items-center justify-center">
+                        <Icon className="h-4 w-4" />
+                        {action.badgeCount > 0 && (
+                          <span className="absolute -right-2 -top-2 inline-flex min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white shadow-sm" data-testid={`${action.testId}-badge`}>
+                            {badgeLabel}
+                          </span>
+                        )}
+                      </span>
+                      <span>{action.label}</span>
+                    </Button>
+                  );
+                })}
               </div>
+            </div>
 
-              <div className="w-full max-w-full overflow-x-auto pb-1" data-testid="dashboard-header-nav">
-                <div className="flex items-center gap-2.5 lg:gap-3 xl:justify-end xl:gap-3.5">
-                  {navigationActions.map((action) => {
-                    const Icon = action.icon;
-                    const badgeLabel = action.badgeCount > 9 ? "9+" : action.badgeCount;
-                    return (
-                      <Button
-                        key={action.label}
-                        variant="ghost"
-                        size="sm"
-                        onClick={action.onClick}
-                        className="h-11 shrink-0 rounded-[15px] border border-transparent px-5 text-sm font-semibold tracking-[0.01em] text-muted-foreground shadow-none [&_svg]:size-4 hover:border-indigo-100 hover:bg-indigo-50/70 hover:text-indigo-700 active:bg-indigo-100/70"
-                        data-testid={action.testId}
-                      >
-                        <span className="relative inline-flex items-center justify-center">
-                          <Icon className="h-4 w-4" />
-                          {action.badgeCount > 0 && (
-                            <span className="absolute -right-2 -top-2 inline-flex min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white shadow-sm" data-testid={`${action.testId}-badge`}>
-                              {badgeLabel}
-                            </span>
-                          )}
-                        </span>
-                        <span>{action.label}</span>
-                      </Button>
-                    );
-                  })}
-                </div>
-              </div>
+            <div className="flex shrink-0 items-center justify-end" data-testid="dashboard-theme-toggle">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  await logout();
+                  navigate("/");
+                }}
+                className="shrink-0 border-border/50 bg-background/70 text-foreground shadow-none hover:border-indigo-200 hover:bg-indigo-50/70 hover:text-indigo-700"
+                data-testid="btn-logout"
+              >
+                <LogOut className="h-4 w-4" />
+                Çıkış
+              </Button>
             </div>
           </header>
 
