@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import AppLogo from "@/components/AppLogo";
 import axios from "axios";
 import { API } from "@/App";
-import { Home, Plus, LogIn, Trophy } from "lucide-react";
+import { Home, Plus, LogIn, Trophy, Users, Globe, Lock } from "lucide-react";
 import { saveRoom } from "@/lib/storage";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -39,6 +39,8 @@ export default function Rooms() {
   const [joinRequiresPassword, setJoinRequiresPassword] = useState(false);
   const [joinResolvedRoomName, setJoinResolvedRoomName] = useState("");
   const [joinError, setJoinError] = useState("");
+  const [availableRooms, setAvailableRooms] = useState([]);
+  const [availableRoomsLoading, setAvailableRoomsLoading] = useState(true);
 
   useEffect(() => {
     const loadIdentity = async () => {
@@ -94,6 +96,35 @@ export default function Rooms() {
 
     loadIdentity();
   }, [currentUser]);
+
+  useEffect(() => {
+    const loadAvailableRooms = async () => {
+      const lastRoomId = localStorage.getItem("currentRoomId");
+      if (!lastRoomId) {
+        setAvailableRooms([]);
+        setAvailableRoomsLoading(false);
+        return;
+      }
+
+      setAvailableRoomsLoading(true);
+      try {
+        const response = await axios.get(`${API}/rooms/${lastRoomId}`);
+        const room = response.data;
+        if (room?.id) {
+          setAvailableRooms([room]);
+        } else {
+          setAvailableRooms([]);
+        }
+      } catch (error) {
+        console.error("Error loading available rooms:", error);
+        setAvailableRooms([]);
+      } finally {
+        setAvailableRoomsLoading(false);
+      }
+    };
+
+    loadAvailableRooms();
+  }, []);
 
   const ensureHandleReady = () => {
     if (identityLoading) {
@@ -257,6 +288,20 @@ export default function Rooms() {
     });
   };
 
+  const handleAvailableRoomJoin = (room) => {
+    const roomCode = (room?.code || "").toUpperCase();
+    if (!roomCode) return;
+
+    const requiresPassword = room?.room_type === "private" || Boolean(room?.is_private);
+
+    setJoinForm({ room_code: roomCode, room_password: "" });
+    setJoinResolvedRoomName(room?.name || "");
+    setJoinRequiresPassword(requiresPassword);
+    setJoinError(requiresPassword ? `"${room?.name || "Bu oda"}" özel oda. Devam etmek için şifre gir.` : "");
+
+    focusFormsSection("join");
+  };
+
   const sharedInputClass =
     "mt-2 h-11 rounded-xl border border-border/70 bg-secondary/70 text-foreground placeholder:text-muted-foreground shadow-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 ";
 
@@ -374,6 +419,66 @@ export default function Rooms() {
                   </div>
                 </Button>
               </div>
+            </div>
+          </section>
+
+          <section className="rounded-2xl border border-border/60 bg-background/80 px-6 py-6 sm:px-7" data-testid="rooms-available-section">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="font-display text-xl font-semibold tracking-tight text-foreground sm:text-2xl" data-testid="rooms-available-title">
+                  Aktif Odalar
+                </h2>
+                <p className="mt-1 text-sm text-muted-foreground" data-testid="rooms-available-subtitle">
+                  Hızlıca tarayıp hemen bir odaya katılabilirsin.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-5">
+              {availableRoomsLoading ? (
+                <div className="rounded-xl border border-border/60 bg-background/70 px-4 py-4 text-sm text-muted-foreground" data-testid="rooms-available-loading">
+                  Odalar yükleniyor...
+                </div>
+              ) : availableRooms.length > 0 ? (
+                <div className="grid gap-3 sm:grid-cols-2" data-testid="rooms-available-grid">
+                  {availableRooms.map((room) => {
+                    const participantCount = room?.participants?.length || 0;
+                    const isPrivate = room?.room_type === "private" || Boolean(room?.is_private);
+
+                    return (
+                      <div key={room.id} className="rounded-xl border border-border/60 bg-background/85 px-4 py-4" data-testid={`rooms-available-item-${room.id}`}>
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="text-base font-semibold text-foreground">{room.name}</p>
+                            <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                              <span className="inline-flex items-center gap-1.5">
+                                <Users className="h-4 w-4 text-indigo-500" />
+                                {participantCount} kişi
+                              </span>
+                              <span className="inline-flex items-center gap-1.5">
+                                {isPrivate ? <Lock className="h-4 w-4 text-indigo-500" /> : <Globe className="h-4 w-4 text-indigo-500" />}
+                                {isPrivate ? "Özel" : "Herkese Açık"}
+                              </span>
+                            </div>
+                          </div>
+
+                          <Button
+                            onClick={() => handleAvailableRoomJoin(room)}
+                            className="h-9 rounded-lg bg-indigo-600 px-4 text-sm text-white shadow-sm transition-all duration-200 hover:bg-indigo-700"
+                            data-testid={`rooms-available-join-${room.id}`}
+                          >
+                            Katıl
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="rounded-xl border border-border/60 bg-background/70 px-4 py-4 text-sm text-muted-foreground" data-testid="rooms-available-empty">
+                  Henüz listelenen aktif oda görünmüyor. Oda koduyla katılabilir veya yeni bir oda oluşturabilirsin.
+                </div>
+              )}
             </div>
           </section>
 
@@ -504,6 +609,15 @@ export default function Rooms() {
                     {formMeta.submitText}
                   </Button>
                 </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+ </div>
               )}
             </CardContent>
           </Card>
