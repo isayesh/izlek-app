@@ -1054,11 +1054,11 @@ export default function RoomPage() {
         </div>
 
         {/* Right: Chat */}
-        <Card className="min-w-0 flex h-[560px] flex-col rounded-2xl border border-slate-200/90 bg-white/90 shadow-[0_14px_28px_-22px_rgba(79,70,229,0.2)]" data-testid="chat-card">
+        <Card className="min-w-0 flex h-[560px] flex-col rounded-2xl border border-gray-200/70 bg-white/70 shadow-sm" data-testid="chat-card">
           <CardHeader className="border-b border-slate-200/90 pb-4">
             <div className="flex items-center justify-between gap-3">
               <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="chat-title">
-                <MessageCircle className="h-5 w-5 text-accent" />
+                <MessageCircle className="h-5 w-5 text-indigo-600" />
                 Sohbet
               </CardTitle>
               {isOwner && (
@@ -1076,7 +1076,7 @@ export default function RoomPage() {
           </CardHeader>
           <CardContent className="relative p-0 flex-1 min-h-0">
             <div className="flex h-full min-h-0 flex-col" data-testid="chat-panel">
-              <div className="min-h-0 flex-1 overflow-hidden px-5 pt-5" data-testid="chat-messages-wrapper">
+              <div className="min-h-0 flex-1 overflow-hidden px-5 pt-6 pb-4" data-testid="chat-messages-wrapper">
                 <ScrollArea className="h-full pr-3" ref={chatContainerRef} data-testid="chat-scroll-area">
                   <div className="space-y-3" data-testid="messages-list">
                     {messages.length === 0 ? (
@@ -1095,7 +1095,7 @@ export default function RoomPage() {
                         if (isSystemMessage) {
                           return (
                             <div key={message.id} className="py-2 text-center" data-testid={`system-message-${message.id}`}>
-                              <span className="inline-flex rounded-full border border-border/70 bg-secondary/80 px-3 py-1 text-xs text-muted-foreground" data-testid={`system-message-content-${message.id}`}>
+                              <span className="inline-flex rounded-full border border-gray-200/70 bg-gray-100/80 px-3 py-1 text-xs text-gray-600" data-testid={`system-message-content-${message.id}`}>
                                 {message.content}
                               </span>
                             </div>
@@ -1174,20 +1174,20 @@ export default function RoomPage() {
               </div>
 
               {/* Message Input */}
-              <div className="flex items-center gap-3 border-t border-slate-200/90 bg-white/72 px-5 py-4 backdrop-blur-sm" data-testid="chat-input-row">
+              <div className="flex items-center gap-3 border-t border-slate-200/90 bg-white/72 px-5 py-5 backdrop-blur-sm" data-testid="chat-input-row">
                 <Input
                   placeholder={!chatEnabled ? "Sohbet kapalı" : "Mesajını yaz..."}
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
                   disabled={!chatEnabled}
-                  className="h-11 border border-border/60 bg-background/50 text-foreground placeholder:text-muted-foreground shadow-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="h-11 border border-gray-200 bg-[#F9FAFB] text-foreground placeholder:text-muted-foreground shadow-none focus-visible:border-indigo-400 focus-visible:ring-2 focus-visible:ring-indigo-100 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60"
                   data-testid="input-message"
                 />
                 <Button
                   onClick={sendMessage}
                   disabled={!chatEnabled}
-                  className="h-11 px-4 rounded-xl disabled:cursor-not-allowed disabled:opacity-60"
+                  className="h-11 rounded-xl bg-[#4F46E5] px-4 text-white shadow-md transition-colors duration-200 hover:bg-[#4338CA] disabled:cursor-not-allowed disabled:opacity-60"
                   data-testid="btn-send-message"
                 >
                   <Send className="h-4 w-4" />
