@@ -85,11 +85,13 @@ function HeroRoomMockup() {
       </div>
 
       <div className="mt-6 space-y-2.5" data-testid="landing-mockup-chat">
-        <div className="ml-auto max-w-[78%] rounded-2xl bg-[#EEF2FF] px-3 py-2 text-sm text-[#3730A3]">
-          Bugün 2 pomodoro daha 🚀
+        <div className="ml-auto inline-flex max-w-[78%] items-center gap-1.5 rounded-2xl bg-[#EEF2FF] px-3 py-2 text-sm text-[#3730A3]">
+          <Timer className="h-3.5 w-3.5" />
+          <span>Bugün 2 odak turu daha</span>
         </div>
-        <div className="max-w-[82%] rounded-2xl bg-[#F3F4F6] px-3 py-2 text-sm text-[#374151]">
-          Başlıyorum, 25 dk odak 💪
+        <div className="inline-flex max-w-[82%] items-center gap-1.5 rounded-2xl bg-[#F3F4F6] px-3 py-2 text-sm text-[#374151]">
+          <MessageSquare className="h-3.5 w-3.5" />
+          <span>Başlıyorum, 25 dk odak</span>
         </div>
       </div>
     </div>
@@ -126,7 +128,7 @@ function RoomExperienceSurface() {
       <div className="mt-4 border-t border-[#ECEEF4] pt-4">
         <p className="text-xs uppercase tracking-[0.14em] text-[#6B7280]">Minimal sohbet</p>
         <div className="mt-2 space-y-2 text-sm text-[#374151]">
-          <p className="w-fit rounded-xl bg-white px-3 py-1.5">5 dk mola sonrası devam 🔁</p>
+          <p className="inline-flex w-fit items-center gap-1.5 rounded-xl bg-white px-3 py-1.5"><Timer className="h-3.5 w-3.5 text-[#4F46E5]" /> 5 dk mola sonrası devam</p>
           <p className="w-fit rounded-xl bg-[#EEF2FF] px-3 py-1.5 text-[#3730A3]">Tamam, yeni seans başlasın.</p>
         </div>
       </div>
@@ -188,15 +190,6 @@ export default function LandingPage() {
                 >
                   Oda oluştur
                   <ArrowRight className="h-4 w-4" />
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={() => navigate("/rooms")}
-                  className="h-12 rounded-xl border-[#E5E7EB] bg-white px-7 text-sm text-[#374151] hover:bg-[#F3F4F6]"
-                  data-testid="hero-join-room-button"
-                >
-                  Odaya katıl
                 </Button>
               </div>
             </div>
@@ -298,6 +291,13 @@ export default function LandingPage() {
           </div>
         </section>
       </main>
+
+      <footer className="px-4 pb-6 sm:px-6 lg:px-8" data-testid="landing-footer">
+        <div className="mx-auto w-full max-w-7xl border-t border-[#ECEEF4] pt-4 text-center text-xs text-[#9CA3AF]">
+          <p>© 2026 İzlek</p>
+          <p className="mt-1">Odaklanmak için birlikte.</p>
+        </div>
+      </footer>
     </div>
   );
 }
