@@ -780,7 +780,7 @@ export default function RoomPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background" data-testid="room-loading-state">
+      <div className="flex min-h-screen items-center justify-center bg-[#F7F8FC]" data-testid="room-loading-state">
         <div className="text-center" data-testid="room-loading-content">
           <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-accent" data-testid="room-loading-spinner"></div>
           <p className="text-muted-foreground" data-testid="room-loading-text">Yükleniyor...</p>
@@ -791,8 +791,8 @@ export default function RoomPage() {
 
   if (room?.error) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background" data-testid="room-error-state">
-        <div className="max-w-md rounded-2xl border border-destructive/20 bg-card p-8 text-center shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)]" data-testid="room-error-card">
+      <div className="flex min-h-screen items-center justify-center bg-[#F7F8FC]" data-testid="room-error-state">
+        <div className="max-w-md rounded-2xl border border-border/55 bg-white/78 p-8 text-center shadow-sm" data-testid="room-error-card">
           <h2 className="mb-4 text-2xl font-semibold text-destructive" data-testid="room-error-title">Oda Yüklenemedi</h2>
           <p className="mb-6 text-muted-foreground" data-testid="room-error-message">{room.error}</p>
           <Button onClick={() => navigate('/rooms')} className="w-full" data-testid="room-error-back-button">
@@ -806,7 +806,7 @@ export default function RoomPage() {
 
   if (!room) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6" data-testid="room-not-found-state">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-[#F7F8FC] px-6" data-testid="room-not-found-state">
         <p className="mb-4 text-muted-foreground" data-testid="room-not-found-message">Oda bulunamadı</p>
         <Button onClick={() => navigate("/rooms")} data-testid="room-not-found-back-button">Odalara Dön</Button>
       </div>
@@ -814,10 +814,10 @@ export default function RoomPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background px-4 py-4 sm:px-6 xl:px-8 2xl:px-10 flex flex-col" data-testid="room-page">
+    <div className="min-h-screen bg-[#F7F8FC] px-4 py-4 sm:px-6 xl:px-8 2xl:px-10 flex flex-col" data-testid="room-page">
       {/* Header */}
       <div className="mb-4 w-full shrink-0" data-testid="room-header-wrapper">
-        <div className="rounded-xl border border-border/60 bg-card/90 p-4 shadow-sm sm:p-5" data-testid="room-header-card">
+        <div className="rounded-xl border border-border/55 bg-white/72 p-4 shadow-sm sm:p-5" data-testid="room-header-card">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <Button
@@ -862,7 +862,7 @@ export default function RoomPage() {
         {/* Left: Participants + Timer */}
         <div className="min-w-0 flex flex-col gap-5" data-testid="room-left-column">
           {/* Participants */}
-          <Card className="order-2 overflow-hidden rounded-2xl border border-border/60 bg-card/90 shadow-sm" data-testid="participants-card">
+          <Card className="order-2 overflow-hidden rounded-2xl border border-border/55 bg-white/72 shadow-sm" data-testid="participants-card">
             <CardHeader className="border-b border-border/60 pb-3">
               <div className="flex items-center justify-between gap-3">
                 <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="participants-title">
@@ -927,7 +927,7 @@ export default function RoomPage() {
           {/* Timer */}
          <div className="order-1" data-testid="timer-sticky-wrap">
   <div data-testid="timer-sticky-inner">
-    <Card className="min-w-0 overflow-hidden rounded-2xl border border-border/60 bg-card/95 shadow-sm" data-testid="timer-card">
+    <Card className="min-w-0 overflow-hidden rounded-2xl border border-border/55 bg-white/76 shadow-sm" data-testid="timer-card">
               <CardHeader className="border-b border-border/60 pb-3">
                 <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="timer-title">
                   <Clock className="h-5 w-5 text-accent" />
@@ -949,7 +949,7 @@ export default function RoomPage() {
                       value={durationInput}
                       onChange={handleDurationChange}
                       disabled={isRunning}
-                      className="h-11 w-20 rounded-xl border border-border/50 bg-background/50 text-center text-xl font-semibold leading-none text-foreground shadow-none focus:ring-2 focus:ring-ring focus:ring-offset-0 disabled:opacity-60"
+                      className="h-11 w-20 rounded-xl border border-border/50 bg-white/70 text-center text-xl font-semibold leading-none text-foreground shadow-none focus:ring-2 focus:ring-ring focus:ring-offset-0 disabled:opacity-60"
                       data-testid="input-timer-minutes"
                     />
                     <span className="min-w-[62px] text-left text-base font-medium tracking-tight text-muted-foreground" data-testid="timer-minutes-unit">dakika</span>
@@ -958,7 +958,7 @@ export default function RoomPage() {
 
                 {/* Timer Display */}
                 <div className="flex w-full justify-center" data-testid="timer-display-row">
-                  <div className="relative mx-auto flex w-full max-w-[520px] min-w-0 items-center justify-center overflow-hidden rounded-2xl border border-border/40 bg-background px-6 py-10 shadow-sm sm:px-10" data-testid="timer-display-wrap">
+                  <div className="relative mx-auto flex w-full max-w-[520px] min-w-0 items-center justify-center overflow-hidden rounded-2xl border border-border/35 bg-white/70 px-6 py-10 shadow-sm sm:px-10" data-testid="timer-display-wrap">
                     <div className={`min-w-0 max-w-full overflow-hidden text-ellipsis font-mono text-center text-[clamp(3.6rem,10vw,6.4rem)] font-bold leading-none tracking-[0.03em] text-foreground transition-all duration-200 ${isOnBreak ? 'scale-[0.985] opacity-[0.22] blur-[1.5px]' : 'scale-100 opacity-100 blur-0'}`} data-testid="timer-display">
                       {formatTime(remainingSeconds)}
                     </div>
@@ -1030,7 +1030,7 @@ export default function RoomPage() {
         </div>
 
         {/* Right: Chat */}
-        <Card className="min-w-0 flex h-[560px] flex-col rounded-2xl border border-border/60 bg-card/90 shadow-sm" data-testid="chat-card">
+        <Card className="min-w-0 flex h-[560px] flex-col rounded-2xl border border-border/55 bg-white/74 shadow-sm" data-testid="chat-card">
           <CardHeader className="border-b border-border/60 pb-4">
             <div className="flex items-center justify-between gap-3">
               <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="chat-title">
@@ -1150,7 +1150,7 @@ export default function RoomPage() {
               </div>
 
               {/* Message Input */}
-              <div className="flex items-center gap-3 border-t border-border/60 bg-background/45 px-5 py-4 backdrop-blur-sm" data-testid="chat-input-row">
+              <div className="flex items-center gap-3 border-t border-border/55 bg-white/55 px-5 py-4 backdrop-blur-sm" data-testid="chat-input-row">
                 <Input
                   placeholder={!chatEnabled ? "Sohbet kapalı" : "Mesajını yaz..."}
                   value={newMessage}
