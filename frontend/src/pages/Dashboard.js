@@ -679,17 +679,21 @@ export default function Dashboard() {
             <div className="pointer-events-none absolute bottom-0 right-0 h-32 w-32 rounded-full bg-[radial-gradient(circle,rgba(45,212,191,0.1),transparent_68%)]" />
 
             <div className="relative flex flex-col gap-10 md:gap-10 xl:flex-row xl:items-start xl:justify-between">
-              <div className="w-full space-y-6 xl:max-w-3xl">
-                <div className="space-y-3.5">
-                  <div className="space-y-3">
-                    <h1 className="font-display text-4xl font-semibold tracking-[-0.05em] text-foreground sm:text-5xl lg:text-6xl" data-testid="dashboard-title">
-                      Merhaba, {heroGreetingName}
-                    </h1>
-                    <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg" data-testid="dashboard-program-summary">
-                      YKS’ye giden yolda bugünü net geçir.
-                      <br />
-                      Küçük adımlar, büyük fark yaratır.
-                    </p>
+              <div className="w-full space-y-7 xl:max-w-3xl">
+                <div className="max-w-2xl space-y-4">
+                  <h1 className="font-display text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl" data-testid="dashboard-title">
+                    {heroGreetingName}, odak ritmini koru
+                  </h1>
+                  <p className="text-base leading-7 text-muted-foreground sm:text-lg" data-testid="dashboard-program-summary">
+                    Bugünün planını netleştir, görevlerini tamamla ve ivmeni koru.
+                  </p>
+                  <div className="pt-1">
+                    <div className="flex flex-wrap items-center gap-3 border-t border-border/60 pt-3" data-testid="dashboard-top-anchor">
+                      <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">Bugün</span>
+                      <span className="text-sm font-medium text-foreground">
+                        {completedTodayCount}/{todaysTasks.length || 0} görev tamamlandı
+                      </span>
+                    </div>
                   </div>
                 </div>
 
