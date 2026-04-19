@@ -58,10 +58,10 @@ const OTHER_FEATURES = [
 function HeroRoomMockup() {
   return (
     <div
-      className="relative mx-auto w-full max-w-[560px] rounded-[28px] border border-[#EDEEF3] bg-[#FFFFFF] p-5 shadow-[0_20px_50px_-36px_rgba(79,70,229,0.25)] sm:p-6"
+      className="relative mx-auto w-full max-w-[560px] rounded-[28px] bg-white/90 p-5 shadow-[0_14px_30px_-28px_rgba(79,70,229,0.18)] sm:p-6"
       data-testid="landing-hero-mockup"
     >
-      <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-[#4F46E5]/10 blur-2xl" />
+      <div className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-[#4F46E5]/8 blur-2xl" />
 
       <div className="flex items-center justify-between">
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#6B7280]">Sessiz Oda</p>
@@ -98,7 +98,7 @@ function HeroRoomMockup() {
 
 function RoomExperienceSurface() {
   return (
-    <div className="rounded-[28px] border border-[#ECEEF4] bg-white p-5 shadow-[0_20px_45px_-35px_rgba(17,24,39,0.15)] sm:p-6" data-testid="landing-room-experience-surface">
+    <div className="rounded-[28px] bg-white/85 p-5 sm:p-6" data-testid="landing-room-experience-surface">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-lg font-semibold text-[#111827]">Canlı oda deneyimi</h3>
         <span className="rounded-full bg-[#EEF2FF] px-3 py-1 text-xs font-medium text-[#4F46E5]">Senkron akış</span>
@@ -111,7 +111,7 @@ function RoomExperienceSurface() {
           <p className="mt-2 text-sm text-[#6B7280]">Herkes aynı sürede başlar, birlikte odakta kalır.</p>
         </div>
 
-        <div className="rounded-2xl bg-[#F9FAFB] px-4 py-5">
+        <div className="rounded-2xl bg-[#F9FAFB]/70 px-4 py-5">
           <p className="text-xs uppercase tracking-[0.14em] text-[#6B7280]">Katılımcılar</p>
           <div className="mt-2 flex items-center gap-2">
             {["A", "E", "S", "+15"].map((value, index) => (
@@ -123,7 +123,7 @@ function RoomExperienceSurface() {
         </div>
       </div>
 
-      <div className="mt-3 rounded-2xl bg-[#F9FAFB] px-4 py-4">
+      <div className="mt-4 border-t border-[#ECEEF4] pt-4">
         <p className="text-xs uppercase tracking-[0.14em] text-[#6B7280]">Minimal sohbet</p>
         <div className="mt-2 space-y-2 text-sm text-[#374151]">
           <p className="w-fit rounded-xl bg-white px-3 py-1.5">5 dk mola sonrası devam 🔁</p>
@@ -169,8 +169,8 @@ export default function LandingPage() {
       </nav>
 
       <main>
-        <section className="px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20 lg:px-8" data-testid="landing-hero-section">
-          <div className="mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[1fr_minmax(0,560px)] lg:gap-14">
+        <section className="px-4 pb-20 pt-16 sm:px-6 sm:pb-28 sm:pt-24 lg:px-8" data-testid="landing-hero-section">
+          <div className="mx-auto grid w-full max-w-7xl items-center gap-16 lg:grid-cols-[1fr_minmax(0,560px)] lg:gap-20">
             <div>
               <h1 className="font-display text-4xl font-semibold leading-tight tracking-tight text-[#111827] sm:text-5xl lg:text-6xl" data-testid="hero-title">
                 Odaklanmak için yalnız değilsin.
@@ -205,7 +205,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8" data-testid="how-it-works-section">
+        <section className="px-4 py-20 sm:px-6 sm:py-24 lg:px-8" data-testid="how-it-works-section">
           <div className="mx-auto w-full max-w-7xl">
             <div className="max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#4F46E5]">Nasıl çalışır</p>
@@ -251,7 +251,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8" data-testid="other-features-section">
+        <section className="px-4 py-20 sm:px-6 sm:py-24 lg:px-8" data-testid="other-features-section">
           <div className="mx-auto w-full max-w-7xl">
             <div className="max-w-3xl">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#4F46E5]">Diğer özellikler</p>
@@ -262,7 +262,7 @@ export default function LandingPage() {
               {OTHER_FEATURES.map((feature, index) => {
                 const Icon = feature.icon;
                 return (
-                  <div key={feature.title} className="rounded-2xl bg-white px-5 py-5 shadow-[0_14px_32px_-26px_rgba(17,24,39,0.16)]" data-testid={`other-feature-${index}`}>
+                  <div key={feature.title} className="px-1 py-3" data-testid={`other-feature-${index}`}>
                     <div className="flex items-center gap-3">
                       <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#4F46E5]">
                         <Icon className="h-5 w-5" />
@@ -277,8 +277,8 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="px-4 pb-20 pt-6 sm:px-6 lg:px-8" data-testid="final-cta-section">
-          <div className="mx-auto w-full max-w-7xl rounded-[28px] bg-white px-6 py-12 text-center shadow-[0_24px_52px_-40px_rgba(79,70,229,0.35)] sm:px-10">
+        <section className="px-4 pb-24 pt-10 sm:px-6 lg:px-8" data-testid="final-cta-section">
+          <div className="mx-auto w-full max-w-7xl rounded-[28px] border border-[#ECEEF4] bg-white/90 px-6 py-12 text-center sm:px-10">
             <h2 className="font-display text-3xl font-semibold tracking-tight text-[#111827] sm:text-4xl" data-testid="final-cta-title">
               Sessiz bir odada, birlikte odaklanmaya başla.
             </h2>
