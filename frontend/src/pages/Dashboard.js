@@ -553,6 +553,7 @@ export default function Dashboard() {
   const tasksByDay = groupTasksByDay();
   const completedTodayCount = todaysTasks.filter((task) => task.completed).length;
   const progressValue = todaysTasks.length === 0 ? 0 : Math.round((completedTodayCount / todaysTasks.length) * 100);
+  const isDailyGoalCompleted = todaysTasks.length > 0 && progressValue === 100;
   const shouldShowStreakReminder =
     profileData.streak_count > 0 && profileData.last_active_date !== getTodayDateString();
 
@@ -740,8 +741,21 @@ export default function Dashboard() {
 
                   <div className="flex items-end justify-between gap-4" data-testid="dashboard-progress-summary">
                     <div>
-                      <p className="text-sm text-muted-foreground">Günlük ilerlemen</p>
-                      <p className="mt-1 text-3xl font-semibold tracking-[-0.03em] text-foreground" data-testid="progress-percentage">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="text-sm text-muted-foreground">Günlük ilerlemen</p>
+                        {isDailyGoalCompleted && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-medium text-indigo-700">
+                            <span aria-hidden="true">✓</span>
+                            Bugün tamamlandı
+                          </span>
+                        )}
+                      </div>
+                      <p
+                        className={`mt-1 text-3xl tracking-[-0.03em] ${
+                          isDailyGoalCompleted ? "font-bold text-indigo-700" : "font-semibold text-foreground"
+                        }`}
+                        data-testid="progress-percentage"
+                      >
                         %{progressValue}
                       </p>
                     </div>
