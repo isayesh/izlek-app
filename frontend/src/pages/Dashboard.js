@@ -678,18 +678,18 @@ export default function Dashboard() {
             <div className="pointer-events-none absolute left-0 top-0 h-36 w-36 rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.12),transparent_68%)]" />
             <div className="pointer-events-none absolute bottom-0 right-0 h-32 w-32 rounded-full bg-[radial-gradient(circle,rgba(45,212,191,0.1),transparent_68%)]" />
 
-            <div className="relative flex flex-col gap-10 md:gap-10 xl:flex-row xl:items-start xl:justify-between">
-              <div className="w-full space-y-7 xl:max-w-3xl">
-                <div className="max-w-2xl space-y-4">
+            <div className="relative flex flex-col gap-8 md:gap-8 xl:flex-row xl:items-start xl:justify-between xl:gap-10">
+              <div className="w-full space-y-5 xl:max-w-[62%]">
+                <div className="max-w-2xl space-y-3">
                   <h1 className="font-display text-5xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl" data-testid="dashboard-title">
                     Merhaba, {heroGreetingName}
                   </h1>
-                  <p className="text-base leading-7 text-muted-foreground sm:text-lg" data-testid="dashboard-program-summary">
+                  <p className="text-base leading-7 text-muted-foreground/90 sm:text-lg" data-testid="dashboard-program-summary">
                     Bugünün planını netleştir ve çalışmaya başla.
                   </p>
                 </div>
 
-                <div className="w-full rounded-[24px] border border-border/40 bg-background/35 px-5 py-4 sm:px-6 sm:py-5 xl:max-w-2xl">
+                <div className="w-full rounded-[24px] border border-border/40 bg-background/35 px-5 py-4 sm:px-6 sm:py-5 xl:max-w-[680px]">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">
                       YKS'ye kalan süre
@@ -697,7 +697,7 @@ export default function Dashboard() {
                     <p className="text-xs text-muted-foreground">20 Haziran 2026 • 10:15</p>
                   </div>
 
-                  <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-4 sm:gap-x-5 sm:gap-y-0 md:gap-x-6">
+                  <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-4 sm:gap-x-5 sm:gap-y-0 md:gap-x-6">
                     {countdownSegments.map((segment, index) => (
                       <div
                         key={segment.label}
@@ -715,7 +715,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="w-full xl:max-w-sm">
+              <div className="w-full xl:max-w-[320px]">
                 <div className="rounded-[24px] border border-border/45 bg-background/45 p-5 sm:p-6" data-testid="dashboard-identity-block">
                   <div className="flex items-center gap-4">
                     <div
@@ -767,7 +767,7 @@ export default function Dashboard() {
                   )}
                 </div>
 
-                <div className="mt-6 flex justify-start xl:justify-end">
+                <div className="mt-5 flex justify-start xl:justify-end">
                   {quickActions.map((action) => {
                     const Icon = action.icon;
                     return (
@@ -776,7 +776,7 @@ export default function Dashboard() {
                         variant={action.variant}
                         size="lg"
                         onClick={action.onClick}
-                        className={`hover-lift h-auto min-h-[88px] w-full items-start justify-between whitespace-normal rounded-[22px] px-5 py-4 text-left xl:w-auto xl:min-w-[220px] ${action.className}`}
+                        className={`hover-lift h-auto min-h-[88px] w-full items-start justify-between whitespace-normal rounded-[22px] px-5 py-4 text-left xl:w-auto xl:min-w-[200px] ${action.className}`}
                         data-testid={action.testId}
                       >
                         <div>
