@@ -751,7 +751,10 @@ export default function Dashboard() {
                         %{progressValue}
                       </p>
                       {isDailyGoalCompleted && (
-                        <p className="mt-1 text-sm font-medium text-foreground/80">Günlük hedef tamamlandı ✓</p>
+                        <p className="mt-1 inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600">
+                          <span className="text-indigo-700" aria-hidden="true">✓</span>
+                          Günlük hedef tamamlandı
+                        </p>
                       )}
                     </div>
                     <div className="text-right text-sm leading-6 text-muted-foreground">
