@@ -836,13 +836,10 @@ export default function Dashboard() {
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,6fr)_minmax(0,4fr)] lg:gap-8">
             <Card className="border-border/50 bg-card/85 shadow-none" data-testid="todays-tasks-card">
-              <CardHeader className="pb-0">
+              <CardHeader className="pb-1">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="space-y-2">
+                  <div>
                     <CardTitle className="font-display text-2xl tracking-[-0.03em] sm:text-3xl">Bugün Yapılacaklar</CardTitle>
-                    <CardDescription>
-                      Günlük önceliklerini ferah bir listede takip et, tamamlananları anında işaretle.
-                    </CardDescription>
                   </div>
 
                   <div className="flex flex-wrap items-center justify-end gap-3">
@@ -858,7 +855,7 @@ export default function Dashboard() {
                 </div>
               </CardHeader>
 
-              <CardContent className="pt-6">
+              <CardContent className="pt-4">
                 {todaysTasks.length === 0 ? (
                   <div className="rounded-[24px] border border-dashed border-border/55 bg-background/35 px-6 py-12 text-center" data-testid="today-tasks-empty-state">
                     <p className="font-display text-2xl font-semibold tracking-[-0.03em] text-foreground">Bugün için görev görünmüyor</p>
@@ -947,21 +944,18 @@ export default function Dashboard() {
             </Card>
 
             <Card className="border-border/50 bg-card/85 shadow-none" data-testid="weekly-program-card">
-              <CardHeader className="pb-0">
-                <div className="space-y-2.5">
+              <CardHeader className="pb-1">
+                <div>
                   <div className="flex items-center justify-between gap-4">
                     <CardTitle className="font-display text-xl tracking-[-0.03em] sm:text-2xl">Haftalık Program</CardTitle>
                     <p className="text-sm text-muted-foreground">
                       {selectedProgram.tasks.length} görev
                     </p>
                   </div>
-                  <CardDescription className="leading-6">
-                    Tüm haftayı gün gün incele, görevlerini aynı yerden düzenle veya sil.
-                  </CardDescription>
                 </div>
               </CardHeader>
 
-              <CardContent className="pt-6">
+              <CardContent className="pt-4">
                 <Tabs value={activeWeeklyDay} onValueChange={setActiveWeeklyDay} className="space-y-4" data-testid="weekly-program-tabs">
                   <div className="w-full overflow-hidden pb-2">
                     <TabsList className="flex h-auto w-full flex-nowrap gap-1 rounded-[20px] border border-border/50 bg-background/50 p-1">
@@ -969,7 +963,7 @@ export default function Dashboard() {
                         <TabsTrigger
                           key={day}
                           value={day}
-                          className="min-w-0 flex-1 whitespace-nowrap rounded-[16px] px-2 py-2 text-[13px] leading-none text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-none"
+                          className="min-w-0 flex-1 whitespace-nowrap rounded-[16px] px-2 py-2 text-[13px] leading-none text-muted-foreground data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700 data-[state=active]:ring-1 data-[state=active]:ring-indigo-100 data-[state=active]:shadow-none"
                           data-testid={`weekly-program-tab-${day.toLocaleLowerCase("tr-TR").replace(/[^a-z0-9]+/g, "-")}`}
                         >
                           {day}
