@@ -264,7 +264,7 @@ export default function Rooms() {
     "mt-2 h-11 w-full rounded-xl border border-border/70 bg-secondary/70 px-3 text-sm text-foreground shadow-none focus:outline-none focus:ring-2 focus:ring-ring ";
 
   const surfaceCardClass =
-    "rounded-2xl border border-border/70 bg-card/95 text-card-foreground shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)]";
+    "rounded-2xl border border-border/60 bg-background/85 text-card-foreground shadow-none";
 
   const formMeta =
     activeTab === "create"
@@ -312,19 +312,17 @@ export default function Rooms() {
             </div>
           </header>
 
-          <section className="relative overflow-hidden rounded-2xl border border-indigo-100 bg-indigo-50/30 px-7 py-9 shadow-sm sm:px-9 sm:py-10" data-testid="rooms-hero-section">
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-indigo-100/35" />
-            <div className="pointer-events-none absolute bottom-0 right-0 h-24 w-24 rounded-full bg-indigo-100/30" />
+          <section className="relative overflow-hidden rounded-2xl border border-indigo-100 bg-indigo-50/25 px-7 py-9 shadow-sm sm:px-9 sm:py-10" data-testid="rooms-hero-section">
 
-            <div className="relative max-w-[980px] space-y-8">
-              <div className="space-y-4">
+            <div className="relative max-w-[980px] space-y-7">
+              <div className="space-y-3">
                 <p className="text-sm font-medium uppercase tracking-[0.18em] text-muted-foreground">
                   Birlikte daha odaklı çalış
                 </p>
                 <h1 className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl" data-testid="rooms-title">
                   Online Çalışma Odaları
                 </h1>
-                <p className="max-w-3xl text-base leading-7 text-muted-foreground sm:text-lg" data-testid="rooms-subtitle">
+                <p className="max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base" data-testid="rooms-subtitle">
                   Bu sayfa oda aksiyonlarına odaklanır: ihtiyacın olanı yukarıdan seç, aşağıda sadece ilgili formu temiz ve tekrar etmeyen bir akışla kullan.
                 </p>
               </div>
@@ -333,7 +331,11 @@ export default function Rooms() {
                 <Button
                   size="lg"
                   onClick={() => focusFormsSection("create")}
-                  className="h-auto items-start justify-between whitespace-normal rounded-2xl border border-indigo-600 bg-indigo-600 px-6 py-5 text-left text-white shadow-sm transition-all duration-200 hover:bg-indigo-700 hover:border-indigo-700"
+                  className={`h-auto items-start justify-between whitespace-normal rounded-2xl border px-6 py-5 text-left shadow-sm transition-all duration-200 ${
+                    activeTab === "create"
+                      ? "border-indigo-600 bg-indigo-600 text-white hover:bg-indigo-700 hover:border-indigo-700"
+                      : "border-indigo-200 bg-white text-indigo-700 hover:border-indigo-300 hover:bg-indigo-50"
+                  }`}
                   data-testid="rooms-quick-create-button"
                 >
                   <div>
@@ -341,7 +343,9 @@ export default function Rooms() {
                       <Plus className="h-4 w-4" />
                       Oda Oluştur
                     </div>
-                    <p className="mt-1 text-sm font-medium text-indigo-100 sm:text-sm">
+                    <p className={`mt-1 text-sm font-medium sm:text-sm ${
+                      activeTab === "create" ? "text-indigo-100" : "text-indigo-500"
+                    }`}>
                       Yeni oda açma formunu aşağıda göster.
                     </p>
                   </div>
@@ -350,7 +354,11 @@ export default function Rooms() {
                 <Button
                   size="lg"
                   onClick={() => focusFormsSection("join")}
-                  className="h-auto items-start justify-between whitespace-normal rounded-2xl border border-indigo-200 bg-white px-6 py-5 text-left text-indigo-700 shadow-sm transition-all duration-200 hover:border-indigo-300 hover:bg-indigo-50"
+                  className={`h-auto items-start justify-between whitespace-normal rounded-2xl border px-6 py-5 text-left shadow-sm transition-all duration-200 ${
+                    activeTab === "join"
+                      ? "border-indigo-600 bg-indigo-600 text-white hover:bg-indigo-700 hover:border-indigo-700"
+                      : "border-indigo-200 bg-white text-indigo-700 hover:border-indigo-300 hover:bg-indigo-50"
+                  }`}
                   data-testid="rooms-quick-join-button"
                 >
                   <div>
@@ -358,7 +366,9 @@ export default function Rooms() {
                       <LogIn className="h-4 w-4" />
                       Odaya Katıl
                     </div>
-                    <p className="mt-1 text-sm font-medium text-indigo-500 sm:text-sm">
+                    <p className={`mt-1 text-sm font-medium sm:text-sm ${
+                      activeTab === "join" ? "text-indigo-100" : "text-indigo-500"
+                    }`}>
                       Mevcut oda kodunla ilerle.
                     </p>
                   </div>
@@ -428,7 +438,7 @@ export default function Rooms() {
                   )}
 
                   <Button
-                    className="h-11 w-full rounded-xl"
+                    className="h-11 w-full rounded-xl bg-indigo-600 text-white shadow-sm transition-all duration-200 hover:bg-indigo-700 hover:shadow-md"
                     onClick={handleCreateRoom}
                     disabled={loading || identityLoading}
                     data-testid={formMeta.submitTestId}
@@ -486,7 +496,7 @@ export default function Rooms() {
                   )}
 
                   <Button
-                    className="h-11 w-full rounded-xl"
+                    className="h-11 w-full rounded-xl bg-indigo-600 text-white shadow-sm transition-all duration-200 hover:bg-indigo-700 hover:shadow-md"
                     onClick={handleJoinRoom}
                     disabled={loading || identityLoading}
                     data-testid={formMeta.submitTestId}
