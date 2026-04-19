@@ -89,8 +89,8 @@ function FocusRoomMockup({ timerValue = "24:32", className = "" }) {
           <Timer className="h-3.5 w-3.5 text-[#4F46E5]" />
           Sessiz oda akışı aktif
         </p>
-        <p className="inline-flex items-center gap-1.5 text-xs text-[#6B7280]">
-          <MessageSquare className="h-3.5 w-3.5 text-[#4F46E5]" />
+        <p className="flex items-center gap-2 text-xs leading-none text-[#6B7280]">
+          <MessageSquare className="h-4 w-4 mr-2 text-[#4F46E5]" />
           Sade sohbet ile devam et
         </p>
       </div>
