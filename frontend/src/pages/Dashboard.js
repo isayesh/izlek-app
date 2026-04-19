@@ -594,11 +594,11 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="px-4 pb-10 pt-6 sm:px-6 sm:pb-12 lg:px-10 xl:px-12">
         <div className="space-y-8 sm:space-y-10">
-          <header className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <header className="flex flex-col gap-4 py-1 sm:py-2 xl:flex-row xl:items-center xl:justify-between">
             <button
               type="button"
               onClick={() => navigate("/dashboard")}
-              className="mr-6 inline-flex h-10 w-fit items-center"
+              className="mr-8 inline-flex h-12 w-fit shrink-0 items-center px-1 xl:mr-10"
               data-testid="dashboard-header-brand"
               aria-label="Dashboard"
             >
