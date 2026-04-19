@@ -344,8 +344,8 @@ export default function Rooms() {
               <span className="font-display text-4xl font-extrabold tracking-[-0.03em] leading-none text-gray-900">izlek</span>
             </button>
 
-            <div className="w-full max-w-full flex-1 overflow-x-auto pb-1 lg:pb-0" data-testid="rooms-theme-toggle-wrap">
-              <div className="flex w-full items-center justify-center gap-3 lg:justify-end lg:pr-2">
+            <div className="w-full max-w-full flex-1 overflow-x-auto pb-1 lg:flex lg:items-center lg:justify-end lg:self-center lg:pr-4 xl:pr-6 lg:pb-0" data-testid="rooms-theme-toggle-wrap">
+              <div className="flex w-full items-center justify-center gap-3 lg:justify-end">
                 <Button
                   variant="ghost"
                   size="sm"
