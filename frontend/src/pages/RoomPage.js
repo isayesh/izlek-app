@@ -927,21 +927,21 @@ export default function RoomPage() {
           {/* Timer */}
          <div className="order-1" data-testid="timer-sticky-wrap">
   <div data-testid="timer-sticky-inner">
-    <Card className="min-w-0 overflow-hidden rounded-2xl border border-slate-200/90 bg-white/92 shadow-[0_16px_30px_-24px_rgba(79,70,229,0.24)]" data-testid="timer-card">
-              <CardHeader className="border-b border-border/60 pb-3">
-                <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="timer-title">
-                  <Clock className="h-5 w-5 text-accent" />
+    <Card className="min-w-0 overflow-hidden rounded-[26px] border border-indigo-200 bg-white/95 shadow-[0_30px_60px_-38px_rgba(79,70,229,0.38)]" data-testid="timer-card">
+              <CardHeader className="border-b border-indigo-100/80 pb-2">
+                <CardTitle className="flex items-center gap-2 text-lg font-semibold text-foreground/90" data-testid="timer-title">
+                  <Clock className="h-5 w-5 text-indigo-600" />
                   Kronometre
                 </CardTitle>
               </CardHeader>
-              <CardContent className="min-w-0 px-6 pb-7 pt-7">
-                <div className="flex min-w-0 flex-col gap-7 overflow-hidden text-center" data-testid="timer-panel">
+              <CardContent className="min-w-0 px-7 pb-9 pt-8 sm:px-8">
+                <div className="flex min-w-0 flex-col gap-8 overflow-hidden text-center" data-testid="timer-panel">
                 {/* Timer Input */}
-                <div className="space-y-2.5" data-testid="timer-input-group">
-                  <label className="block text-sm font-medium tracking-tight text-foreground/90" data-testid="timer-minutes-label">
+                <div className="mx-auto w-fit space-y-1.5 rounded-xl border border-indigo-100 bg-indigo-50/55 px-4 py-3" data-testid="timer-input-group">
+                  <label className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-indigo-700/85" data-testid="timer-minutes-label">
                     Çalışma Süresi (dakika)
                   </label>
-                  <div className="flex flex-wrap items-center justify-center gap-3" data-testid="timer-minutes-row">
+                  <div className="flex flex-wrap items-center justify-center gap-2.5" data-testid="timer-minutes-row">
                     <Input
                       type="number"
                       min="1"
@@ -949,17 +949,17 @@ export default function RoomPage() {
                       value={durationInput}
                       onChange={handleDurationChange}
                       disabled={isRunning}
-                      className="h-11 w-20 rounded-xl border border-slate-200/90 bg-white/82 text-center text-xl font-semibold leading-none text-foreground shadow-none focus:ring-2 focus:ring-ring focus:ring-offset-0 disabled:opacity-60"
+                      className="h-10 w-16 rounded-lg border border-indigo-200/90 bg-white text-center text-lg font-semibold leading-none text-foreground shadow-none focus:ring-2 focus:ring-ring focus:ring-offset-0 disabled:opacity-60"
                       data-testid="input-timer-minutes"
                     />
-                    <span className="min-w-[62px] text-left text-base font-medium tracking-tight text-muted-foreground" data-testid="timer-minutes-unit">dakika</span>
+                    <span className="text-xs font-medium text-indigo-700/80" data-testid="timer-minutes-unit">dakika</span>
                   </div>
                 </div>
 
                 {/* Timer Display */}
                 <div className="flex w-full justify-center" data-testid="timer-display-row">
-                  <div className="relative mx-auto flex w-full max-w-[520px] min-w-0 items-center justify-center overflow-hidden rounded-2xl border border-indigo-200/80 bg-indigo-50/60 px-6 py-10 shadow-[0_14px_30px_-24px_rgba(79,70,229,0.28)] sm:px-10" data-testid="timer-display-wrap">
-                    <div className={`min-w-0 max-w-full overflow-hidden text-ellipsis font-mono text-center text-[clamp(3.6rem,10vw,6.4rem)] font-bold leading-none tracking-[0.03em] text-foreground transition-all duration-200 ${isOnBreak ? 'scale-[0.985] opacity-[0.22] blur-[1.5px]' : 'scale-100 opacity-100 blur-0'}`} data-testid="timer-display">
+                  <div className="relative mx-auto flex w-full max-w-[560px] min-w-0 items-center justify-center overflow-hidden rounded-[24px] border border-indigo-200 bg-indigo-50/75 px-6 py-12 shadow-[0_20px_40px_-28px_rgba(79,70,229,0.34)] sm:px-10" data-testid="timer-display-wrap">
+                    <div className={`min-w-0 max-w-full overflow-hidden text-ellipsis font-mono text-center text-[clamp(4.5rem,11.5vw,7.4rem)] font-bold leading-none tracking-[0.06em] text-foreground transition-all duration-200 ${isOnBreak ? 'scale-[0.985] opacity-[0.22] blur-[1.5px]' : 'scale-100 opacity-100 blur-0'}`} data-testid="timer-display">
                       {formatTime(remainingSeconds)}
                     </div>
 
@@ -978,12 +978,12 @@ export default function RoomPage() {
                   </div>
                 </div>
 
-                <div className="grid w-full grid-cols-1 gap-3 pt-1 sm:grid-cols-3" data-testid="timer-controls">
+                <div className="grid w-full grid-cols-1 gap-3.5 sm:grid-cols-3" data-testid="timer-controls">
                   {!isRunning ? (
                     <Button
                       onClick={handleStartTimer}
                       size="lg"
-                      className="h-11 w-full justify-center rounded-xl border border-indigo-600 bg-indigo-600 px-4 text-white shadow-sm transition-all duration-200 hover:bg-indigo-700 hover:border-indigo-700"
+                      className="h-12 w-full justify-center rounded-xl border border-indigo-600 bg-indigo-600 px-4 text-white shadow-sm transition-all duration-200 hover:bg-indigo-700 hover:border-indigo-700"
                       data-testid="btn-timer-start"
                     >
                       <Play className="h-5 w-5" />
@@ -993,7 +993,7 @@ export default function RoomPage() {
                     <Button
                       onClick={handlePauseTimer}
                       size="lg"
-                      className="h-11 w-full justify-center rounded-xl border border-indigo-600 bg-indigo-600 px-4 text-white shadow-sm transition-all duration-200 hover:bg-indigo-700 hover:border-indigo-700"
+                      className="h-12 w-full justify-center rounded-xl border border-indigo-600 bg-indigo-600 px-4 text-white shadow-sm transition-all duration-200 hover:bg-indigo-700 hover:border-indigo-700"
                       data-testid="btn-timer-pause"
                     >
                       <Pause className="h-5 w-5" />
@@ -1004,7 +1004,7 @@ export default function RoomPage() {
                   <Button
                     onClick={handleToggleBreakMode}
                     size="lg"
-                    className={`h-11 w-full justify-center rounded-xl border px-4 transition-all duration-200 ${isOnBreak ? 'border-amber-200 bg-amber-100/70 text-amber-700 hover:bg-amber-100' : 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100/80'}`}
+                    className={`h-12 w-full justify-center rounded-xl border px-4 transition-all duration-200 ${isOnBreak ? 'border-amber-200 bg-amber-100/70 text-amber-700 hover:bg-amber-100' : 'border-amber-200 bg-amber-50/80 text-amber-700 hover:bg-amber-100/90'}`}
                     data-testid="btn-break-mode-toggle"
                   >
                     {isOnBreak ? "Çalışmaya Dön" : "Mola Ver"}
@@ -1014,7 +1014,7 @@ export default function RoomPage() {
                     onClick={handleResetTimer}
                     variant="outline"
                     size="lg"
-                    className="h-11 w-full justify-center rounded-xl border border-transparent bg-transparent px-4 text-muted-foreground hover:border-border/60 hover:bg-background/55 hover:text-foreground"
+                    className="h-12 w-full justify-center rounded-xl border border-slate-200 bg-white/65 px-4 text-muted-foreground hover:border-slate-300 hover:bg-white hover:text-foreground"
                     data-testid="btn-timer-reset"
                   >
                     <RotateCcw className="h-5 w-5" />
@@ -1192,3 +1192,4 @@ export default function RoomPage() {
     </div>
   );
 }
+
