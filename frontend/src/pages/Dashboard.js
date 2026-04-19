@@ -853,7 +853,7 @@ export default function Dashboard() {
                               <Checkbox
                                 checked={task.completed}
                                 onCheckedChange={() => toggleTaskComplete(task.id)}
-                                className="mt-1"
+                                className="mt-1 border-border/70 data-[state=checked]:border-indigo-300 data-[state=checked]:bg-indigo-50 data-[state=checked]:text-indigo-600"
                                 data-testid={`checkbox-${task.id}`}
                               />
 
@@ -881,7 +881,7 @@ export default function Dashboard() {
                                   size="icon"
                                   onClick={() => editTask(task)}
                                   aria-label="Görevi düzenle"
-                                  className="rounded-md text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700"
+                                  className="rounded-md text-slate-500 hover:bg-slate-100/80 hover:text-slate-700"
                                   data-testid={`edit-${task.id}`}
                                 >
                                   <Edit className="h-4 w-4" />
@@ -973,7 +973,7 @@ export default function Dashboard() {
                                           size="icon"
                                           onClick={() => editTask(task)}
                                           aria-label="Görevi düzenle"
-                                          className="rounded-md text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700"
+                                          className="rounded-md text-slate-500 hover:bg-slate-100/80 hover:text-slate-700"
                                           data-testid={`weekly-edit-${task.id}`}
                                         >
                                           <Edit className="h-4 w-4" />
