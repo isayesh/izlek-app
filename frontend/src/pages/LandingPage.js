@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -101,6 +101,7 @@ function FocusRoomMockup({ timerValue = "24:32", className = "" }) {
 export default function LandingPage() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     if (currentUser) {
@@ -108,9 +109,29 @@ export default function LandingPage() {
     }
   }, [currentUser, navigate]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 12);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#F7F7F7] text-[#111111]" data-testid="landing-page">
-      <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white" data-testid="landing-nav">
+      <nav
+        className={`sticky top-0 z-50 border-b transition-all duration-200 ${
+          isScrolled
+            ? "border-gray-200/90 bg-white/95 shadow-sm backdrop-blur-sm"
+            : "border-gray-100 bg-white"
+        }`}
+        data-testid="landing-nav"
+      >
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
           <button
             type="button"
