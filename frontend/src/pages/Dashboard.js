@@ -580,7 +580,7 @@ export default function Dashboard() {
       onClick: () => navigate("/rooms"),
       variant: "default",
       emphasis: "primary",
-      className: "border-transparent shadow-none hover:shadow-none",
+      className: "border border-indigo-200 bg-indigo-600 text-white shadow-sm hover:bg-indigo-700 hover:border-indigo-300 hover:shadow-sm",
       testId: "dashboard-quick-action-find-room-button",
     },
   ];
@@ -616,7 +616,7 @@ export default function Dashboard() {
                     await logout();
                     navigate("/");
                   }}
-                  className="shrink-0 border-border/50 bg-background/70 shadow-none hover:bg-secondary/60"
+                  className="shrink-0 border-border/50 bg-background/70 text-foreground shadow-none hover:border-indigo-200 hover:bg-indigo-50/70 hover:text-indigo-700"
                   data-testid="btn-logout"
                 >
                   <LogOut className="h-4 w-4" />
@@ -635,7 +635,7 @@ export default function Dashboard() {
                         variant="ghost"
                         size="sm"
                         onClick={action.onClick}
-                        className="h-11 shrink-0 rounded-[15px] border border-transparent px-5 text-sm font-semibold tracking-[0.01em] text-muted-foreground shadow-none [&_svg]:size-4 hover:border-border/55 hover:bg-secondary/60 hover:text-foreground active:bg-secondary/70"
+                        className="h-11 shrink-0 rounded-[15px] border border-transparent px-5 text-sm font-semibold tracking-[0.01em] text-muted-foreground shadow-none [&_svg]:size-4 hover:border-indigo-100 hover:bg-indigo-50/70 hover:text-indigo-700 active:bg-indigo-100/70"
                         data-testid={action.testId}
                       >
                         <span className="relative inline-flex items-center justify-center">
@@ -672,11 +672,11 @@ export default function Dashboard() {
           )}
 
           <section
-            className="relative overflow-hidden rounded-[28px] border border-border/50 bg-card/80 px-6 py-7 shadow-[0_20px_45px_-38px_rgba(15,23,42,0.35)] sm:px-8 sm:py-9"
+            className="relative overflow-hidden rounded-[28px] border border-border/50 bg-card/90 px-6 py-7 shadow-sm sm:px-8 sm:py-9"
             data-testid="dashboard-hero-section"
           >
-            <div className="pointer-events-none absolute left-0 top-0 h-36 w-36 rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.12),transparent_68%)]" />
-            <div className="pointer-events-none absolute bottom-0 right-0 h-32 w-32 rounded-full bg-[radial-gradient(circle,rgba(45,212,191,0.1),transparent_68%)]" />
+            <div className="pointer-events-none absolute left-0 top-0 h-36 w-36 rounded-full bg-indigo-100/55" />
+            <div className="pointer-events-none absolute bottom-0 right-0 h-32 w-32 rounded-full bg-indigo-50/80" />
 
             <div className="relative flex flex-col gap-8 md:gap-8 xl:flex-row xl:items-start xl:justify-between xl:gap-10">
               <div className="w-full space-y-5 xl:max-w-[62%]">
@@ -760,8 +760,8 @@ export default function Dashboard() {
                   <Progress value={progressValue} className="mt-4 h-2.5 bg-secondary/80" />
 
                   {shouldShowStreakReminder && (
-                    <div className="mt-4 flex items-start gap-2 text-sm text-amber-700 " data-testid="dashboard-streak-reminder">
-                      <Flame className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-500" />
+                    <div className="mt-4 flex items-start gap-2 text-sm text-indigo-700" data-testid="dashboard-streak-reminder">
+                      <Flame className="mt-0.5 h-4 w-4 flex-shrink-0 text-indigo-500" />
                       <span>Bugün çalışmanı işaretleyerek serini koru.</span>
                     </div>
                   )}
@@ -784,7 +784,7 @@ export default function Dashboard() {
                             <Icon className="h-4 w-4" />
                             {action.label}
                           </div>
-                          <p className={`mt-2 text-sm leading-6 ${action.emphasis === "primary" ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
+                          <p className={`mt-2 text-sm leading-6 ${action.emphasis === "primary" ? "text-indigo-100" : "text-muted-foreground"}`}>
                             {action.description}
                           </p>
                         </div>
@@ -797,7 +797,7 @@ export default function Dashboard() {
           </section>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,6fr)_minmax(0,4fr)] lg:gap-8">
-            <Card className="border-border/50 bg-card/75 shadow-none" data-testid="todays-tasks-card">
+            <Card className="border-border/50 bg-card/85 shadow-none" data-testid="todays-tasks-card">
               <CardHeader className="pb-0">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div className="space-y-2">
@@ -817,7 +817,7 @@ export default function Dashboard() {
                     <Button
                       variant="outline"
                       onClick={() => setShowAddTask(true)}
-                      className="border-border/50 bg-background/55 shadow-none hover:bg-secondary/60"
+                      className="border-border/50 bg-background/55 text-foreground shadow-none hover:border-indigo-200 hover:bg-indigo-50/70 hover:text-indigo-700"
                       data-testid="btn-add-task"
                     >
                       <Plus className="h-4 w-4" />
@@ -846,7 +846,7 @@ export default function Dashboard() {
                         {todaysTasks.map((task) => (
                           <div
                             key={task.id}
-                            className="group px-4 py-4 transition-colors duration-200 hover:bg-secondary/35 sm:px-5"
+                            className="group px-4 py-4 transition-colors duration-200 hover:bg-indigo-50/50 sm:px-5"
                             data-testid={`task-${task.id}`}
                           >
                             <div className="flex items-start gap-4">
@@ -881,7 +881,7 @@ export default function Dashboard() {
                                   size="icon"
                                   onClick={() => editTask(task)}
                                   aria-label="Görevi düzenle"
-                                  className="text-muted-foreground hover:text-foreground"
+                                  className="text-muted-foreground hover:text-indigo-700"
                                   data-testid={`edit-${task.id}`}
                                 >
                                   <Edit className="h-4 w-4" />
@@ -907,7 +907,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
 
-            <Card className="border-border/50 bg-card/75 shadow-none" data-testid="weekly-program-card">
+            <Card className="border-border/50 bg-card/85 shadow-none" data-testid="weekly-program-card">
               <CardHeader className="pb-0">
                 <div className="space-y-2.5">
                   <div className="flex items-center justify-between gap-4">
@@ -925,7 +925,7 @@ export default function Dashboard() {
               <CardContent className="pt-6">
                 <Tabs value={activeWeeklyDay} onValueChange={setActiveWeeklyDay} className="space-y-4" data-testid="weekly-program-tabs">
                   <div className="w-full overflow-hidden pb-2">
-                    <TabsList className="flex h-auto w-full flex-nowrap gap-1 rounded-[20px] border border-border/50 bg-background/40 p-1">
+                    <TabsList className="flex h-auto w-full flex-nowrap gap-1 rounded-[20px] border border-border/50 bg-background/50 p-1">
                       {DAY_ORDER.map((day) => (
                         <TabsTrigger
                           key={day}
@@ -955,7 +955,7 @@ export default function Dashboard() {
                                 {dayTasks.map((task) => (
                                   <div
                                     key={task.id}
-                                    className="group px-4 py-4 transition-colors duration-200 hover:bg-secondary/35 sm:px-5"
+                                    className="group px-4 py-4 transition-colors duration-200 hover:bg-indigo-50/50 sm:px-5"
                                   >
                                     <div className="flex items-start justify-between gap-3">
                                       <div className="min-w-0">
@@ -973,7 +973,7 @@ export default function Dashboard() {
                                           size="icon"
                                           onClick={() => editTask(task)}
                                           aria-label="Görevi düzenle"
-                                          className="text-muted-foreground hover:text-foreground"
+                                          className="text-muted-foreground hover:text-indigo-700"
                                           data-testid={`weekly-edit-${task.id}`}
                                         >
                                           <Edit className="h-4 w-4" />
@@ -1062,4 +1062,6 @@ export default function Dashboard() {
       </Dialog>
     </div>
   );
+}
+);
 }
