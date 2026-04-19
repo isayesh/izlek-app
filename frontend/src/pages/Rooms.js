@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import AppLogo from "@/components/AppLogo";
 import axios from "axios";
 import { API } from "@/App";
 import { Home, Plus, LogIn, Trophy, Users, Globe, Lock } from "lucide-react";
@@ -334,26 +333,40 @@ export default function Rooms() {
     <div className="min-h-screen bg-background text-foreground" data-testid="rooms-page">
       <div className="px-4 pb-10 pt-6 sm:px-6 sm:pb-12 lg:px-10 xl:px-12">
         <div className="space-y-10 sm:space-y-12">
-          <header className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <header className="flex flex-col gap-3 border-b border-indigo-200 bg-indigo-50/35 pb-4 lg:flex-row lg:items-center lg:justify-between">
             <button
               type="button"
               onClick={() => navigate("/dashboard")}
-              className="inline-flex h-10 w-fit items-center"
+              className="inline-flex h-12 w-fit shrink-0 items-center px-1"
               data-testid="rooms-header-brand"
               aria-label="Dashboard"
             >
-              <AppLogo />
+              <span className="font-display text-4xl font-extrabold tracking-[-0.03em] leading-none text-gray-900">izlek</span>
             </button>
 
-            <div className="flex items-center justify-end gap-2" data-testid="rooms-theme-toggle-wrap">
-              <Button variant="outline" size="sm" onClick={() => navigate("/")} data-testid="btn-home">
-                <Home className="h-4 w-4" />
-                Ana Sayfa
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => navigate("/leaderboard")} data-testid="btn-leaderboard">
-                <Trophy className="h-4 w-4" />
-                Liderlik Tablosu
-              </Button>
+            <div className="w-full max-w-full overflow-x-auto pb-1 lg:w-auto lg:pb-0" data-testid="rooms-theme-toggle-wrap">
+              <div className="flex items-center justify-end gap-2.5 lg:gap-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate("/")}
+                  className="h-11 shrink-0 rounded-[15px] border border-transparent px-5 text-sm font-semibold tracking-[0.01em] text-slate-600 shadow-none [&_svg]:size-4 hover:border-indigo-200/90 hover:bg-indigo-100/70 hover:text-indigo-700 active:bg-indigo-100/80"
+                  data-testid="btn-home"
+                >
+                  <Home className="h-4 w-4" />
+                  Ana Sayfa
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate("/leaderboard")}
+                  className="h-11 shrink-0 rounded-[15px] border border-transparent px-5 text-sm font-semibold tracking-[0.01em] text-slate-600 shadow-none [&_svg]:size-4 hover:border-indigo-200/90 hover:bg-indigo-100/70 hover:text-indigo-700 active:bg-indigo-100/80"
+                  data-testid="btn-leaderboard"
+                >
+                  <Trophy className="h-4 w-4" />
+                  Liderlik Tablosu
+                </Button>
+              </div>
             </div>
           </header>
 
