@@ -675,8 +675,6 @@ export default function Dashboard() {
             className="relative overflow-hidden rounded-[28px] border border-border/50 bg-card/90 px-6 py-7 shadow-sm sm:px-8 sm:py-9"
             data-testid="dashboard-hero-section"
           >
-            <div className="pointer-events-none absolute left-0 top-0 h-36 w-36 rounded-full bg-indigo-100/55" />
-            <div className="pointer-events-none absolute bottom-0 right-0 h-32 w-32 rounded-full bg-indigo-50/80" />
 
             <div className="relative flex flex-col gap-8 md:gap-8 xl:flex-row xl:items-start xl:justify-between xl:gap-10">
               <div className="w-full space-y-5 xl:max-w-[62%]">
