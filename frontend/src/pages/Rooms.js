@@ -333,7 +333,7 @@ export default function Rooms() {
     <div className="min-h-screen bg-background text-foreground" data-testid="rooms-page">
       <div className="px-4 pb-10 pt-6 sm:px-6 sm:pb-12 lg:px-10 xl:px-12">
         <div className="space-y-10 sm:space-y-12">
-          <header className="flex flex-col gap-3 border-b border-indigo-200 bg-indigo-50/35 pb-4 lg:flex-row lg:items-center lg:gap-4">
+          <header className="flex flex-col gap-3 border-b border-indigo-200 bg-indigo-50/35 pb-4 xl:flex-row xl:items-center xl:gap-4">
             <button
               type="button"
               onClick={() => navigate("/dashboard")}
@@ -344,8 +344,8 @@ export default function Rooms() {
               <span className="font-display text-4xl font-extrabold tracking-[-0.03em] leading-none text-gray-900">izlek</span>
             </button>
 
-            <div className="w-full max-w-full flex-1 overflow-x-auto pb-1 lg:flex lg:items-center lg:justify-end lg:self-center lg:pr-4 xl:pr-6 lg:pb-0" data-testid="rooms-theme-toggle-wrap">
-              <div className="flex w-full items-center justify-center gap-3 lg:justify-end">
+            <div className="w-full max-w-full flex-1 overflow-x-auto pb-1 xl:pb-0" data-testid="rooms-theme-toggle-wrap">
+              <div className="flex items-center gap-2.5 lg:gap-3 xl:justify-end xl:gap-3.5">
                 <Button
                   variant="ghost"
                   size="sm"
