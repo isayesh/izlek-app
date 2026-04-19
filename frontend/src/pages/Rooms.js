@@ -288,7 +288,7 @@ export default function Rooms() {
   return (
     <div className="min-h-screen bg-background text-foreground" data-testid="rooms-page">
       <div className="px-4 pb-10 pt-6 sm:px-6 sm:pb-12 lg:px-10 xl:px-12">
-        <div className="space-y-8 sm:space-y-10">
+        <div className="space-y-10 sm:space-y-12">
           <header className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <button
               type="button"
@@ -312,16 +312,16 @@ export default function Rooms() {
             </div>
           </header>
 
-          <section className="relative overflow-hidden rounded-2xl border border-border/70 bg-card px-7 py-8 shadow-sm sm:px-9 sm:py-9" data-testid="rooms-hero-section">
-            <div className="pointer-events-none absolute left-0 top-0 h-40 w-40 rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.18),transparent_68%)]" />
-            <div className="pointer-events-none absolute bottom-0 right-0 h-36 w-36 rounded-full bg-[radial-gradient(circle,rgba(45,212,191,0.14),transparent_68%)]" />
+          <section className="relative overflow-hidden rounded-2xl border border-indigo-100 bg-indigo-50/30 px-7 py-9 shadow-sm sm:px-9 sm:py-10" data-testid="rooms-hero-section">
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-indigo-100/35" />
+            <div className="pointer-events-none absolute bottom-0 right-0 h-24 w-24 rounded-full bg-indigo-100/30" />
 
-            <div className="relative max-w-[960px] space-y-7">
+            <div className="relative max-w-[980px] space-y-8">
               <div className="space-y-4">
                 <p className="text-sm font-medium uppercase tracking-[0.18em] text-muted-foreground">
                   Birlikte daha odaklı çalış
                 </p>
-                <h1 className="font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl" data-testid="rooms-title">
+                <h1 className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl" data-testid="rooms-title">
                   Online Çalışma Odaları
                 </h1>
                 <p className="max-w-3xl text-base leading-7 text-muted-foreground sm:text-lg" data-testid="rooms-subtitle">
@@ -329,38 +329,36 @@ export default function Rooms() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 gap-3 sm:max-w-3xl sm:grid-cols-2" data-testid="rooms-quick-actions">
+              <div className="grid grid-cols-1 gap-4 sm:max-w-3xl sm:grid-cols-2" data-testid="rooms-quick-actions">
                 <Button
-                  variant="secondary"
                   size="lg"
                   onClick={() => focusFormsSection("create")}
-                  className="hover-lift h-auto items-start justify-between whitespace-normal rounded-2xl px-5 py-4 text-left"
+                  className="h-auto items-start justify-between whitespace-normal rounded-2xl border border-indigo-600 bg-indigo-600 px-6 py-5 text-left text-white shadow-sm transition-all duration-200 hover:bg-indigo-700 hover:border-indigo-700"
                   data-testid="rooms-quick-create-button"
                 >
                   <div>
-                    <div className="flex items-center gap-2 text-sm font-semibold">
+                    <div className="flex items-center gap-2 text-base font-semibold">
                       <Plus className="h-4 w-4" />
                       Oda Oluştur
                     </div>
-                    <p className="mt-1 text-xs font-medium text-muted-foreground sm:text-sm">
+                    <p className="mt-1 text-sm font-medium text-indigo-100 sm:text-sm">
                       Yeni oda açma formunu aşağıda göster.
                     </p>
                   </div>
                 </Button>
 
                 <Button
-                  variant="outline"
                   size="lg"
                   onClick={() => focusFormsSection("join")}
-                  className="hover-lift h-auto items-start justify-between whitespace-normal rounded-2xl px-5 py-4 text-left"
+                  className="h-auto items-start justify-between whitespace-normal rounded-2xl border border-indigo-200 bg-white px-6 py-5 text-left text-indigo-700 shadow-sm transition-all duration-200 hover:border-indigo-300 hover:bg-indigo-50"
                   data-testid="rooms-quick-join-button"
                 >
                   <div>
-                    <div className="flex items-center gap-2 text-sm font-semibold">
+                    <div className="flex items-center gap-2 text-base font-semibold">
                       <LogIn className="h-4 w-4" />
                       Odaya Katıl
                     </div>
-                    <p className="mt-1 text-xs font-medium text-muted-foreground sm:text-sm">
+                    <p className="mt-1 text-sm font-medium text-indigo-500 sm:text-sm">
                       Mevcut oda kodunla ilerle.
                     </p>
                   </div>
@@ -371,14 +369,14 @@ export default function Rooms() {
 
           <Card id="rooms-forms-section" className={surfaceCardClass} data-testid="rooms-main-card">
             <CardHeader className="pb-0">
-              <div className="space-y-2">
-                <CardTitle className="font-display text-2xl sm:text-3xl" data-testid="rooms-form-title">{formMeta.title}</CardTitle>
-                <p className="text-sm leading-6 text-muted-foreground" data-testid="rooms-form-description">
+              <div className="space-y-1.5">
+                <CardTitle className="font-display text-xl text-foreground/90 sm:text-2xl" data-testid="rooms-form-title">{formMeta.title}</CardTitle>
+                <p className="text-sm leading-6 text-muted-foreground/90" data-testid="rooms-form-description">
                   {formMeta.description}
                 </p>
               </div>
             </CardHeader>
-            <CardContent className="pt-6 sm:pt-7">
+            <CardContent className="pt-5 sm:pt-6">
               {activeTab === "create" ? (
                 <div className="space-y-6" data-testid="create-room-form">
                   <div className="space-y-2">
