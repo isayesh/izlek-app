@@ -370,261 +370,245 @@ export default function Rooms() {
             </div>
           </header>
 
-          <section className="relative overflow-hidden rounded-2xl border border-indigo-100 bg-indigo-50/25 px-7 py-9 shadow-sm sm:px-9 sm:py-10" data-testid="rooms-hero-section">
-
-            <div className="relative max-w-[980px] space-y-7">
-              <div className="space-y-3">
-                <p className="text-sm font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                  Birlikte daha odaklı çalış
-                </p>
-                <h1 className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl" data-testid="rooms-title">
-                  Online Çalışma Odaları
-                </h1>
-                <p className="max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base" data-testid="rooms-subtitle">
-                  Bu sayfa oda aksiyonlarına odaklanır: ihtiyacın olanı yukarıdan seç, aşağıda sadece ilgili formu temiz ve tekrar etmeyen bir akışla kullan.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 sm:max-w-3xl sm:grid-cols-2" data-testid="rooms-quick-actions">
-                <Button
-                  size="lg"
-                  onClick={() => focusFormsSection("create")}
-                  className={`h-auto items-start justify-between whitespace-normal rounded-2xl border px-6 py-5 text-left shadow-sm transition-all duration-200 ${
-                    activeTab === "create"
-                      ? "border-indigo-600 bg-indigo-600 text-white hover:bg-indigo-700 hover:border-indigo-700"
-                      : "border-indigo-200 bg-white text-indigo-700 hover:border-indigo-300 hover:bg-indigo-50"
-                  }`}
-                  data-testid="rooms-quick-create-button"
-                >
-                  <div>
-                    <div className="flex items-center gap-2 text-base font-semibold">
-                      <Plus className="h-4 w-4" />
-                      Oda Oluştur
-                    </div>
-                    <p className={`mt-1 text-sm font-medium sm:text-sm ${
-                      activeTab === "create" ? "text-indigo-100" : "text-indigo-500"
-                    }`}>
-                      Yeni oda açma formunu aşağıda göster.
-                    </p>
-                  </div>
-                </Button>
-
-                <Button
-                  size="lg"
-                  onClick={() => focusFormsSection("join")}
-                  className={`h-auto items-start justify-between whitespace-normal rounded-2xl border px-6 py-5 text-left shadow-sm transition-all duration-200 ${
-                    activeTab === "join"
-                      ? "border-indigo-600 bg-indigo-600 text-white hover:bg-indigo-700 hover:border-indigo-700"
-                      : "border-indigo-200 bg-white text-indigo-700 hover:border-indigo-300 hover:bg-indigo-50"
-                  }`}
-                  data-testid="rooms-quick-join-button"
-                >
-                  <div>
-                    <div className="flex items-center gap-2 text-base font-semibold">
-                      <LogIn className="h-4 w-4" />
-                      Odaya Katıl
-                    </div>
-                    <p className={`mt-1 text-sm font-medium sm:text-sm ${
-                      activeTab === "join" ? "text-indigo-100" : "text-indigo-500"
-                    }`}>
-                      Mevcut oda kodunla ilerle.
-                    </p>
-                  </div>
-                </Button>
-              </div>
-            </div>
-          </section>
-
-          <section className="rounded-2xl border border-border/60 bg-background/80 px-6 py-6 sm:px-7" data-testid="rooms-available-section">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h2 className="font-display text-xl font-semibold tracking-tight text-foreground sm:text-2xl" data-testid="rooms-available-title">
-                  Aktif Odalar
-                </h2>
-                <p className="mt-1 text-sm text-muted-foreground" data-testid="rooms-available-subtitle">
-                  Hızlıca tarayıp hemen bir odaya katılabilirsin.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-5">
-              {availableRoomsLoading ? (
-                <div className="rounded-xl border border-border/60 bg-background/70 px-4 py-4 text-sm text-muted-foreground" data-testid="rooms-available-loading">
-                  Odalar yükleniyor...
+          <section className="grid gap-6 lg:grid-cols-[55%_45%] lg:gap-7" data-testid="rooms-lobby-layout">
+            <Card id="rooms-forms-section" className={surfaceCardClass} data-testid="rooms-left-panel">
+              <CardHeader className="pb-2">
+                <div className="space-y-3">
+                  <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">Birlikte daha odaklı çalış</p>
+                  <h1 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl" data-testid="rooms-title">
+                    Online Çalışma Odaları
+                  </h1>
+                  <p className="max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base" data-testid="rooms-subtitle">
+                    Oda oluştur ya da kodla katıl. Hemen aşağıdan modu seçip tek akışta devam et.
+                  </p>
                 </div>
-              ) : availableRooms.length > 0 ? (
-                <div className="grid gap-3 sm:grid-cols-2" data-testid="rooms-available-grid">
-                  {availableRooms.map((room) => {
-                    const participantCount = room?.participants?.length || 0;
-                    const isPrivate = room?.room_type === "private" || Boolean(room?.is_private);
 
-                    return (
-                      <div key={room.id} className="rounded-xl border border-border/60 bg-background/85 px-4 py-4" data-testid={`rooms-available-item-${room.id}`}>
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="text-base font-semibold text-foreground">{room.name}</p>
-                            <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                              <span className="inline-flex items-center gap-1.5">
-                                <Users className="h-4 w-4 text-indigo-500" />
-                                {participantCount} kişi
-                              </span>
-                              <span className="inline-flex items-center gap-1.5">
-                                {isPrivate ? <Lock className="h-4 w-4 text-indigo-500" /> : <Globe className="h-4 w-4 text-indigo-500" />}
-                                {isPrivate ? "Özel" : "Herkese Açık"}
-                              </span>
-                            </div>
-                          </div>
-
-                          <Button
-                            onClick={() => handleAvailableRoomJoin(room)}
-                            className="h-9 rounded-lg bg-indigo-600 px-4 text-sm text-white shadow-sm transition-all duration-200 hover:bg-indigo-700"
-                            data-testid={`rooms-available-join-${room.id}`}
-                          >
-                            Katıl
-                          </Button>
-                        </div>
+                <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2" data-testid="rooms-mode-switch">
+                  <Button
+                    type="button"
+                    onClick={() => focusFormsSection("create")}
+                    className={`h-auto items-start justify-between whitespace-normal rounded-xl border px-5 py-4 text-left shadow-none transition-all duration-200 ${
+                      activeTab === "create"
+                        ? "border-indigo-600 bg-indigo-600 text-white hover:bg-indigo-700 hover:border-indigo-700"
+                        : "border-indigo-200 bg-white text-indigo-700 hover:border-indigo-300 hover:bg-indigo-50"
+                    }`}
+                    data-testid="rooms-quick-create-button"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2 text-base font-semibold">
+                        <Plus className="h-4 w-4" />
+                        Oda Oluştur
                       </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="rounded-xl border border-border/60 bg-background/70 px-4 py-4 text-sm text-muted-foreground" data-testid="rooms-available-empty">
-                  Henüz listelenen aktif oda görünmüyor. Oda koduyla katılabilir veya yeni bir oda oluşturabilirsin.
-                </div>
-              )}
-            </div>
-          </section>
-
-          <Card id="rooms-forms-section" className={surfaceCardClass} data-testid="rooms-main-card">
-            <CardHeader className="pb-0">
-              <div className="space-y-1.5">
-                <CardTitle className="font-display text-xl text-foreground/90 sm:text-2xl" data-testid="rooms-form-title">{formMeta.title}</CardTitle>
-                <p className="text-sm leading-6 text-muted-foreground/90" data-testid="rooms-form-description">
-                  {formMeta.description}
-                </p>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-5 sm:pt-6">
-              {activeTab === "create" ? (
-                <div className="space-y-6" data-testid="create-room-form">
-                  <div className="space-y-2">
-                    <Label htmlFor="room-name" className="text-sm font-medium text-foreground" data-testid="label-room-name">Oda Adı *</Label>
-                    <Input
-                      id="room-name"
-                      placeholder="Örn: TYT Matematik Çalışma"
-                      value={createForm.room_name}
-                      onChange={(e) => setCreateForm({ ...createForm, room_name: e.target.value })}
-                      className={sharedInputClass}
-                      data-testid="input-room-name"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="room-type" className="text-sm font-medium text-foreground" data-testid="label-room-type">Oda Türü</Label>
-                    <select
-                      id="room-type"
-                      className={sharedSelectClass}
-                      value={createForm.room_type}
-                      onChange={(e) => setCreateForm((prev) => ({
-                        ...prev,
-                        room_type: e.target.value,
-                        room_password: e.target.value === "private" ? prev.room_password : ""
-                      }))}
-                      data-testid="select-room-type"
-                    >
-                      <option value="public">Herkese Açık</option>
-                      <option value="private">Özel</option>
-                    </select>
-                  </div>
-
-                  {createForm.room_type === "private" && (
-                    <div className="space-y-2" data-testid="create-room-password-wrap">
-                      <Label htmlFor="room-password" className="text-sm font-medium text-foreground" data-testid="label-room-password">Oda Şifresi *</Label>
-                      <Input
-                        id="room-password"
-                        type="password"
-                        placeholder="En az 6 karakter"
-                        value={createForm.room_password}
-                        onChange={(e) => setCreateForm({ ...createForm, room_password: e.target.value })}
-                        className={sharedInputClass}
-                        data-testid="input-room-password"
-                      />
-                      <p className="mt-2 text-sm text-muted-foreground" data-testid="room-password-help-text">
-                        Özel odalara yalnızca kod ve doğru şifre ile girilir.
-                      </p>
                     </div>
-                  )}
+                  </Button>
 
                   <Button
-                    className="h-11 w-full rounded-xl bg-indigo-600 text-white shadow-sm transition-all duration-200 hover:bg-indigo-700 hover:shadow-md"
-                    onClick={handleCreateRoom}
-                    disabled={loading || identityLoading}
-                    data-testid={formMeta.submitTestId}
+                    type="button"
+                    onClick={() => focusFormsSection("join")}
+                    className={`h-auto items-start justify-between whitespace-normal rounded-xl border px-5 py-4 text-left shadow-none transition-all duration-200 ${
+                      activeTab === "join"
+                        ? "border-indigo-600 bg-indigo-600 text-white hover:bg-indigo-700 hover:border-indigo-700"
+                        : "border-indigo-200 bg-white text-indigo-700 hover:border-indigo-300 hover:bg-indigo-50"
+                    }`}
+                    data-testid="rooms-quick-join-button"
                   >
-                    {formMeta.submitText}
+                    <div>
+                      <div className="flex items-center gap-2 text-base font-semibold">
+                        <LogIn className="h-4 w-4" />
+                        Odaya Katıl
+                      </div>
+                    </div>
                   </Button>
                 </div>
-              ) : (
-                <div className="space-y-6" data-testid="join-room-form">
-                  <div className="space-y-2">
-                    <Label htmlFor="room-code" className="text-sm font-medium text-foreground" data-testid="label-room-code">Oda Kodu *</Label>
-                    <Input
-                      id="room-code"
-                      placeholder="Örn: ABC123"
-                      value={joinForm.room_code}
-                      onChange={(e) => {
-                        setJoinForm({ ...joinForm, room_code: e.target.value.toUpperCase(), room_password: "" });
-                        setJoinRequiresPassword(false);
-                        setJoinResolvedRoomName("");
-                        setJoinError("");
-                      }}
-                      className={sharedInputClass}
-                      data-testid="input-room-code"
-                    />
-                    <p className="mt-2 text-sm text-muted-foreground" data-testid="room-code-help-text">Oda sahibinden aldığın kodu buraya gir.</p>
-                  </div>
+              </CardHeader>
 
-                  {joinRequiresPassword && (
-                    <div className="space-y-2" data-testid="join-room-password-wrap">
-                      <Label htmlFor="join-room-password" className="text-sm font-medium text-foreground" data-testid="label-join-room-password">Oda Şifresi *</Label>
+              <CardContent className="pt-5 sm:pt-6">
+                <div className="space-y-1.5">
+                  <CardTitle className="font-display text-xl text-foreground/90 sm:text-2xl" data-testid="rooms-form-title">{formMeta.title}</CardTitle>
+                  <p className="text-sm leading-6 text-muted-foreground/90" data-testid="rooms-form-description">
+                    {formMeta.description}
+                  </p>
+                </div>
+
+                {activeTab === "create" ? (
+                  <div className="mt-6 space-y-6" data-testid="create-room-form">
+                    <div className="space-y-2">
+                      <Label htmlFor="room-name" className="text-sm font-medium text-foreground" data-testid="label-room-name">Oda Adı *</Label>
                       <Input
-                        id="join-room-password"
-                        type="password"
-                        placeholder="Özel oda şifresini gir"
-                        value={joinForm.room_password}
+                        id="room-name"
+                        placeholder="Örn: TYT Matematik Çalışma"
+                        value={createForm.room_name}
+                        onChange={(e) => setCreateForm({ ...createForm, room_name: e.target.value })}
+                        className={sharedInputClass}
+                        data-testid="input-room-name"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="room-type" className="text-sm font-medium text-foreground" data-testid="label-room-type">Oda Türü</Label>
+                      <select
+                        id="room-type"
+                        className={sharedSelectClass}
+                        value={createForm.room_type}
+                        onChange={(e) => setCreateForm((prev) => ({
+                          ...prev,
+                          room_type: e.target.value,
+                          room_password: e.target.value === "private" ? prev.room_password : ""
+                        }))}
+                        data-testid="select-room-type"
+                      >
+                        <option value="public">Herkese Açık</option>
+                        <option value="private">Özel</option>
+                      </select>
+                    </div>
+
+                    {createForm.room_type === "private" && (
+                      <div className="space-y-2" data-testid="create-room-password-wrap">
+                        <Label htmlFor="room-password" className="text-sm font-medium text-foreground" data-testid="label-room-password">Oda Şifresi *</Label>
+                        <Input
+                          id="room-password"
+                          type="password"
+                          placeholder="En az 6 karakter"
+                          value={createForm.room_password}
+                          onChange={(e) => setCreateForm({ ...createForm, room_password: e.target.value })}
+                          className={sharedInputClass}
+                          data-testid="input-room-password"
+                        />
+                        <p className="mt-2 text-sm text-muted-foreground" data-testid="room-password-help-text">
+                          Özel odalara yalnızca kod ve doğru şifre ile girilir.
+                        </p>
+                      </div>
+                    )}
+
+                    <Button
+                      className="h-11 w-full rounded-xl bg-indigo-600 text-white shadow-sm transition-all duration-200 hover:bg-indigo-700 hover:shadow-md"
+                      onClick={handleCreateRoom}
+                      disabled={loading || identityLoading}
+                      data-testid={formMeta.submitTestId}
+                    >
+                      {formMeta.submitText}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="mt-6 space-y-6" data-testid="join-room-form">
+                    <div className="space-y-2">
+                      <Label htmlFor="room-code" className="text-sm font-medium text-foreground" data-testid="label-room-code">Oda Kodu *</Label>
+                      <Input
+                        id="room-code"
+                        placeholder="Örn: ABC123"
+                        value={joinForm.room_code}
                         onChange={(e) => {
-                          setJoinForm({ ...joinForm, room_password: e.target.value });
+                          setJoinForm({ ...joinForm, room_code: e.target.value.toUpperCase(), room_password: "" });
+                          setJoinRequiresPassword(false);
+                          setJoinResolvedRoomName("");
                           setJoinError("");
                         }}
                         className={sharedInputClass}
-                        data-testid="input-join-room-password"
+                        data-testid="input-room-code"
                       />
-                      <p className="mt-2 text-sm text-muted-foreground" data-testid="join-room-password-help-text">
-                        {joinResolvedRoomName
-                          ? `"${joinResolvedRoomName}" özel oda olarak ayarlı. Devam etmek için şifre gir.`
-                          : "Bu oda özel. Devam etmek için şifre gir."}
-                      </p>
+                      <p className="mt-2 text-sm text-muted-foreground" data-testid="room-code-help-text">Oda sahibinden aldığın kodu buraya gir.</p>
                     </div>
-                  )}
 
-                  {joinError && (
-                    <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700   " data-testid="join-room-error-message">
-                      {joinError}
-                    </div>
-                  )}
+                    {joinRequiresPassword && (
+                      <div className="space-y-2" data-testid="join-room-password-wrap">
+                        <Label htmlFor="join-room-password" className="text-sm font-medium text-foreground" data-testid="label-join-room-password">Oda Şifresi *</Label>
+                        <Input
+                          id="join-room-password"
+                          type="password"
+                          placeholder="Özel oda şifresini gir"
+                          value={joinForm.room_password}
+                          onChange={(e) => {
+                            setJoinForm({ ...joinForm, room_password: e.target.value });
+                            setJoinError("");
+                          }}
+                          className={sharedInputClass}
+                          data-testid="input-join-room-password"
+                        />
+                        <p className="mt-2 text-sm text-muted-foreground" data-testid="join-room-password-help-text">
+                          {joinResolvedRoomName
+                            ? `"${joinResolvedRoomName}" özel oda olarak ayarlı. Devam etmek için şifre gir.`
+                            : "Bu oda özel. Devam etmek için şifre gir."}
+                        </p>
+                      </div>
+                    )}
 
-                  <Button
-                    className="h-11 w-full rounded-xl bg-indigo-600 text-white shadow-sm transition-all duration-200 hover:bg-indigo-700 hover:shadow-md"
-                    onClick={handleJoinRoom}
-                    disabled={loading || identityLoading}
-                    data-testid={formMeta.submitTestId}
-                  >
-                    {formMeta.submitText}
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                    {joinError && (
+                      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700" data-testid="join-room-error-message">
+                        {joinError}
+                      </div>
+                    )}
+
+                    <Button
+                      className="h-11 w-full rounded-xl bg-indigo-600 text-white shadow-sm transition-all duration-200 hover:bg-indigo-700 hover:shadow-md"
+                      onClick={handleJoinRoom}
+                      disabled={loading || identityLoading}
+                      data-testid={formMeta.submitTestId}
+                    >
+                      {formMeta.submitText}
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-2xl border border-border/60 bg-background/80 text-card-foreground shadow-none" data-testid="rooms-available-section">
+              <CardHeader className="pb-2">
+                <CardTitle className="font-display text-xl font-semibold tracking-tight text-foreground sm:text-2xl" data-testid="rooms-available-title">
+                  Aktif Odalar
+                </CardTitle>
+                <p className="text-sm text-muted-foreground" data-testid="rooms-available-subtitle">
+                  Hızlıca tarayıp hemen bir odaya katılabilirsin.
+                </p>
+              </CardHeader>
+
+              <CardContent className="pt-4">
+                {availableRoomsLoading ? (
+                  <div className="rounded-xl border border-border/60 bg-background/70 px-4 py-4 text-sm text-muted-foreground" data-testid="rooms-available-loading">
+                    Odalar yükleniyor...
+                  </div>
+                ) : availableRooms.length > 0 ? (
+                  <div className="grid gap-3" data-testid="rooms-available-grid">
+                    {availableRooms.map((room) => {
+                      const participantCount = room?.participants?.length || 0;
+                      const isPrivate = room?.room_type === "private" || Boolean(room?.is_private);
+
+                      return (
+                        <div key={room.id} className="rounded-xl border border-border/60 bg-background/85 px-4 py-4" data-testid={`rooms-available-item-${room.id}`}>
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <p className="text-base font-semibold text-foreground">{room.name}</p>
+                              <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                                <span className="inline-flex items-center gap-1.5">
+                                  <Users className="h-4 w-4 text-indigo-500" />
+                                  {participantCount} kişi
+                                </span>
+                                <span className="inline-flex items-center gap-1.5">
+                                  {isPrivate ? <Lock className="h-4 w-4 text-indigo-500" /> : <Globe className="h-4 w-4 text-indigo-500" />}
+                                  {isPrivate ? "Özel" : "Herkese Açık"}
+                                </span>
+                              </div>
+                            </div>
+
+                            <Button
+                              onClick={() => handleAvailableRoomJoin(room)}
+                              className="h-9 rounded-lg bg-indigo-600 px-4 text-sm text-white shadow-sm transition-all duration-200 hover:bg-indigo-700"
+                              data-testid={`rooms-available-join-${room.id}`}
+                            >
+                              Katıl
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="rounded-xl border border-border/60 bg-background/70 px-4 py-4 text-sm text-muted-foreground" data-testid="rooms-available-empty">
+                    Henüz listelenen aktif oda görünmüyor. Oda koduyla katılabilir veya yeni bir oda oluşturabilirsin.
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </section>
         </div>
       </div>
     </div>
