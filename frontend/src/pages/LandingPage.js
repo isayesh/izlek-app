@@ -1,246 +1,142 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   ArrowRight,
   BarChart3,
-  BookOpen,
-  Calendar,
-  CheckCircle2,
-  ChevronDown,
-  Clock3,
-  LogIn,
+  Flame,
+  ListChecks,
   MessageSquare,
-  Sparkles,
-  Target,
+  PlayCircle,
   Timer,
-  UserPlus,
+  Trophy,
   Users,
 } from "lucide-react";
 
-const HERO_PREVIEW_IMAGE =
-  "https://customer-assets.emergentagent.com/job_izlek-showcase/artifacts/e7n3smcn_hero_crop.png";
-
-const ROOM_PREVIEW_IMAGE =
-  "https://customer-assets.emergentagent.com/job_izlek-showcase/artifacts/dyw9havo_room_crop_final.png";
-
-const heroMetrics = [
-  {
-    icon: CheckCircle2,
-    label: "Günlük görevler",
-    value: "6 görev",
-    detail: "öncelik sırasıyla hazır",
-    accentClassName: "text-blue-700 ",
-  },
+const HOW_IT_WORKS_STEPS = [
   {
     icon: Users,
-    label: "Aktif oda",
-    value: "124 çevrimiçi",
-    detail: "eş zamanlı oturumlarda",
-    accentClassName: "text-emerald-700 ",
-  },
-  {
-    icon: Calendar,
-    label: "Haftalık plan",
-    value: "7 gün",
-    detail: "dengeli bir çalışma ritmi",
-    accentClassName: "text-violet-700 ",
-  },
-];
-
-const steps = [
-  {
-    number: "01",
-    icon: UserPlus,
-    title: "Kaydol ve seviyeni tanımla",
-    description:
-      "Kısa bir başlangıç akışıyla hedefini ve mevcut durumunu paylaş. İlk yapı hemen oluşsun.",
-  },
-  {
-    number: "02",
-    icon: Target,
-    title: "Planını netleştir",
-    description:
-      "Günlük görevler, haftalık tempo ve konu dağılımı tek bir ekran üzerinde toparlansın.",
-  },
-  {
-    number: "03",
-    icon: BarChart3,
-    title: "Ritim kazan ve takip et",
-    description:
-      "Odalar, ilerleme görünümü ve düzenli tekrarlarla çalışma düzenini sürdürülebilir kıl.",
-  },
-];
-
-const roomHighlights = [
-  "Senkron sayaç ile aynı oturuma birlikte gir.",
-  "Anlık chat sayesinde soru sor, kopmadan ilerle.",
-  "Oda akışı motive eder; yalnız hissettirmez.",
-  "Canlı odalara katıl veya kendi odanı aç.",
-];
-
-const roomSignals = [
-  { label: "Senkron sayaç", value: "24:10" },
-  { label: "Aktif sohbet", value: "3 yeni mesaj" },
-  { label: "Katılımcı", value: "18 kişi" },
-];
-
-const features = [
-  {
-    icon: Target,
-    title: "Kişisel çalışma akışı",
-    description: "Hedefinle uyumlu günlük görevler tek bakışta görünür.",
-    cardClassName:
-      "border-blue-100/80 bg-blue-50/35   hover:border-blue-200/80",
-    iconClassName:
-      "bg-blue-100/90 text-blue-900  ",
-  },
-  {
-    icon: Users,
-    title: "Ortak çalışma odaları",
-    description:
-      "Birlikte çalışma temposu ile motivasyon daha sürdürülebilir hale gelir.",
-    cardClassName:
-      "border-violet-100/80 bg-violet-50/30   hover:border-violet-200/80",
-    iconClassName:
-      "bg-violet-100/90 text-violet-900  ",
+    title: "Oda oluştur veya katıl",
+    description: "Tek tıkla bir odaya gir, çalışma ritmine hemen dahil ol.",
   },
   {
     icon: Timer,
-    title: "Odaklı seans yapısı",
-    description:
-      "Süreyi takip etmek kolaylaşır; çalışma anı daha net hissedilir.",
-    cardClassName:
-      "border-emerald-100/80 bg-emerald-50/30   hover:border-emerald-200/80",
-    iconClassName:
-      "bg-emerald-100/90 text-emerald-900  ",
+    title: "Timer başlat",
+    description: "Ortak sayaçla herkes aynı odak akışında kalır.",
   },
   {
-    icon: MessageSquare,
-    title: "Anlık iletişim",
-    description:
-      "Sorular, kısa notlar ve motivasyon mesajları aynı yerde kalır.",
-    cardClassName:
-      "border-slate-200/90 bg-slate-50/70   hover:border-slate-300/90",
-    iconClassName:
-      "bg-slate-200/80 text-slate-900  ",
+    icon: PlayCircle,
+    title: "Birlikte odaklan",
+    description: "Sessiz oda hissiyle dikkat dağılmadan çalışmayı sürdür.",
   },
-  {
-    icon: BookOpen,
-    title: "Haftalık görünüm",
-    description:
-      "Konuların, görevlerin ve tempo dağılımın dağılmadan yönetilir.",
-    cardClassName:
-      "border-blue-100/80 bg-blue-50/30   hover:border-blue-200/80",
-    iconClassName:
-      "bg-blue-100/90 text-blue-900  ",
-  },
+];
+
+const OTHER_FEATURES = [
   {
     icon: BarChart3,
     title: "İlerleme takibi",
-    description:
-      "Tamamlanan işler ve kalan yük dengeli bir görünümle izlenir.",
-    cardClassName:
-      "border-violet-100/80 bg-violet-50/25   hover:border-violet-200/80",
-    iconClassName:
-      "bg-violet-100/90 text-violet-900  ",
+    description: "Çalışma süreni ve tamamlanan görevlerini tek bakışta gör.",
+  },
+  {
+    icon: Flame,
+    title: "Streak / motivasyon",
+    description: "Düzenli çalışma serini koru, ritmini canlı tut.",
+  },
+  {
+    icon: Trophy,
+    title: "Liderlik tablosu",
+    description: "Topluluk içindeki yerini sade bir sıralama ile takip et.",
+  },
+  {
+    icon: ListChecks,
+    title: "Program oluşturma",
+    description: "Hedefine göre günlük ve haftalık çalışma planını netleştir.",
   },
 ];
 
-const faqs = [
-  {
-    question: "İzlek ile nasıl başlıyorum?",
-    answer:
-      "Kayıt olduktan sonra kısa bir başlangıç akışıyla hedefini ve mevcut durumunu paylaşıyorsun. Ardından plan görünümü senin için hazırlanıyor.",
-  },
-  {
-    question: "Online çalışma odaları nasıl işliyor?",
-    answer:
-      "Bir odaya katıldığında senkron zamanlayıcı ve anlık sohbet akışına dahil oluyorsun. Böylece hem birlikte çalışma hissi hem de odak korunuyor.",
-  },
-  {
-    question: "Programımı sonra düzenleyebilir miyim?",
-    answer:
-      "Evet. Haftalık planını, görevlerini ve çalışma yoğunluğunu ihtiyaçlarına göre güncelleyebilirsin.",
-  },
-  {
-    question: "Mobilde de kullanılabiliyor mu?",
-    answer:
-      "Evet. Landing ve uygulama akışı farklı ekran genişliklerinde rahat kullanılacak şekilde tasarlandı.",
-  },
-];
-
-function SectionHeading({ eyebrow, title, description, align = "left", testIdPrefix }) {
-  const alignment =
-    align === "center"
-      ? "mx-auto max-w-3xl text-center"
-      : "max-w-2xl text-left";
-
+function HeroRoomMockup() {
   return (
-    <div className={alignment} data-testid={`${testIdPrefix}-heading-block`}>
-      <div
-        className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600  "
-        data-testid={`${testIdPrefix}-eyebrow`}
-      >
-        <Sparkles className="h-3.5 w-3.5" />
-        {eyebrow}
+    <div
+      className="relative mx-auto w-full max-w-[560px] rounded-[28px] border border-[#EDEEF3] bg-[#FFFFFF] p-5 shadow-[0_20px_50px_-36px_rgba(79,70,229,0.25)] sm:p-6"
+      data-testid="landing-hero-mockup"
+    >
+      <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-[#4F46E5]/10 blur-2xl" />
+
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#6B7280]">Sessiz Oda</p>
+        <span className="rounded-full bg-[#EEF2FF] px-2.5 py-1 text-[11px] font-medium text-[#4F46E5]">18 kişi aktif</span>
       </div>
-      <h2
-        className="mt-5 font-display text-4xl font-semibold tracking-tight text-slate-900  sm:text-5xl"
-        data-testid={`${testIdPrefix}-title`}
-      >
-        {title}
-      </h2>
-      <p
-        className="mt-4 text-base leading-7 text-slate-600  sm:text-lg"
-        data-testid={`${testIdPrefix}-description`}
-      >
-        {description}
-      </p>
+
+      <div className="mt-5 flex items-center gap-2" data-testid="landing-mockup-participants">
+        {["A", "B", "C", "+15"].map((item, index) => (
+          <div
+            key={`${item}-${index}`}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F4F6] text-xs font-semibold text-[#374151]"
+          >
+            {item}
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-7 rounded-2xl bg-[#F8FAFF] px-4 py-6 text-center">
+        <p className="text-xs uppercase tracking-[0.14em] text-[#6B7280]">Ortak Timer</p>
+        <p className="mt-2 text-5xl font-semibold tracking-tight text-[#111827] sm:text-6xl">24:10</p>
+      </div>
+
+      <div className="mt-6 space-y-2.5" data-testid="landing-mockup-chat">
+        <div className="ml-auto max-w-[78%] rounded-2xl bg-[#EEF2FF] px-3 py-2 text-sm text-[#3730A3]">
+          Bugün 2 pomodoro daha 🚀
+        </div>
+        <div className="max-w-[82%] rounded-2xl bg-[#F3F4F6] px-3 py-2 text-sm text-[#374151]">
+          Başlıyorum, 25 dk odak 💪
+        </div>
+      </div>
     </div>
   );
 }
 
-function JourneyMark({ idSuffix }) {
+function RoomExperienceSurface() {
   return (
-    <span className="relative inline-flex h-5 w-5 items-center justify-center" aria-hidden="true">
-      <svg viewBox="0 0 32 32" className="h-5 w-5 " fill="none">
-        <defs>
-          <linearGradient id={`journey-gradient-${idSuffix}`} x1="4" y1="25" x2="28" y2="6" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#0F172A" />
-            <stop offset="1" stopColor="#2563EB" />
-          </linearGradient>
-        </defs>
-        <path
-          d="M5 24.5C8.4 18.8 11.8 15.2 15.8 12.8C19.3 10.7 22.4 10.4 25.7 7.5"
-          stroke={`url(#journey-gradient-${idSuffix})`}
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <circle cx="26.8" cy="6.4" r="2.2" fill={`url(#journey-gradient-${idSuffix})`} />
-      </svg>
+    <div className="rounded-[28px] border border-[#ECEEF4] bg-white p-5 shadow-[0_20px_45px_-35px_rgba(17,24,39,0.15)] sm:p-6" data-testid="landing-room-experience-surface">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h3 className="text-lg font-semibold text-[#111827]">Canlı oda deneyimi</h3>
+        <span className="rounded-full bg-[#EEF2FF] px-3 py-1 text-xs font-medium text-[#4F46E5]">Senkron akış</span>
+      </div>
 
-      <svg viewBox="0 0 32 32" className="hidden h-5 w-5 " fill="none">
-        <path
-          d="M5 24.5C8.4 18.8 11.8 15.2 15.8 12.8C19.3 10.7 22.4 10.4 25.7 7.5"
-          stroke="white"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <circle cx="26.8" cy="6.4" r="2.2" fill="white" />
-      </svg>
-    </span>
+      <div className="mt-5 grid gap-3 sm:grid-cols-[1.2fr_0.8fr]">
+        <div className="rounded-2xl bg-[#F8FAFF] px-4 py-5">
+          <p className="text-xs uppercase tracking-[0.14em] text-[#6B7280]">Timer</p>
+          <p className="mt-2 text-4xl font-semibold tracking-tight text-[#111827]">24:10</p>
+          <p className="mt-2 text-sm text-[#6B7280]">Herkes aynı sürede başlar, birlikte odakta kalır.</p>
+        </div>
+
+        <div className="rounded-2xl bg-[#F9FAFB] px-4 py-5">
+          <p className="text-xs uppercase tracking-[0.14em] text-[#6B7280]">Katılımcılar</p>
+          <div className="mt-2 flex items-center gap-2">
+            {["A", "E", "S", "+15"].map((value, index) => (
+              <span key={`${value}-${index}`} className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-xs font-semibold text-[#374151]">
+                {value}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-3 rounded-2xl bg-[#F9FAFB] px-4 py-4">
+        <p className="text-xs uppercase tracking-[0.14em] text-[#6B7280]">Minimal sohbet</p>
+        <div className="mt-2 space-y-2 text-sm text-[#374151]">
+          <p className="w-fit rounded-xl bg-white px-3 py-1.5">5 dk mola sonrası devam 🔁</p>
+          <p className="w-fit rounded-xl bg-[#EEF2FF] px-3 py-1.5 text-[#3730A3]">Tamam, yeni seans başlasın.</p>
+        </div>
+      </div>
+    </div>
   );
 }
 
 export default function LandingPage() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const [openFaq, setOpenFaq] = useState(0);
 
   useEffect(() => {
     if (currentUser) {
@@ -249,52 +145,21 @@ export default function LandingPage() {
   }, [currentUser, navigate]);
 
   return (
-    <div
-      className="min-h-screen bg-slate-50 text-slate-900  "
-      data-testid="landing-page"
-    >
-      <nav
-        className="sticky top-0 z-50 border-b border-border/70 bg-white/80 backdrop-blur-xl "
-        data-testid="landing-nav"
-      >
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-          <button
-            type="button"
-            onClick={() => navigate("/")}
-            className="flex items-center gap-3 text-left"
-            data-testid="landing-brand-button"
-          >
-            <div className="flex h-7 w-7 items-center justify-center text-slate-900 ">
-              <JourneyMark idSuffix="nav" />
-            </div>
-            <div>
-              <div
-                className="font-display text-[1.4rem] font-semibold tracking-[0.08em]"
-                data-testid="landing-brand-name"
-              >
-                izlek
-              </div>
-              <div
-                className="text-xs text-slate-500 "
-                data-testid="landing-brand-tagline"
-              >
-                odaklı çalışma alanın
-              </div>
-            </div>
+    <div className="min-h-screen bg-[#F7F7F7] text-[#111827]" data-testid="landing-page">
+      <nav className="sticky top-0 z-50 border-b border-[#ECEEF4] bg-[#F7F7F7]/95 backdrop-blur" data-testid="landing-nav">
+        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <button type="button" onClick={() => navigate("/")} className="text-left" data-testid="landing-brand-button">
+            <p className="font-display text-[1.35rem] font-semibold tracking-[0.06em] text-[#111827]" data-testid="landing-brand-name">izlek</p>
+            <p className="text-xs text-[#6B7280]" data-testid="landing-brand-tagline">birlikte odaklanma alanı</p>
           </button>
 
-          <div className="flex items-center gap-2 sm:gap-3" data-testid="landing-nav-actions">
-            <Button
-              variant="ghost"
-              onClick={() => navigate("/login")}
-              data-testid="landing-nav-login-button"
-            >
-              <LogIn className="h-4 w-4" />
-              <span className="hidden sm:inline">Giriş Yap</span>
+          <div className="flex items-center gap-2" data-testid="landing-nav-actions">
+            <Button variant="ghost" onClick={() => navigate("/login")} className="text-[#374151] hover:bg-[#EEF2FF]" data-testid="landing-nav-login-button">
+              Giriş Yap
             </Button>
             <Button
-              className="bg-primary text-primary-foreground shadow-sm hover:bg-slate-800 hover:shadow-md"
               onClick={() => navigate("/register")}
+              className="bg-[#4F46E5] text-white shadow-[0_12px_28px_-20px_rgba(79,70,229,0.65)] hover:bg-[#6366F1]"
               data-testid="landing-nav-register-button"
             >
               Hemen Başla
@@ -304,453 +169,135 @@ export default function LandingPage() {
       </nav>
 
       <main>
-        <section
-          className="relative overflow-hidden border-b border-border/60"
-          data-testid="landing-hero-section"
-        >
-          <div className="absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-slate-100/85 via-white/0 to-transparent " />
-          <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-[radial-gradient(circle_at_top,rgba(15,23,42,0.06),transparent_58%)]  lg:block" />
-          <div className="pointer-events-none absolute right-[10%] top-[24%] hidden h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.1),transparent_72%)] opacity-50 blur-[110px] lg:block " />
-          <img
-            src={HERO_PREVIEW_IMAGE}
-            alt=""
-            aria-hidden="true"
-            className="pointer-events-none absolute right-[2%] top-1/2 hidden w-[44rem] max-w-[52vw] -translate-y-1/2 opacity-[0.18] blur-[52px] "
-          />
+        <section className="px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20 lg:px-8" data-testid="landing-hero-section">
+          <div className="mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[1fr_minmax(0,560px)] lg:gap-14">
+            <div>
+              <h1 className="font-display text-4xl font-semibold leading-tight tracking-tight text-[#111827] sm:text-5xl lg:text-6xl" data-testid="hero-title">
+                Odaklanmak için yalnız değilsin.
+              </h1>
+              <p className="mt-6 max-w-2xl text-base leading-7 text-[#6B7280] sm:text-lg" data-testid="hero-description">
+                İzlek, birlikte sessizce çalıştığın odak odaları sunar. Ortak timer, canlı oda hissi ve sade sohbet tek yerde.
+              </p>
 
-          <div className="mx-auto max-w-7xl px-4 pb-20 pt-14 sm:px-6 sm:pt-20 lg:px-8 lg:pb-24">
-            <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)]">
-              <div className="max-w-2xl" data-testid="hero-copy-column">
-                <div
-                  className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card px-4 py-2 text-sm font-medium text-slate-600 shadow-sm  "
-                  data-testid="hero-badge"
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row" data-testid="hero-cta-group">
+                <Button
+                  size="lg"
+                  onClick={() => navigate("/rooms")}
+                  className="h-12 rounded-xl bg-[#4F46E5] px-7 text-sm font-medium text-white hover:bg-[#6366F1]"
+                  data-testid="hero-create-room-button"
                 >
-                  <Sparkles className="h-4 w-4 text-slate-700 " />
-                  Premium bir çalışma akışı için sakin ve net bir başlangıç
-                </div>
-
-                <h1
-                  className="mt-6 font-display text-4xl font-semibold tracking-tight text-slate-900  sm:text-5xl lg:text-6xl"
-                  data-testid="hero-title"
+                  Oda oluştur
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => navigate("/rooms")}
+                  className="h-12 rounded-xl border-[#E5E7EB] bg-white px-7 text-sm text-[#374151] hover:bg-[#F3F4F6]"
+                  data-testid="hero-join-room-button"
                 >
-                  Planın hazır olsun,
-                  <span className="block bg-gradient-to-r from-slate-900 via-slate-700 to-blue-500 bg-clip-text text-transparent   ">
-                    sen çalışmaya odaklan.
-                  </span>
-                </h1>
-
-                <p
-                  className="mt-6 max-w-xl text-base leading-7 text-slate-600  sm:text-lg"
-                  data-testid="hero-description"
-                >
-                  İzlek; günlük görevlerini, haftalık ritmini ve online çalışma odalarını tek bir ürün deneyiminde bir araya getirir.
-                  Böylece ne yapacağını düşünmek yerine düzenli çalışmaya geçebilirsin.
-                </p>
-
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row" data-testid="hero-cta-group">
-                  <Button
-                    size="lg"
-                    className="h-12 rounded-xl bg-primary px-7 text-sm text-primary-foreground shadow-sm hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-lg"
-                    onClick={() => navigate("/register")}
-                    data-testid="hero-start-button"
-                  >
-                    Hemen Başla
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="h-12 rounded-xl border-border/80 bg-white/90 px-7 text-sm "
-                    onClick={() => navigate("/login")}
-                    data-testid="hero-login-button"
-                  >
-                    <LogIn className="h-4 w-4" />
-                    Giriş Yap
-                  </Button>
-                </div>
-
-                <div className="mt-10 grid gap-3 sm:grid-cols-3" data-testid="hero-metrics-grid">
-                  {heroMetrics.map((item, index) => {
-                    const Icon = item.icon;
-
-                    return (
-                      <div
-                        key={item.label}
-                        className="rounded-2xl border border-border/70 bg-white/85 p-4 shadow-sm "
-                        data-testid={`hero-metric-card-${index}`}
-                      >
-                        <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.16em] text-slate-500 ">
-                          <Icon className={`h-4 w-4 ${item.accentClassName}`} />
-                          <span data-testid={`hero-metric-label-${index}`}>{item.label}</span>
-                        </div>
-                        <p
-                          className="mt-3 text-lg font-semibold text-slate-900 "
-                          data-testid={`hero-metric-value-${index}`}
-                        >
-                          {item.value}
-                        </p>
-                        <p
-                          className="mt-1 text-sm text-slate-500 "
-                          data-testid={`hero-metric-detail-${index}`}
-                        >
-                          {item.detail}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="relative mx-auto w-full" data-testid="hero-preview-column">
-                <Card
-                  className="flex w-full max-w-[560px] items-center justify-end overflow-visible border-0 bg-transparent p-0 shadow-none "
-                  data-testid="hero-preview-card"
-                >
-                  <CardContent className="flex w-full items-center justify-end p-0">
-                    <div className="relative flex w-full max-w-[560px] items-center justify-end bg-transparent p-0 shadow-none" data-testid="hero-preview-image-frame">
-                        <div className="pointer-events-none absolute right-[10%] top-1/2 h-[72%] w-[72%] -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.1),transparent_72%)] blur-[72px] " />
-                        <img
-                          src={HERO_PREVIEW_IMAGE}
-                          alt="İzlek ürün önizlemesi"
-                          className="m-0 block h-auto w-full max-w-[560px] rounded-[24px] p-0 object-contain shadow-[0_26px_48px_-34px_rgba(15,23,42,0.24)]"
-                          data-testid="hero-preview-image"
-                        />
-                    </div>
-                  </CardContent>
-                </Card>
+                  Odaya katıl
+                </Button>
               </div>
             </div>
+
+            <HeroRoomMockup />
           </div>
         </section>
 
-        <section className="bg-[linear-gradient(145deg,rgba(239,246,255,0.52)_0%,rgba(248,250,252,0.92)_42%,rgba(255,255,255,1)_100%)] py-20 " data-testid="how-it-works-section">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <SectionHeading
-              eyebrow="Nasıl çalışır"
-              title="Üç net adımda ritmini kur"
-              description="Başlangıç akışı kısa kalır; asıl odak planın, görünürlüğün ve çalışmayı sürdürebilmen üzerinedir."
-              align="center"
-              testIdPrefix="how-it-works"
-            />
+        <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8" data-testid="how-it-works-section">
+          <div className="mx-auto w-full max-w-7xl">
+            <div className="max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#4F46E5]">Nasıl çalışır</p>
+              <h2 className="mt-4 font-display text-3xl font-semibold tracking-tight text-[#111827] sm:text-4xl">Üç adımda odak ritmi</h2>
+            </div>
 
-            <div className="mt-12 grid gap-6 lg:grid-cols-3" data-testid="how-it-works-grid">
-              {steps.map((step, index) => {
+            <div className="mt-10 grid gap-8 md:grid-cols-3 md:gap-10" data-testid="how-it-works-grid">
+              {HOW_IT_WORKS_STEPS.map((step, index) => {
                 const Icon = step.icon;
-
                 return (
-                  <Card
-                    key={step.number}
-                    className="border-border/70 bg-card/95 shadow-sm"
-                    data-testid={`step-card-${index}`}
-                  >
-                    <CardContent className="p-6 sm:p-7">
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <div
-                            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-secondary text-sm font-semibold text-foreground"
-                            data-testid={`step-number-${index}`}
-                          >
-                            {step.number}
-                          </div>
-                          <h3
-                            className="mt-5 font-display text-2xl font-semibold text-slate-900 "
-                            data-testid={`step-title-${index}`}
-                          >
-                            {step.title}
-                          </h3>
-                        </div>
-                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-border/70 bg-slate-50 text-slate-700  ">
-                          <Icon className="h-5 w-5" />
-                        </div>
-                      </div>
-                      <p
-                        className="mt-4 text-base leading-7 text-slate-600 "
-                        data-testid={`step-description-${index}`}
-                      >
-                        {step.description}
-                      </p>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        <section
-          className="border-y border-border/60 bg-slate-50 py-20 "
-          data-testid="study-rooms-section"
-        >
-          <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:px-8">
-            <div data-testid="study-rooms-copy-column">
-              <SectionHeading
-                eyebrow="Online çalışma odaları"
-                title="Yalnız değil, birlikte odakta kal"
-                description="İzlek'in en güçlü taraflarından biri ortak çalışma hissini ürün deneyiminin merkezinde tutmasıdır. Senkron sayaç, anlık sohbet ve aynı hedefe yürüyen öğrenciler tek akışta buluşur."
-                testIdPrefix="study-rooms"
-              />
-
-              <div className="mt-8 space-y-4" data-testid="study-rooms-highlight-list">
-                {roomHighlights.map((item, index) => (
-                  <div
-                    key={item}
-                    className="flex items-start gap-3 rounded-2xl border border-border/70 bg-white/90 px-4 py-4 shadow-sm "
-                    data-testid={`study-rooms-highlight-${index}`}
-                  >
-                    <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-secondary text-foreground">
-                      <CheckCircle2 className="h-4 w-4" />
+                  <div key={step.title} className="relative md:pr-6" data-testid={`how-it-works-item-${index}`}>
+                    {index < HOW_IT_WORKS_STEPS.length - 1 && (
+                      <span className="absolute right-0 top-3 hidden h-[calc(100%-24px)] w-px bg-[#E5E7EB] md:block" aria-hidden="true" />
+                    )}
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#EEF2FF] text-[#4F46E5]">
+                      <Icon className="h-5 w-5" />
                     </div>
-                    <p className="text-sm leading-6 text-slate-600 ">{item}</p>
+                    <h3 className="mt-4 text-lg font-semibold text-[#111827]">{step.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-[#6B7280]">{step.description}</p>
                   </div>
-                ))}
-              </div>
-
-              <div className="mt-8 grid gap-3 sm:grid-cols-3" data-testid="study-rooms-signal-grid">
-                {roomSignals.map((signal, index) => (
-                  <div
-                    key={signal.label}
-                    className="rounded-2xl border border-border/70 bg-white/90 p-4 shadow-sm "
-                    data-testid={`study-rooms-signal-${index}`}
-                  >
-                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500 ">
-                      {signal.label}
-                    </p>
-                    <p
-                      className="mt-2 text-lg font-semibold text-slate-900 "
-                      data-testid={`study-rooms-signal-value-${index}`}
-                    >
-                      {signal.value}
-                    </p>
-                  </div>
-                ))}
-              </div>
+                );
+              })}
             </div>
-
-            <Card
-              className="flex w-full max-w-[560px] items-center justify-end overflow-visible border-0 bg-transparent p-0 shadow-none"
-              data-testid="study-rooms-preview-card"
-            >
-              <CardContent className="flex w-full items-center justify-end p-0">
-                <div className="flex w-full max-w-[560px] items-center justify-end bg-transparent p-0 shadow-none" data-testid="study-rooms-image-frame">
-                    <img
-                      src={ROOM_PREVIEW_IMAGE}
-                      alt="İzlek online çalışma odası önizlemesi"
-                      className="m-0 block h-auto w-full max-w-[560px] rounded-[24px] p-0 object-contain"
-                      data-testid="study-rooms-image"
-                    />
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </section>
 
-        <section className="bg-white py-20 " data-testid="features-section">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <SectionHeading
-              eyebrow="Öne çıkanlar"
-              title="Planlama ve kullanım tek ürün dilinde buluşuyor"
-              description="Landing tarafı daha sakin ve daha pazarlama odaklı kalırken; ürünün asıl gücünü gösteren temel özellikler kısa ve net biçimde öne çıkarılır."
-              align="center"
-              testIdPrefix="features"
-            />
+        <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8" data-testid="room-experience-section">
+          <div className="mx-auto grid w-full max-w-7xl items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+            <RoomExperienceSurface />
 
-            <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3" data-testid="features-grid">
-              {features.map((feature, index) => {
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#4F46E5]">Ürünü göster</p>
+              <h2 className="mt-4 font-display text-3xl font-semibold tracking-tight text-[#111827] sm:text-4xl">Oda deneyimi bir bakışta net</h2>
+              <p className="mt-4 text-base leading-7 text-[#6B7280]">
+                Timer, katılımcılar ve minimal sohbet tek yüzeyde buluşur. Karmaşa olmadan sadece çalışmaya odaklanırsın.
+              </p>
+              <div className="mt-6 space-y-2 text-sm text-[#4B5563]">
+                <p className="flex items-center gap-2"><Timer className="h-4 w-4 text-[#4F46E5]" /> Ortak timer ile senkron odak</p>
+                <p className="flex items-center gap-2"><Users className="h-4 w-4 text-[#4F46E5]" /> Katılımcı görünürlüğü</p>
+                <p className="flex items-center gap-2"><MessageSquare className="h-4 w-4 text-[#4F46E5]" /> Sade ve dikkat dağıtmayan chat</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8" data-testid="other-features-section">
+          <div className="mx-auto w-full max-w-7xl">
+            <div className="max-w-3xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#4F46E5]">Diğer özellikler</p>
+              <h2 className="mt-4 font-display text-3xl font-semibold tracking-tight text-[#111827] sm:text-4xl">İzlek sadece odalardan ibaret değil</h2>
+            </div>
+
+            <div className="mt-10 grid gap-5 sm:grid-cols-2" data-testid="other-features-grid">
+              {OTHER_FEATURES.map((feature, index) => {
                 const Icon = feature.icon;
-
                 return (
-                  <Card
-                    key={feature.title}
-                    className={`border shadow-[0_14px_28px_-24px_rgba(15,23,42,0.14)] transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-[0_22px_38px_-24px_rgba(15,23,42,0.18)] ${feature.cardClassName}`}
-                    data-testid={`feature-card-${index}`}
-                  >
-                    <CardContent className="p-6 sm:p-7">
-                      <div className="flex items-start gap-4">
-                        <div
-                          className={`flex h-11 w-11 items-center justify-center rounded-2xl ${feature.iconClassName}`}
-                          data-testid={`feature-icon-${index}`}
-                        >
-                          <Icon className="h-5 w-5" />
-                        </div>
-                      </div>
-                      <h3
-                        className="mt-5 font-display text-2xl font-semibold text-slate-900 "
-                        data-testid={`feature-title-${index}`}
-                      >
-                        {feature.title}
-                      </h3>
-                      <p
-                        className="mt-3 text-base leading-7 text-slate-600 "
-                        data-testid={`feature-description-${index}`}
-                      >
-                        {feature.description}
-                      </p>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        <section className="bg-slate-50 py-20 " data-testid="faq-section">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            <SectionHeading
-              eyebrow="Kısa sorular"
-              title="Merak edilenleri sade biçimde toparladık"
-              description="Landing akışını uzatmadan, başlarken en çok sorulan noktaları burada bırakıyoruz."
-              align="center"
-              testIdPrefix="faq"
-            />
-
-            <div className="mt-10 space-y-4" data-testid="faq-list">
-              {faqs.map((faq, index) => {
-                const isOpen = openFaq === index;
-
-                return (
-                  <Card
-                    key={faq.question}
-                    className="border-border/70 bg-white/95 shadow-sm "
-                    data-testid={`faq-card-${index}`}
-                  >
-                    <CardContent className="p-0">
-                      <button
-                        type="button"
-                        onClick={() => setOpenFaq(isOpen ? null : index)}
-                        className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left sm:px-7"
-                        aria-expanded={isOpen}
-                        data-testid={`faq-toggle-${index}`}
-                      >
-                        <span
-                          className="pr-4 text-base font-semibold text-slate-900 "
-                          data-testid={`faq-question-${index}`}
-                        >
-                          {faq.question}
-                        </span>
-                        <span
-                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/70 bg-slate-50 text-slate-500 transition-transform   ${
-                            isOpen ? "rotate-180" : "rotate-0"
-                          }`}
-                        >
-                          <ChevronDown className="h-4 w-4" />
-                        </span>
-                      </button>
-                      {isOpen && (
-                        <div
-                          className="border-t border-border/70 px-6 py-5 sm:px-7"
-                          data-testid={`faq-answer-${index}`}
-                        >
-                          <p className="text-sm leading-7 text-slate-600 ">{faq.answer}</p>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        <section className="bg-slate-50 pb-20 " data-testid="final-cta-section">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="overflow-hidden rounded-[2rem] border border-border/70 bg-slate-900 px-6 py-12 text-white shadow-[0_24px_60px_-42px_rgba(15,23,42,0.55)] sm:px-10 sm:py-14 lg:px-14">
-              <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
-                <div className="max-w-3xl" data-testid="final-cta-copy">
-                  <div
-                    className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white/90"
-                    data-testid="final-cta-badge"
-                  >
-                    <Sparkles className="h-3.5 w-3.5" />
-                    İzlek ile daha düzenli bir başlangıç
+                  <div key={feature.title} className="rounded-2xl bg-white px-5 py-5 shadow-[0_14px_32px_-26px_rgba(17,24,39,0.16)]" data-testid={`other-feature-${index}`}>
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#4F46E5]">
+                        <Icon className="h-5 w-5" />
+                      </span>
+                      <h3 className="text-base font-semibold text-[#111827]">{feature.title}</h3>
+                    </div>
+                    <p className="mt-3 text-sm leading-6 text-[#6B7280]">{feature.description}</p>
                   </div>
-                  <h2
-                    className="mt-6 font-display text-4xl font-semibold tracking-tight sm:text-5xl"
-                    data-testid="final-cta-title"
-                  >
-                    Sakin, rafine ve ürün odaklı bir çalışma alanıyla başla.
-                  </h2>
-                  <p
-                    className="mt-5 max-w-2xl text-base leading-7 text-white/75 sm:text-lg"
-                    data-testid="final-cta-description"
-                  >
-                    Planını kur, oda ritmine dahil ol ve ne çalışacağına karar vermek yerine gerçekten çalışmaya geç.
-                  </p>
-                </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
 
-                <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row" data-testid="final-cta-actions">
-                  <Button
-                    size="lg"
-                    className="h-12 rounded-xl bg-white px-7 text-sm text-slate-950 hover:bg-slate-100"
-                    onClick={() => navigate("/register")}
-                    data-testid="final-cta-start-button"
-                  >
-                    Hemen Başla
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="h-12 rounded-xl border-white/20 bg-white/5 px-7 text-sm text-white hover:bg-white/10 hover:text-white"
-                    onClick={() => navigate("/login")}
-                    data-testid="final-cta-login-button"
-                  >
-                    Giriş Yap
-                  </Button>
-                </div>
-              </div>
-
-              <div className="mt-10 grid gap-3 sm:grid-cols-3" data-testid="final-cta-proof-grid">
-                <div
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-white/80"
-                  data-testid="final-cta-proof-0"
-                >
-                  Kurulum akışı kısa, ürün deneyimi net.
-                </div>
-                <div
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-white/80"
-                  data-testid="final-cta-proof-1"
-                >
-                  Çalışma odaları motivasyonu görünür kılar.
-                </div>
-                <div
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-white/80"
-                  data-testid="final-cta-proof-2"
-                >
-                  Dashboard ile aynı ürün ailesi hissi korunur.
-                </div>
-              </div>
+        <section className="px-4 pb-20 pt-6 sm:px-6 lg:px-8" data-testid="final-cta-section">
+          <div className="mx-auto w-full max-w-7xl rounded-[28px] bg-white px-6 py-12 text-center shadow-[0_24px_52px_-40px_rgba(79,70,229,0.35)] sm:px-10">
+            <h2 className="font-display text-3xl font-semibold tracking-tight text-[#111827] sm:text-4xl" data-testid="final-cta-title">
+              Sessiz bir odada, birlikte odaklanmaya başla.
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-[#6B7280]" data-testid="final-cta-description">
+              Hazırsan bir oda aç ve çalışma ritmini şimdi netleştir.
+            </p>
+            <div className="mt-8" data-testid="final-cta-actions">
+              <Button
+                size="lg"
+                onClick={() => navigate("/rooms")}
+                className="h-12 rounded-xl bg-[#4F46E5] px-8 text-sm font-medium text-white hover:bg-[#6366F1]"
+                data-testid="final-cta-create-room-button"
+              >
+                Oda oluştur
+              </Button>
             </div>
           </div>
         </section>
       </main>
-
-      <footer
-        className="border-t border-border/60 bg-white py-8 "
-        data-testid="landing-footer"
-      >
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 text-sm text-slate-500 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8 ">
-          <div className="flex items-center gap-3" data-testid="landing-footer-brand">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-border/70 bg-card text-slate-900  ">
-              <JourneyMark idSuffix="footer" />
-            </div>
-            <div>
-              <div
-                className="font-display text-base font-semibold text-slate-900 "
-                data-testid="landing-footer-brand-name"
-              >
-                izlek
-              </div>
-              <div data-testid="landing-footer-brand-copy">çalışma ritmini netleştiren ürün alanı</div>
-            </div>
-          </div>
-          <div className="text-left md:text-right" data-testid="landing-footer-meta">
-            <p data-testid="landing-footer-copyright">© İzlek. Tüm hakları saklıdır.</p>
-            <p className="mt-1" data-testid="landing-footer-note">
-              Planını gör, ritmini koru, odağını dağıtma.
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
