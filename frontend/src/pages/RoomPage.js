@@ -112,18 +112,28 @@ export default function RoomPage() {
     const participantAvatarUrl = getParticipantAvatarUrl(participant);
     const participantStatusLabel = participant.is_on_break ? "Molada" : isRunning ? "Çalışıyor" : "Hazır";
     const participantStatusPillClasses = participant.is_on_break
-      ? "border-yellow-200 bg-yellow-100 text-yellow-700   "
+      ? "border-yellow-200 bg-yellow-100 text-yellow-700"
       : isRunning
-        ? "border-green-200 bg-green-100 text-green-700   "
-        : "border-slate-200 bg-slate-100 text-slate-700   ";
+        ? "border-indigo-200 bg-indigo-50 text-indigo-700"
+        : "border-slate-200 bg-slate-100 text-slate-700";
+
+    const isPanelVariant = variant === "panel";
+    const avatarSizeClass = allParticipants.length <= 4 ? "h-14 w-14" : allParticipants.length <= 8 ? "h-12 w-12" : "h-10 w-10";
 
     return (
       <div
         key={`${variant}-${participant.id}`}
-        className="flex items-center gap-3.5 rounded-2xl border border-border/50 bg-background/45 px-4 py-3.5 shadow-[0_18px_38px_-34px_rgba(2,6,23,0.95)] transition-[background-color,border-color,box-shadow] duration-200 hover:border-border/60 hover:bg-white/5 hover:shadow-[0_22px_42px_-34px_rgba(2,6,23,1)]"
+        className={
+          isPanelVariant
+            ? "group flex flex-col items-center rounded-xl border border-border/55 bg-background/65 px-3 py-3 text-center transition-colors duration-200 hover:bg-indigo-50/45"
+            : "flex items-center gap-3.5 rounded-2xl border border-border/50 bg-background/45 px-4 py-3.5 shadow-[0_18px_38px_-34px_rgba(2,6,23,0.95)] transition-[background-color,border-color,box-shadow] duration-200 hover:border-border/60 hover:bg-white/5 hover:shadow-[0_22px_42px_-34px_rgba(2,6,23,1)]"
+        }
         data-testid={`${variant}-participant-${participant.id}`}
       >
-        <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-base font-semibold text-foreground shadow-[0_16px_30px_-22px_rgba(59,130,246,0.45)] ring-1 ring-primary/20" data-testid={`${variant}-participant-avatar-${participant.id}`}>
+        <div
+          className={`${isPanelVariant ? `${avatarSizeClass} rounded-xl` : "h-[52px] w-[52px] rounded-2xl"} flex shrink-0 items-center justify-center overflow-hidden bg-primary/10 text-base font-semibold text-foreground ring-1 ring-primary/20`}
+          data-testid={`${variant}-participant-avatar-${participant.id}`}
+        >
           {participantAvatarUrl ? (
             <img
               src={participantAvatarUrl}
@@ -136,13 +146,13 @@ export default function RoomPage() {
             getInitial(participant.name)
           )}
         </div>
-        <div className="min-w-0 flex-1" data-testid={`${variant}-participant-info-${participant.id}`}>
-          <p className="truncate text-sm font-semibold text-foreground sm:text-[0.95rem]" data-testid={`${variant}-participant-name-${participant.id}`}>{participant.name}</p>
+        <div className={isPanelVariant ? "mt-2 min-w-0" : "min-w-0 flex-1"} data-testid={`${variant}-participant-info-${participant.id}`}>
+          <p className={`${isPanelVariant ? "text-sm" : "truncate text-sm sm:text-[0.95rem]"} font-semibold text-foreground`} data-testid={`${variant}-participant-name-${participant.id}`}>{participant.name}</p>
           {participant.study_field && (
-            <p className="mt-1 truncate text-xs font-medium text-muted-foreground/85" data-testid={`${variant}-participant-study-field-${participant.id}`}>{participant.study_field}</p>
+            <p className={`${isPanelVariant ? "mt-1 line-clamp-1 text-[11px]" : "mt-1 truncate text-xs"} font-medium text-muted-foreground/85`} data-testid={`${variant}-participant-study-field-${participant.id}`}>{participant.study_field}</p>
           )}
         </div>
-        <span className={`inline-flex shrink-0 items-center rounded-full border px-2.5 py-1 text-xs font-semibold leading-none ${participantStatusPillClasses}`} data-testid={`${variant}-participant-status-badge-${participant.id}`}>
+        <span className={`${isPanelVariant ? "mt-2" : ""} inline-flex shrink-0 items-center rounded-full border px-2.5 py-1 text-xs font-semibold leading-none ${participantStatusPillClasses}`} data-testid={`${variant}-participant-status-badge-${participant.id}`}>
           {participantStatusLabel}
         </span>
       </div>
@@ -804,10 +814,10 @@ export default function RoomPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background px-4 py-6 sm:px-6 xl:px-8 2xl:px-10 flex flex-col" data-testid="room-page">
+    <div className="min-h-screen bg-background px-4 py-4 sm:px-6 xl:px-8 2xl:px-10 flex flex-col" data-testid="room-page">
       {/* Header */}
-      <div className="mb-8 w-full shrink-0" data-testid="room-header-wrapper">
-        <div className="rounded-2xl border border-border/60 bg-card/90 p-5 shadow-[0_22px_48px_-36px_rgba(2,6,23,0.9)] backdrop-blur-sm sm:p-6" data-testid="room-header-card">
+      <div className="mb-4 w-full shrink-0" data-testid="room-header-wrapper">
+        <div className="rounded-xl border border-border/60 bg-card/90 p-4 shadow-sm sm:p-5" data-testid="room-header-card">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <Button
@@ -819,8 +829,8 @@ export default function RoomPage() {
                 <ArrowLeft className="h-4 w-4" />
               </Button>
 
-              <div className="space-y-2">
-                <h1 className="font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl" data-testid="room-name">
+              <div className="space-y-1">
+                <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground sm:text-3xl" data-testid="room-name">
                   {room.name}
                 </h1>
                 <div className="flex flex-wrap items-center gap-2" data-testid="room-meta-row">
@@ -848,11 +858,11 @@ export default function RoomPage() {
         </div>
       </div>
 
-      <div className="grid w-full flex-1 grid-cols-1 min-w-0 gap-6 lg:grid-cols-[380px_minmax(0,1fr)] xl:grid-cols-[420px_minmax(0,1fr)] 2xl:grid-cols-[460px_minmax(0,1fr)]" data-testid="room-main-grid">
+      <div className="grid w-full flex-1 grid-cols-1 min-w-0 gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,0.95fr)] xl:grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)]" data-testid="room-main-grid">
         {/* Left: Participants + Timer */}
-        <div className="min-w-0 space-y-6" data-testid="room-left-column">
+        <div className="min-w-0 flex flex-col gap-5" data-testid="room-left-column">
           {/* Participants */}
-          <Card className="overflow-hidden rounded-2xl border border-border/60 bg-card/90 shadow-[0_22px_48px_-36px_rgba(2,6,23,0.9)] backdrop-blur-sm" data-testid="participants-card">
+          <Card className="order-2 overflow-hidden rounded-2xl border border-border/60 bg-card/90 shadow-sm" data-testid="participants-card">
             <CardHeader className="border-b border-border/60 pb-3">
               <div className="flex items-center justify-between gap-3">
                 <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="participants-title">
@@ -871,7 +881,15 @@ export default function RoomPage() {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="pb-3 pt-2"></CardContent>
+            <CardContent className="pt-4 pb-4">
+              {allParticipants.length > 0 ? (
+                <div className={`grid gap-3 ${allParticipants.length <= 4 ? "grid-cols-2 sm:grid-cols-3" : allParticipants.length <= 8 ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4" : "grid-cols-3 sm:grid-cols-4 lg:grid-cols-5"}`} data-testid="participants-panel-grid">
+                  {allParticipants.map((participant) => renderParticipantItem(participant, "panel"))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground" data-testid="participants-panel-empty">Henüz katılımcı yok.</p>
+              )}
+            </CardContent>
           </Card>
 
           <Dialog open={showParticipantsModal} onOpenChange={setShowParticipantsModal}>
@@ -907,9 +925,9 @@ export default function RoomPage() {
           </Dialog>
 
           {/* Timer */}
-         <div data-testid="timer-sticky-wrap">
+         <div className="order-1" data-testid="timer-sticky-wrap">
   <div data-testid="timer-sticky-inner">
-    <Card className="min-w-0 overflow-hidden rounded-2xl border border-border/60 bg-card/90 shadow-[0_22px_48px_-36px_rgba(2,6,23,0.9)] backdrop-blur-sm" data-testid="timer-card">
+    <Card className="min-w-0 overflow-hidden rounded-2xl border border-border/60 bg-card/95 shadow-sm" data-testid="timer-card">
               <CardHeader className="border-b border-border/60 pb-3">
                 <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="timer-title">
                   <Clock className="h-5 w-5 text-accent" />
@@ -940,8 +958,8 @@ export default function RoomPage() {
 
                 {/* Timer Display */}
                 <div className="flex w-full justify-center" data-testid="timer-display-row">
-                  <div className="relative mx-auto flex w-full max-w-[320px] min-w-0 items-center justify-center overflow-hidden rounded-2xl border border-border/60 bg-background/45 px-4 py-5 shadow-[0_18px_36px_-30px_rgba(2,6,23,0.95)] sm:px-8 sm:py-5.5" data-testid="timer-display-wrap">
-                    <div className={`min-w-0 max-w-full overflow-hidden text-ellipsis font-mono text-center text-[clamp(2.75rem,8vw,4.25rem)] font-semibold leading-none tracking-tight text-foreground transition-all duration-200 ${isOnBreak ? 'scale-[0.985] opacity-[0.22] blur-[1.5px]' : 'scale-100 opacity-100 blur-0'}`} data-testid="timer-display">
+                  <div className="relative mx-auto flex w-full max-w-[420px] min-w-0 items-center justify-center overflow-hidden rounded-2xl border border-border/60 bg-background px-6 py-8 shadow-sm sm:px-10" data-testid="timer-display-wrap">
+                    <div className={`min-w-0 max-w-full overflow-hidden text-ellipsis font-mono text-center text-[clamp(3.2rem,9vw,5.8rem)] font-semibold leading-none tracking-tight text-foreground transition-all duration-200 ${isOnBreak ? 'scale-[0.985] opacity-[0.22] blur-[1.5px]' : 'scale-100 opacity-100 blur-0'}`} data-testid="timer-display">
                       {formatTime(remainingSeconds)}
                     </div>
 
@@ -1012,7 +1030,7 @@ export default function RoomPage() {
         </div>
 
         {/* Right: Chat */}
-        <Card className="min-w-0 flex h-[560px] min-h-0 flex-col rounded-2xl border border-border/60 bg-card/90 shadow-[0_22px_48px_-36px_rgba(2,6,23,0.9)] backdrop-blur-sm" data-testid="chat-card">
+        <Card className="min-w-0 flex h-[560px] flex-col rounded-2xl border border-border/60 bg-card/90 shadow-sm" data-testid="chat-card">
           <CardHeader className="border-b border-border/60 pb-4">
             <div className="flex items-center justify-between gap-3">
               <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="chat-title">
