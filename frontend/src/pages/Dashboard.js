@@ -963,7 +963,7 @@ export default function Dashboard() {
                         <TabsTrigger
                           key={day}
                           value={day}
-                          className="min-w-0 flex-1 whitespace-nowrap rounded-[16px] px-2 py-2 text-[13px] leading-none text-muted-foreground data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700 data-[state=active]:ring-1 data-[state=active]:ring-indigo-100 data-[state=active]:shadow-none"
+                          className="min-w-0 flex-1 whitespace-nowrap rounded-[16px] border border-transparent px-2 py-2 text-[13px] leading-none text-muted-foreground data-[state=active]:border-indigo-200 data-[state=active]:bg-indigo-100/85 data-[state=active]:text-indigo-800 data-[state=active]:shadow-none"
                           data-testid={`weekly-program-tab-${day.toLocaleLowerCase("tr-TR").replace(/[^a-z0-9]+/g, "-")}`}
                         >
                           {day}
