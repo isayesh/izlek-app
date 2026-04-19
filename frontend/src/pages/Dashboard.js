@@ -594,7 +594,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="px-4 pb-10 pt-4 sm:px-6 sm:pb-12 lg:px-10 xl:px-12">
         <div className="space-y-8 sm:space-y-10">
-          <header className="flex flex-col gap-3 border-b border-border/60 pb-4 xl:flex-row xl:items-center xl:gap-4">
+          <header className="flex flex-col gap-3 border-b border-indigo-100/80 bg-indigo-50/20 pb-4 xl:flex-row xl:items-center xl:gap-4">
             <button
               type="button"
               onClick={() => navigate("/dashboard")}
@@ -602,7 +602,7 @@ export default function Dashboard() {
               data-testid="dashboard-header-brand"
               aria-label="Dashboard"
             >
-              <span className="font-display text-4xl font-bold tracking-tight leading-none text-gray-900">izlek</span>
+              <span className="font-display text-4xl font-extrabold tracking-[-0.03em] leading-none text-gray-900">izlek</span>
             </button>
 
             <div className="w-full max-w-full flex-1 overflow-x-auto pb-1 xl:pb-0" data-testid="dashboard-header-nav">
@@ -616,7 +616,7 @@ export default function Dashboard() {
                       variant="ghost"
                       size="sm"
                       onClick={action.onClick}
-                      className="h-11 shrink-0 rounded-[15px] border border-transparent px-5 text-sm font-semibold tracking-[0.01em] text-muted-foreground shadow-none [&_svg]:size-4 hover:border-indigo-100 hover:bg-indigo-50/70 hover:text-indigo-700 active:bg-indigo-100/70"
+                      className="h-11 shrink-0 rounded-[15px] border border-transparent px-5 text-sm font-semibold tracking-[0.01em] text-slate-500 shadow-none [&_svg]:size-4 hover:border-indigo-100/90 hover:bg-indigo-50/60 hover:text-indigo-600 active:bg-indigo-100/60"
                       data-testid={action.testId}
                     >
                       <span className="relative inline-flex items-center justify-center">
