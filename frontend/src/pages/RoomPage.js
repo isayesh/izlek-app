@@ -873,38 +873,7 @@ export default function RoomPage() {
 
       <div className="grid w-full flex-1 grid-cols-1 min-w-0 gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,0.95fr)] xl:grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)]" data-testid="room-main-grid">
         {/* Left: Participants + Timer */}
-        <div className="min-w-0 flex flex-col gap-5" data-testid="room-left-column">
-          {/* Participants */}
-          <Card className="order-2 overflow-hidden rounded-2xl border border-slate-200/90 bg-white/90 shadow-[0_14px_28px_-22px_rgba(79,70,229,0.2)]" data-testid="participants-card">
-            <CardHeader className="border-b border-border/60 pb-3">
-              <div className="flex items-center justify-between gap-3">
-                <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="participants-title">
-                  <Users className="h-5 w-5 text-accent" />
-                  Katılımcılar ({room.participants.length})
-                </CardTitle>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowParticipantsModal(true)}
-                  className="h-8 shrink-0 rounded-full border border-border/60 bg-background/35 px-3 text-xs font-semibold text-muted-foreground hover:bg-background/50 hover:text-foreground"
-                  data-testid="participants-show-more-button"
-                >
-                  Tümünü Gör
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-4 pb-4">
-              {allParticipants.length > 0 ? (
-                <div className={`grid gap-x-3 gap-y-4 ${allParticipants.length <= 4 ? "grid-cols-2 sm:grid-cols-3" : allParticipants.length <= 8 ? "grid-cols-3 sm:grid-cols-4" : "grid-cols-3 sm:grid-cols-4 lg:grid-cols-5"}`} data-testid="participants-panel-grid">
-                  {allParticipants.map((participant) => renderParticipantItem(participant, "panel"))}
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground" data-testid="participants-panel-empty">Henüz katılımcı yok.</p>
-              )}
-            </CardContent>
-          </Card>
-
+        <div className="min-w-0" data-testid="room-left-column">
           <Dialog open={showParticipantsModal} onOpenChange={setShowParticipantsModal}>
             <DialogContent className="flex w-[90vw] max-w-xl max-h-[70vh] flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/95 p-0 shadow-[0_28px_60px_-40px_rgba(2,6,23,0.95)] backdrop-blur-sm [&>button]:hidden" data-testid="participants-modal">
               <DialogHeader className="border-b border-border/60 px-6 py-4">
@@ -937,19 +906,9 @@ export default function RoomPage() {
             </DialogContent>
           </Dialog>
 
-          {/* Timer */}
-         <div className="order-1" data-testid="timer-sticky-wrap">
-  <div data-testid="timer-sticky-inner">
-    <Card className="min-w-0 overflow-hidden rounded-[26px] border border-indigo-200 bg-white/95 shadow-[0_30px_60px_-38px_rgba(79,70,229,0.38)]" data-testid="timer-card">
-              <CardHeader className="border-b border-indigo-100/80 pb-2">
-                <CardTitle className="flex items-center gap-2 text-lg font-semibold text-foreground/90" data-testid="timer-title">
-                  <Clock className="h-5 w-5 text-indigo-600" />
-                  Kronometre
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="min-w-0 px-7 pb-9 pt-8 sm:px-8">
-                <div className="flex min-w-0 flex-col gap-8 overflow-hidden text-center" data-testid="timer-panel">
-                {/* Timer Input */}
+          <div className="rounded-[26px] border border-indigo-200 bg-white/95 shadow-[0_30px_60px_-38px_rgba(79,70,229,0.38)]" data-testid="room-left-surface">
+            <div className="px-7 pb-8 pt-8 sm:px-8 sm:pb-9">
+              <div className="flex min-w-0 flex-col gap-9 text-center" data-testid="timer-card">
                 <div className="mx-auto w-fit space-y-1.5 rounded-xl border border-indigo-100 bg-indigo-50/55 px-4 py-3" data-testid="timer-input-group">
                   <label className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-indigo-700/85" data-testid="timer-minutes-label">
                     Çalışma Süresi (dakika)
@@ -969,15 +928,14 @@ export default function RoomPage() {
                   </div>
                 </div>
 
-                {/* Timer Display */}
                 <div className="flex w-full justify-center" data-testid="timer-display-row">
-                  <div className="relative mx-auto flex w-full max-w-[560px] min-w-0 items-center justify-center overflow-hidden rounded-[24px] border border-indigo-200 bg-indigo-50/75 px-6 py-12 shadow-[0_20px_40px_-28px_rgba(79,70,229,0.34)] sm:px-10" data-testid="timer-display-wrap">
-                    <div className={`min-w-0 max-w-full overflow-hidden text-ellipsis font-mono text-center text-[clamp(4.5rem,11.5vw,7.4rem)] font-bold leading-none tracking-[0.06em] text-foreground transition-all duration-200 ${isOnBreak ? 'scale-[0.985] opacity-[0.22] blur-[1.5px]' : 'scale-100 opacity-100 blur-0'}`} data-testid="timer-display">
+                  <div className="relative mx-auto flex w-full max-w-[620px] min-w-0 items-center justify-center px-6 py-14 sm:px-10" data-testid="timer-display-wrap">
+                    <div className={`min-w-0 max-w-full overflow-hidden text-ellipsis font-mono text-center text-[clamp(5rem,12.2vw,7.8rem)] font-bold leading-none tracking-[0.07em] text-foreground transition-all duration-200 ${isOnBreak ? 'scale-[0.985] opacity-[0.22] blur-[1.5px]' : 'scale-100 opacity-100 blur-0'}`} data-testid="timer-display">
                       {formatTime(remainingSeconds)}
                     </div>
 
                     {isOnBreak && (
-                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-[inherit] border border-slate-200/70 bg-white/72 px-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-sm      " data-testid="break-mode-overlay" aria-hidden="true">
+                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-2xl border border-slate-200/70 bg-white/72 px-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-sm" data-testid="break-mode-overlay" aria-hidden="true">
                         <div className="pointer-events-none mx-auto flex max-w-[16rem] flex-col items-center justify-center">
                           <div className="text-sm font-semibold leading-tight tracking-tight text-slate-700 sm:text-[0.95rem] ">
                             Moladasın
@@ -991,7 +949,7 @@ export default function RoomPage() {
                   </div>
                 </div>
 
-                <div className="grid w-full grid-cols-1 gap-3.5 sm:grid-cols-3" data-testid="timer-controls">
+                <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-3" data-testid="timer-controls">
                   {!isRunning ? (
                     <Button
                       onClick={handleStartTimer}
@@ -1034,10 +992,34 @@ export default function RoomPage() {
                     Reset
                   </Button>
                 </div>
+              </div>
 
+              <section className="mt-9 border-t border-indigo-100/80 pt-6" data-testid="participants-card">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="participants-title">
+                    <Users className="h-5 w-5 text-indigo-600" />
+                    Katılımcılar ({room.participants.length})
+                  </CardTitle>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowParticipantsModal(true)}
+                    className="h-8 shrink-0 rounded-full border border-slate-200 bg-white/75 px-3 text-xs font-semibold text-muted-foreground hover:bg-indigo-50/65 hover:text-foreground"
+                    data-testid="participants-show-more-button"
+                  >
+                    Tümünü Gör
+                  </Button>
                 </div>
-              </CardContent>
-              </Card>
+
+                {allParticipants.length > 0 ? (
+                  <div className={`grid gap-x-3 gap-y-4 ${allParticipants.length <= 4 ? "grid-cols-2 sm:grid-cols-3" : allParticipants.length <= 8 ? "grid-cols-3 sm:grid-cols-4" : "grid-cols-3 sm:grid-cols-4 lg:grid-cols-5"}`} data-testid="participants-panel-grid">
+                    {allParticipants.map((participant) => renderParticipantItem(participant, "panel"))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground" data-testid="participants-panel-empty">Henüz katılımcı yok.</p>
+                )}
+              </section>
             </div>
           </div>
         </div>
