@@ -881,7 +881,7 @@ export default function Dashboard() {
                                   size="icon"
                                   onClick={() => editTask(task)}
                                   aria-label="Görevi düzenle"
-                                  className="text-muted-foreground hover:text-indigo-700"
+                                  className="rounded-md text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700"
                                   data-testid={`edit-${task.id}`}
                                 >
                                   <Edit className="h-4 w-4" />
@@ -891,7 +891,7 @@ export default function Dashboard() {
                                   size="icon"
                                   onClick={() => deleteTask(task.id)}
                                   aria-label="Görevi sil"
-                                  className="text-muted-foreground hover:text-destructive"
+                                  className="rounded-md text-red-500 hover:bg-red-50 hover:text-red-600"
                                   data-testid={`delete-${task.id}`}
                                 >
                                   <Trash2 className="h-4 w-4" />
@@ -973,7 +973,7 @@ export default function Dashboard() {
                                           size="icon"
                                           onClick={() => editTask(task)}
                                           aria-label="Görevi düzenle"
-                                          className="text-muted-foreground hover:text-indigo-700"
+                                          className="rounded-md text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700"
                                           data-testid={`weekly-edit-${task.id}`}
                                         >
                                           <Edit className="h-4 w-4" />
@@ -983,7 +983,7 @@ export default function Dashboard() {
                                           size="icon"
                                           onClick={() => deleteTask(task.id)}
                                           aria-label="Görevi sil"
-                                          className="text-muted-foreground hover:text-destructive"
+                                          className="rounded-md text-red-500 hover:bg-red-50 hover:text-red-600"
                                           data-testid={`weekly-delete-${task.id}`}
                                         >
                                           <Trash2 className="h-4 w-4" />
