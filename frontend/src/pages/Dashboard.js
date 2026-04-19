@@ -844,7 +844,9 @@ export default function Dashboard() {
                         {todaysTasks.map((task) => (
                           <div
                             key={task.id}
-                            className="group px-4 py-4 transition-colors duration-200 hover:bg-indigo-50/50 sm:px-5"
+                            className={`group px-4 py-4 transition-colors duration-200 sm:px-5 ${
+                              task.completed ? "bg-indigo-50/35 hover:bg-indigo-50/55" : "hover:bg-indigo-50/50"
+                            }`}
                             data-testid={`task-${task.id}`}
                           >
                             <div className="flex items-start gap-4">
@@ -856,19 +858,23 @@ export default function Dashboard() {
                               />
 
                               <div className="min-w-0 flex-1">
-                                <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                                <div className={`flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.18em] ${
+                                  task.completed ? "text-muted-foreground/75" : "text-muted-foreground"
+                                }`}>
                                   <span>{task.day}</span>
                                   <span className="h-1 w-1 rounded-full bg-border" />
                                   <span>{task.duration} dakika</span>
                                 </div>
                                 <p
                                   className={`mt-3 text-lg font-semibold tracking-[-0.02em] ${
-                                    task.completed ? "text-muted-foreground line-through" : "text-foreground"
+                                    task.completed
+                                      ? "text-muted-foreground/85 line-through decoration-1 decoration-muted-foreground/50"
+                                      : "text-foreground"
                                   }`}
                                 >
                                   {task.lesson}
                                 </p>
-                                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                                <p className={`mt-1 text-sm leading-6 ${task.completed ? "text-muted-foreground/75" : "text-muted-foreground"}`}>
                                   {task.topic}
                                 </p>
                               </div>
@@ -953,14 +959,22 @@ export default function Dashboard() {
                                 {dayTasks.map((task) => (
                                   <div
                                     key={task.id}
-                                    className="group px-4 py-4 transition-colors duration-200 hover:bg-indigo-50/50 sm:px-5"
+                                    className={`group px-4 py-4 transition-colors duration-200 sm:px-5 ${
+                                      task.completed ? "bg-indigo-50/35 hover:bg-indigo-50/55" : "hover:bg-indigo-50/50"
+                                    }`}
                                   >
                                     <div className="flex items-start justify-between gap-3">
                                       <div className="min-w-0">
-                                        <p className={`text-sm font-semibold leading-6 ${task.completed ? "text-muted-foreground line-through" : "text-foreground"}`}>
+                                        <p
+                                          className={`text-sm font-semibold leading-6 ${
+                                            task.completed
+                                              ? "text-muted-foreground/85 line-through decoration-1 decoration-muted-foreground/50"
+                                              : "text-foreground"
+                                          }`}
+                                        >
                                           {task.lesson} · {task.topic}
                                         </p>
-                                        <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                                        <p className={`mt-1 text-[11px] uppercase tracking-[0.18em] ${task.completed ? "text-muted-foreground/75" : "text-muted-foreground"}`}>
                                           {task.duration} dakika
                                         </p>
                                       </div>
