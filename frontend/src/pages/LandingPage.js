@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import ThemeToggle from "@/components/ThemeToggle";
 import {
   ArrowRight,
   BarChart3,
@@ -33,21 +32,21 @@ const heroMetrics = [
     label: "Günlük görevler",
     value: "6 görev",
     detail: "öncelik sırasıyla hazır",
-    accentClassName: "text-blue-700 dark:text-blue-200",
+    accentClassName: "text-blue-700 ",
   },
   {
     icon: Users,
     label: "Aktif oda",
     value: "124 çevrimiçi",
     detail: "eş zamanlı oturumlarda",
-    accentClassName: "text-emerald-700 dark:text-emerald-200",
+    accentClassName: "text-emerald-700 ",
   },
   {
     icon: Calendar,
     label: "Haftalık plan",
     value: "7 gün",
     detail: "dengeli bir çalışma ritmi",
-    accentClassName: "text-violet-700 dark:text-violet-200",
+    accentClassName: "text-violet-700 ",
   },
 ];
 
@@ -94,9 +93,9 @@ const features = [
     title: "Kişisel çalışma akışı",
     description: "Hedefinle uyumlu günlük görevler tek bakışta görünür.",
     cardClassName:
-      "border-blue-100/80 bg-blue-50/35 dark:border-blue-500/10 dark:bg-blue-500/[0.04] hover:border-blue-200/80",
+      "border-blue-100/80 bg-blue-50/35   hover:border-blue-200/80",
     iconClassName:
-      "bg-blue-100/90 text-blue-900 dark:bg-blue-500/12 dark:text-blue-100",
+      "bg-blue-100/90 text-blue-900  ",
   },
   {
     icon: Users,
@@ -104,9 +103,9 @@ const features = [
     description:
       "Birlikte çalışma temposu ile motivasyon daha sürdürülebilir hale gelir.",
     cardClassName:
-      "border-violet-100/80 bg-violet-50/30 dark:border-violet-500/10 dark:bg-violet-500/[0.04] hover:border-violet-200/80",
+      "border-violet-100/80 bg-violet-50/30   hover:border-violet-200/80",
     iconClassName:
-      "bg-violet-100/90 text-violet-900 dark:bg-violet-500/12 dark:text-violet-100",
+      "bg-violet-100/90 text-violet-900  ",
   },
   {
     icon: Timer,
@@ -114,9 +113,9 @@ const features = [
     description:
       "Süreyi takip etmek kolaylaşır; çalışma anı daha net hissedilir.",
     cardClassName:
-      "border-emerald-100/80 bg-emerald-50/30 dark:border-emerald-500/10 dark:bg-emerald-500/[0.04] hover:border-emerald-200/80",
+      "border-emerald-100/80 bg-emerald-50/30   hover:border-emerald-200/80",
     iconClassName:
-      "bg-emerald-100/90 text-emerald-900 dark:bg-emerald-500/12 dark:text-emerald-100",
+      "bg-emerald-100/90 text-emerald-900  ",
   },
   {
     icon: MessageSquare,
@@ -124,9 +123,9 @@ const features = [
     description:
       "Sorular, kısa notlar ve motivasyon mesajları aynı yerde kalır.",
     cardClassName:
-      "border-slate-200/90 bg-slate-50/70 dark:border-slate-700 dark:bg-slate-900/60 hover:border-slate-300/90",
+      "border-slate-200/90 bg-slate-50/70   hover:border-slate-300/90",
     iconClassName:
-      "bg-slate-200/80 text-slate-900 dark:bg-slate-800 dark:text-slate-100",
+      "bg-slate-200/80 text-slate-900  ",
   },
   {
     icon: BookOpen,
@@ -134,9 +133,9 @@ const features = [
     description:
       "Konuların, görevlerin ve tempo dağılımın dağılmadan yönetilir.",
     cardClassName:
-      "border-blue-100/80 bg-blue-50/30 dark:border-blue-500/10 dark:bg-blue-500/[0.04] hover:border-blue-200/80",
+      "border-blue-100/80 bg-blue-50/30   hover:border-blue-200/80",
     iconClassName:
-      "bg-blue-100/90 text-blue-900 dark:bg-blue-500/12 dark:text-blue-100",
+      "bg-blue-100/90 text-blue-900  ",
   },
   {
     icon: BarChart3,
@@ -144,9 +143,9 @@ const features = [
     description:
       "Tamamlanan işler ve kalan yük dengeli bir görünümle izlenir.",
     cardClassName:
-      "border-violet-100/80 bg-violet-50/25 dark:border-violet-500/10 dark:bg-violet-500/[0.04] hover:border-violet-200/80",
+      "border-violet-100/80 bg-violet-50/25   hover:border-violet-200/80",
     iconClassName:
-      "bg-violet-100/90 text-violet-900 dark:bg-violet-500/12 dark:text-violet-100",
+      "bg-violet-100/90 text-violet-900  ",
   },
 ];
 
@@ -182,20 +181,20 @@ function SectionHeading({ eyebrow, title, description, align = "left", testIdPre
   return (
     <div className={alignment} data-testid={`${testIdPrefix}-heading-block`}>
       <div
-        className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600 dark:bg-background/70 dark:text-slate-300"
+        className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600  "
         data-testid={`${testIdPrefix}-eyebrow`}
       >
         <Sparkles className="h-3.5 w-3.5" />
         {eyebrow}
       </div>
       <h2
-        className="mt-5 font-display text-4xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-5xl"
+        className="mt-5 font-display text-4xl font-semibold tracking-tight text-slate-900  sm:text-5xl"
         data-testid={`${testIdPrefix}-title`}
       >
         {title}
       </h2>
       <p
-        className="mt-4 text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg"
+        className="mt-4 text-base leading-7 text-slate-600  sm:text-lg"
         data-testid={`${testIdPrefix}-description`}
       >
         {description}
@@ -207,7 +206,7 @@ function SectionHeading({ eyebrow, title, description, align = "left", testIdPre
 function JourneyMark({ idSuffix }) {
   return (
     <span className="relative inline-flex h-5 w-5 items-center justify-center" aria-hidden="true">
-      <svg viewBox="0 0 32 32" className="h-5 w-5 dark:hidden" fill="none">
+      <svg viewBox="0 0 32 32" className="h-5 w-5 " fill="none">
         <defs>
           <linearGradient id={`journey-gradient-${idSuffix}`} x1="4" y1="25" x2="28" y2="6" gradientUnits="userSpaceOnUse">
             <stop stopColor="#0F172A" />
@@ -224,7 +223,7 @@ function JourneyMark({ idSuffix }) {
         <circle cx="26.8" cy="6.4" r="2.2" fill={`url(#journey-gradient-${idSuffix})`} />
       </svg>
 
-      <svg viewBox="0 0 32 32" className="hidden h-5 w-5 dark:block" fill="none">
+      <svg viewBox="0 0 32 32" className="hidden h-5 w-5 " fill="none">
         <path
           d="M5 24.5C8.4 18.8 11.8 15.2 15.8 12.8C19.3 10.7 22.4 10.4 25.7 7.5"
           stroke="white"
@@ -251,11 +250,11 @@ export default function LandingPage() {
 
   return (
     <div
-      className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-white"
+      className="min-h-screen bg-slate-50 text-slate-900  "
       data-testid="landing-page"
     >
       <nav
-        className="sticky top-0 z-50 border-b border-border/70 bg-white/80 backdrop-blur-xl dark:bg-slate-950/80"
+        className="sticky top-0 z-50 border-b border-border/70 bg-white/80 backdrop-blur-xl "
         data-testid="landing-nav"
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -265,7 +264,7 @@ export default function LandingPage() {
             className="flex items-center gap-3 text-left"
             data-testid="landing-brand-button"
           >
-            <div className="flex h-7 w-7 items-center justify-center text-slate-900 dark:text-white">
+            <div className="flex h-7 w-7 items-center justify-center text-slate-900 ">
               <JourneyMark idSuffix="nav" />
             </div>
             <div>
@@ -276,7 +275,7 @@ export default function LandingPage() {
                 izlek
               </div>
               <div
-                className="text-xs text-slate-500 dark:text-slate-400"
+                className="text-xs text-slate-500 "
                 data-testid="landing-brand-tagline"
               >
                 odaklı çalışma alanın
@@ -285,10 +284,6 @@ export default function LandingPage() {
           </button>
 
           <div className="flex items-center gap-2 sm:gap-3" data-testid="landing-nav-actions">
-            <ThemeToggle
-              className="border border-border bg-background/90 shadow-sm hover:bg-secondary"
-              dataTestId="landing-theme-toggle"
-            />
             <Button
               variant="ghost"
               onClick={() => navigate("/login")}
@@ -313,39 +308,39 @@ export default function LandingPage() {
           className="relative overflow-hidden border-b border-border/60"
           data-testid="landing-hero-section"
         >
-          <div className="absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-slate-100/85 via-white/0 to-transparent dark:from-slate-900/40" />
-          <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-[radial-gradient(circle_at_top,rgba(15,23,42,0.06),transparent_58%)] dark:bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.08),transparent_58%)] lg:block" />
-          <div className="pointer-events-none absolute right-[10%] top-[24%] hidden h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.1),transparent_72%)] opacity-50 blur-[110px] lg:block dark:opacity-30" />
+          <div className="absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-slate-100/85 via-white/0 to-transparent " />
+          <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-[radial-gradient(circle_at_top,rgba(15,23,42,0.06),transparent_58%)]  lg:block" />
+          <div className="pointer-events-none absolute right-[10%] top-[24%] hidden h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.1),transparent_72%)] opacity-50 blur-[110px] lg:block " />
           <img
             src={HERO_PREVIEW_IMAGE}
             alt=""
             aria-hidden="true"
-            className="pointer-events-none absolute right-[2%] top-1/2 hidden w-[44rem] max-w-[52vw] -translate-y-1/2 opacity-[0.18] blur-[52px] dark:block"
+            className="pointer-events-none absolute right-[2%] top-1/2 hidden w-[44rem] max-w-[52vw] -translate-y-1/2 opacity-[0.18] blur-[52px] "
           />
 
           <div className="mx-auto max-w-7xl px-4 pb-20 pt-14 sm:px-6 sm:pt-20 lg:px-8 lg:pb-24">
             <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)]">
               <div className="max-w-2xl" data-testid="hero-copy-column">
                 <div
-                  className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card px-4 py-2 text-sm font-medium text-slate-600 shadow-sm dark:bg-background/80 dark:text-slate-300"
+                  className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card px-4 py-2 text-sm font-medium text-slate-600 shadow-sm  "
                   data-testid="hero-badge"
                 >
-                  <Sparkles className="h-4 w-4 text-slate-700 dark:text-slate-200" />
+                  <Sparkles className="h-4 w-4 text-slate-700 " />
                   Premium bir çalışma akışı için sakin ve net bir başlangıç
                 </div>
 
                 <h1
-                  className="mt-6 font-display text-4xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-6xl"
+                  className="mt-6 font-display text-4xl font-semibold tracking-tight text-slate-900  sm:text-5xl lg:text-6xl"
                   data-testid="hero-title"
                 >
                   Planın hazır olsun,
-                  <span className="block bg-gradient-to-r from-slate-900 via-slate-700 to-blue-500 bg-clip-text text-transparent dark:from-white dark:via-slate-100 dark:to-blue-300">
+                  <span className="block bg-gradient-to-r from-slate-900 via-slate-700 to-blue-500 bg-clip-text text-transparent   ">
                     sen çalışmaya odaklan.
                   </span>
                 </h1>
 
                 <p
-                  className="mt-6 max-w-xl text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg"
+                  className="mt-6 max-w-xl text-base leading-7 text-slate-600  sm:text-lg"
                   data-testid="hero-description"
                 >
                   İzlek; günlük görevlerini, haftalık ritmini ve online çalışma odalarını tek bir ürün deneyiminde bir araya getirir.
@@ -365,7 +360,7 @@ export default function LandingPage() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="h-12 rounded-xl border-border/80 bg-white/90 px-7 text-sm dark:bg-slate-900/90"
+                    className="h-12 rounded-xl border-border/80 bg-white/90 px-7 text-sm "
                     onClick={() => navigate("/login")}
                     data-testid="hero-login-button"
                   >
@@ -381,21 +376,21 @@ export default function LandingPage() {
                     return (
                       <div
                         key={item.label}
-                        className="rounded-2xl border border-border/70 bg-white/85 p-4 shadow-sm dark:bg-slate-900/85"
+                        className="rounded-2xl border border-border/70 bg-white/85 p-4 shadow-sm "
                         data-testid={`hero-metric-card-${index}`}
                       >
-                        <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
+                        <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.16em] text-slate-500 ">
                           <Icon className={`h-4 w-4 ${item.accentClassName}`} />
                           <span data-testid={`hero-metric-label-${index}`}>{item.label}</span>
                         </div>
                         <p
-                          className="mt-3 text-lg font-semibold text-slate-900 dark:text-white"
+                          className="mt-3 text-lg font-semibold text-slate-900 "
                           data-testid={`hero-metric-value-${index}`}
                         >
                           {item.value}
                         </p>
                         <p
-                          className="mt-1 text-sm text-slate-500 dark:text-slate-400"
+                          className="mt-1 text-sm text-slate-500 "
                           data-testid={`hero-metric-detail-${index}`}
                         >
                           {item.detail}
@@ -408,12 +403,12 @@ export default function LandingPage() {
 
               <div className="relative mx-auto w-full" data-testid="hero-preview-column">
                 <Card
-                  className="flex w-full max-w-[560px] items-center justify-end overflow-visible border-0 bg-transparent p-0 shadow-none dark:hidden"
+                  className="flex w-full max-w-[560px] items-center justify-end overflow-visible border-0 bg-transparent p-0 shadow-none "
                   data-testid="hero-preview-card"
                 >
                   <CardContent className="flex w-full items-center justify-end p-0">
                     <div className="relative flex w-full max-w-[560px] items-center justify-end bg-transparent p-0 shadow-none" data-testid="hero-preview-image-frame">
-                        <div className="pointer-events-none absolute right-[10%] top-1/2 h-[72%] w-[72%] -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.1),transparent_72%)] blur-[72px] dark:hidden" />
+                        <div className="pointer-events-none absolute right-[10%] top-1/2 h-[72%] w-[72%] -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.1),transparent_72%)] blur-[72px] " />
                         <img
                           src={HERO_PREVIEW_IMAGE}
                           alt="İzlek ürün önizlemesi"
@@ -428,7 +423,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="bg-[linear-gradient(145deg,rgba(239,246,255,0.52)_0%,rgba(248,250,252,0.92)_42%,rgba(255,255,255,1)_100%)] py-20 dark:bg-[linear-gradient(145deg,rgba(30,41,59,0.82)_0%,rgba(15,23,42,0.96)_54%,rgba(15,23,42,1)_100%)]" data-testid="how-it-works-section">
+        <section className="bg-[linear-gradient(145deg,rgba(239,246,255,0.52)_0%,rgba(248,250,252,0.92)_42%,rgba(255,255,255,1)_100%)] py-20 " data-testid="how-it-works-section">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeading
               eyebrow="Nasıl çalışır"
@@ -458,18 +453,18 @@ export default function LandingPage() {
                             {step.number}
                           </div>
                           <h3
-                            className="mt-5 font-display text-2xl font-semibold text-slate-900 dark:text-white"
+                            className="mt-5 font-display text-2xl font-semibold text-slate-900 "
                             data-testid={`step-title-${index}`}
                           >
                             {step.title}
                           </h3>
                         </div>
-                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-border/70 bg-slate-50 text-slate-700 dark:bg-slate-950 dark:text-slate-200">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-border/70 bg-slate-50 text-slate-700  ">
                           <Icon className="h-5 w-5" />
                         </div>
                       </div>
                       <p
-                        className="mt-4 text-base leading-7 text-slate-600 dark:text-slate-300"
+                        className="mt-4 text-base leading-7 text-slate-600 "
                         data-testid={`step-description-${index}`}
                       >
                         {step.description}
@@ -483,7 +478,7 @@ export default function LandingPage() {
         </section>
 
         <section
-          className="border-y border-border/60 bg-slate-50 py-20 dark:bg-slate-950"
+          className="border-y border-border/60 bg-slate-50 py-20 "
           data-testid="study-rooms-section"
         >
           <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:px-8">
@@ -499,13 +494,13 @@ export default function LandingPage() {
                 {roomHighlights.map((item, index) => (
                   <div
                     key={item}
-                    className="flex items-start gap-3 rounded-2xl border border-border/70 bg-white/90 px-4 py-4 shadow-sm dark:bg-slate-900/90"
+                    className="flex items-start gap-3 rounded-2xl border border-border/70 bg-white/90 px-4 py-4 shadow-sm "
                     data-testid={`study-rooms-highlight-${index}`}
                   >
                     <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-secondary text-foreground">
                       <CheckCircle2 className="h-4 w-4" />
                     </div>
-                    <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">{item}</p>
+                    <p className="text-sm leading-6 text-slate-600 ">{item}</p>
                   </div>
                 ))}
               </div>
@@ -514,14 +509,14 @@ export default function LandingPage() {
                 {roomSignals.map((signal, index) => (
                   <div
                     key={signal.label}
-                    className="rounded-2xl border border-border/70 bg-white/90 p-4 shadow-sm dark:bg-slate-900/90"
+                    className="rounded-2xl border border-border/70 bg-white/90 p-4 shadow-sm "
                     data-testid={`study-rooms-signal-${index}`}
                   >
-                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
+                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500 ">
                       {signal.label}
                     </p>
                     <p
-                      className="mt-2 text-lg font-semibold text-slate-900 dark:text-white"
+                      className="mt-2 text-lg font-semibold text-slate-900 "
                       data-testid={`study-rooms-signal-value-${index}`}
                     >
                       {signal.value}
@@ -549,7 +544,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="bg-white py-20 dark:bg-slate-900" data-testid="features-section">
+        <section className="bg-white py-20 " data-testid="features-section">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeading
               eyebrow="Öne çıkanlar"
@@ -579,13 +574,13 @@ export default function LandingPage() {
                         </div>
                       </div>
                       <h3
-                        className="mt-5 font-display text-2xl font-semibold text-slate-900 dark:text-white"
+                        className="mt-5 font-display text-2xl font-semibold text-slate-900 "
                         data-testid={`feature-title-${index}`}
                       >
                         {feature.title}
                       </h3>
                       <p
-                        className="mt-3 text-base leading-7 text-slate-600 dark:text-slate-300"
+                        className="mt-3 text-base leading-7 text-slate-600 "
                         data-testid={`feature-description-${index}`}
                       >
                         {feature.description}
@@ -598,7 +593,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="bg-slate-50 py-20 dark:bg-slate-950" data-testid="faq-section">
+        <section className="bg-slate-50 py-20 " data-testid="faq-section">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             <SectionHeading
               eyebrow="Kısa sorular"
@@ -615,7 +610,7 @@ export default function LandingPage() {
                 return (
                   <Card
                     key={faq.question}
-                    className="border-border/70 bg-white/95 shadow-sm dark:bg-slate-900/95"
+                    className="border-border/70 bg-white/95 shadow-sm "
                     data-testid={`faq-card-${index}`}
                   >
                     <CardContent className="p-0">
@@ -627,13 +622,13 @@ export default function LandingPage() {
                         data-testid={`faq-toggle-${index}`}
                       >
                         <span
-                          className="pr-4 text-base font-semibold text-slate-900 dark:text-white"
+                          className="pr-4 text-base font-semibold text-slate-900 "
                           data-testid={`faq-question-${index}`}
                         >
                           {faq.question}
                         </span>
                         <span
-                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/70 bg-slate-50 text-slate-500 transition-transform dark:bg-slate-950 dark:text-slate-300 ${
+                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/70 bg-slate-50 text-slate-500 transition-transform   ${
                             isOpen ? "rotate-180" : "rotate-0"
                           }`}
                         >
@@ -645,7 +640,7 @@ export default function LandingPage() {
                           className="border-t border-border/70 px-6 py-5 sm:px-7"
                           data-testid={`faq-answer-${index}`}
                         >
-                          <p className="text-sm leading-7 text-slate-600 dark:text-slate-300">{faq.answer}</p>
+                          <p className="text-sm leading-7 text-slate-600 ">{faq.answer}</p>
                         </div>
                       )}
                     </CardContent>
@@ -656,7 +651,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="bg-slate-50 pb-20 dark:bg-slate-950" data-testid="final-cta-section">
+        <section className="bg-slate-50 pb-20 " data-testid="final-cta-section">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="overflow-hidden rounded-[2rem] border border-border/70 bg-slate-900 px-6 py-12 text-white shadow-[0_24px_60px_-42px_rgba(15,23,42,0.55)] sm:px-10 sm:py-14 lg:px-14">
               <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
@@ -730,17 +725,17 @@ export default function LandingPage() {
       </main>
 
       <footer
-        className="border-t border-border/60 bg-white py-8 dark:bg-slate-950"
+        className="border-t border-border/60 bg-white py-8 "
         data-testid="landing-footer"
       >
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 text-sm text-slate-500 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8 dark:text-slate-400">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 text-sm text-slate-500 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8 ">
           <div className="flex items-center gap-3" data-testid="landing-footer-brand">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-border/70 bg-card text-slate-900 dark:bg-background/70 dark:text-white">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-border/70 bg-card text-slate-900  ">
               <JourneyMark idSuffix="footer" />
             </div>
             <div>
               <div
-                className="font-display text-base font-semibold text-slate-900 dark:text-white"
+                className="font-display text-base font-semibold text-slate-900 "
                 data-testid="landing-footer-brand-name"
               >
                 izlek

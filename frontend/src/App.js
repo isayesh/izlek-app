@@ -1,5 +1,4 @@
 import "@/App.css";
-import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -33,17 +32,6 @@ const normalizedBackendUrl = trimmedBackendUrl.endsWith("/api")
 export const API = normalizedBackendUrl ? `${normalizedBackendUrl}/api` : "/api";
 
 function App() {
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    const initialTheme = savedTheme || "light";
-
-    if (initialTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
-
   return (
     <div className="App min-h-screen bg-background text-foreground">
       <AuthProvider>

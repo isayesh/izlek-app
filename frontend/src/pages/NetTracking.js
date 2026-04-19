@@ -165,7 +165,7 @@ export default function NetTracking() {
   };
 
   const surfaceCardClass = "border-border/70 bg-card/95 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)]";
-  const inputClass = "mt-2 h-11 rounded-xl border-border/70 bg-secondary/70 shadow-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 dark:bg-secondary/80";
+  const inputClass = "mt-2 h-11 rounded-xl border-border/70 bg-secondary/70 shadow-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 ";
   const emptyStateClass = "flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/70 bg-background/60 px-6 py-12 text-center";
   const chartTheme = {
     grid: "hsl(var(--border))",
@@ -230,9 +230,9 @@ export default function NetTracking() {
 
       <div className="max-w-7xl mx-auto mb-10">
         <div className="grid gap-6 md:grid-cols-2">
-          <Card className={`${surfaceCardClass} border-sky-200/50 dark:border-border/70`} data-testid="tyt-entry-card">
-            <CardHeader className="rounded-t-2xl border-b border-border/60 bg-sky-50/70 dark:bg-sky-500/5">
-              <CardTitle className="text-xl font-semibold text-sky-950 dark:text-slate-50">TYT Net Girişi</CardTitle>
+          <Card className={`${surfaceCardClass} border-sky-200/50 `} data-testid="tyt-entry-card">
+            <CardHeader className="rounded-t-2xl border-b border-border/60 bg-sky-50/70 ">
+              <CardTitle className="text-xl font-semibold text-sky-950 ">TYT Net Girişi</CardTitle>
             </CardHeader>
             <CardContent className="space-y-5 pt-6">
               <div className="space-y-2">
@@ -282,9 +282,9 @@ export default function NetTracking() {
             </CardContent>
           </Card>
 
-          <Card className={`${surfaceCardClass} border-indigo-200/50 dark:border-border/70`} data-testid="ayt-entry-card">
-            <CardHeader className="rounded-t-2xl border-b border-border/60 bg-indigo-50/70 dark:bg-indigo-500/5">
-              <CardTitle className="text-xl font-semibold text-indigo-950 dark:text-slate-50">AYT Net Girişi</CardTitle>
+          <Card className={`${surfaceCardClass} border-indigo-200/50 `} data-testid="ayt-entry-card">
+            <CardHeader className="rounded-t-2xl border-b border-border/60 bg-indigo-50/70 ">
+              <CardTitle className="text-xl font-semibold text-indigo-950 ">AYT Net Girişi</CardTitle>
             </CardHeader>
             <CardContent className="space-y-5 pt-6">
               <div className="space-y-2">
@@ -360,8 +360,8 @@ export default function NetTracking() {
                       <span
                         className={`rounded-full border px-3 py-1 text-xs font-semibold ${
                           result.exam_type === "TYT"
-                            ? "border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-200"
-                            : "border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-500/20 dark:bg-indigo-500/10 dark:text-indigo-200"
+                            ? "border-sky-200 bg-sky-50 text-sky-700   "
+                            : "border-indigo-200 bg-indigo-50 text-indigo-700   "
                         }`}
                       >
                         {result.exam_type}
@@ -386,9 +386,9 @@ export default function NetTracking() {
         <h2 className="mb-6 text-3xl font-semibold tracking-tight text-foreground">Analiz</h2>
 
         <div className="mb-8 grid gap-6 md:grid-cols-2">
-          <Card className={`${surfaceCardClass} border-sky-200/50 dark:border-border/70`}>
+          <Card className={`${surfaceCardClass} border-sky-200/50 `}>
             <CardHeader>
-              <CardTitle className="text-xl font-semibold text-sky-950 dark:text-slate-50">TYT İstatistikleri</CardTitle>
+              <CardTitle className="text-xl font-semibold text-sky-950 ">TYT İstatistikleri</CardTitle>
             </CardHeader>
             <CardContent>
               {tytStats ? (
@@ -430,9 +430,9 @@ export default function NetTracking() {
             </CardContent>
           </Card>
 
-          <Card className={`${surfaceCardClass} border-indigo-200/50 dark:border-border/70`}>
+          <Card className={`${surfaceCardClass} border-indigo-200/50 `}>
             <CardHeader>
-              <CardTitle className="text-xl font-semibold text-indigo-950 dark:text-slate-50">AYT İstatistikleri</CardTitle>
+              <CardTitle className="text-xl font-semibold text-indigo-950 ">AYT İstatistikleri</CardTitle>
             </CardHeader>
             <CardContent>
               {aytStats ? (

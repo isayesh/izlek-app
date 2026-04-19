@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 
 import { API } from "@/App";
-import ThemeToggle from "@/components/ThemeToggle";
 import AppLogo from "@/components/AppLogo";
 import { useAuth } from "@/contexts/AuthContext";
 import { getStoredPrograms, savePrograms } from "@/lib/storage";
@@ -610,10 +609,6 @@ export default function Dashboard() {
 
             <div className="flex flex-col gap-3 xl:items-end">
               <div className="flex items-center justify-end gap-2" data-testid="dashboard-theme-toggle">
-                <ThemeToggle
-                  dataTestId="theme-toggle"
-                  className="border border-border/50 bg-background/70 shadow-none hover:bg-secondary/60"
-                />
                 <Button
                   variant="outline"
                   size="sm"
@@ -712,7 +707,7 @@ export default function Dashboard() {
                         key={segment.label}
                         className={`flex flex-col gap-1 ${index > 0 ? "sm:border-l sm:border-border/45 sm:pl-5" : ""}`}
                       >
-                        <span className="font-display text-3xl font-semibold tracking-[-0.04em] text-foreground sm:text-[2.1rem] dark:text-slate-50">
+                        <span className="font-display text-3xl font-semibold tracking-[-0.04em] text-foreground sm:text-[2.1rem] ">
                           {String(segment.value).padStart(2, "0")}
                         </span>
                         <span className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
@@ -769,7 +764,7 @@ export default function Dashboard() {
                   <Progress value={progressValue} className="mt-4 h-2.5 bg-secondary/80" />
 
                   {shouldShowStreakReminder && (
-                    <div className="mt-4 flex items-start gap-2 text-sm text-amber-700 dark:text-amber-300" data-testid="dashboard-streak-reminder">
+                    <div className="mt-4 flex items-start gap-2 text-sm text-amber-700 " data-testid="dashboard-streak-reminder">
                       <Flame className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-500" />
                       <span>Bugün çalışmanı işaretleyerek serini koru.</span>
                     </div>

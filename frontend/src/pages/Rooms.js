@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import ThemeToggle from "@/components/ThemeToggle";
 import AppLogo from "@/components/AppLogo";
 import axios from "axios";
 import { API } from "@/App";
@@ -259,10 +258,10 @@ export default function Rooms() {
   };
 
   const sharedInputClass =
-    "mt-2 h-11 rounded-xl border border-border/70 bg-secondary/70 text-foreground placeholder:text-muted-foreground shadow-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 dark:bg-secondary/80";
+    "mt-2 h-11 rounded-xl border border-border/70 bg-secondary/70 text-foreground placeholder:text-muted-foreground shadow-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 ";
 
   const sharedSelectClass =
-    "mt-2 h-11 w-full rounded-xl border border-border/70 bg-secondary/70 px-3 text-sm text-foreground shadow-none focus:outline-none focus:ring-2 focus:ring-ring dark:bg-secondary/80";
+    "mt-2 h-11 w-full rounded-xl border border-border/70 bg-secondary/70 px-3 text-sm text-foreground shadow-none focus:outline-none focus:ring-2 focus:ring-ring ";
 
   const surfaceCardClass =
     "rounded-2xl border border-border/70 bg-card/95 text-card-foreground shadow-[0_12px_30px_-24px_rgba(15,23,42,0.45)]";
@@ -302,10 +301,6 @@ export default function Rooms() {
             </button>
 
             <div className="flex items-center justify-end gap-2" data-testid="rooms-theme-toggle-wrap">
-              <ThemeToggle
-                dataTestId="theme-toggle"
-                className="border border-border bg-background/90 shadow-sm hover:bg-secondary"
-              />
               <Button variant="outline" size="sm" onClick={() => navigate("/")} data-testid="btn-home">
                 <Home className="h-4 w-4" />
                 Ana Sayfa
@@ -487,7 +482,7 @@ export default function Rooms() {
                   )}
 
                   {joinError && (
-                    <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300" data-testid="join-room-error-message">
+                    <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700   " data-testid="join-room-error-message">
                       {joinError}
                     </div>
                   )}

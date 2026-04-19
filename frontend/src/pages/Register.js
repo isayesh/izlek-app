@@ -73,8 +73,8 @@ export default function Register() {
   // Show Firebase configuration warning
   if (!firebaseConfigured) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-        <Card className="w-full max-w-md shadow-lg dark:bg-slate-800">
+      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-50 via-white to-blue-50   ">
+        <Card className="w-full max-w-md shadow-lg ">
           <CardHeader>
             <CardTitle className="text-2xl text-center flex items-center justify-center gap-2">
               <AlertCircle className="h-6 w-6 text-amber-500" />
@@ -115,10 +115,10 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      <Card className="w-full max-w-md shadow-lg dark:bg-slate-800" data-testid="register-card">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-50 via-white to-blue-50   ">
+      <Card className="w-full max-w-md shadow-lg " data-testid="register-card">
         <CardHeader>
-          <CardTitle className="text-3xl text-center font-bold text-gray-900 dark:text-white">
+          <CardTitle className="text-3xl text-center font-bold text-gray-900 ">
             Kayıt Ol
           </CardTitle>
         </CardHeader>
@@ -131,7 +131,7 @@ export default function Register() {
             )}
             
             <div className="space-y-2">
-              <Label htmlFor="name" className="dark:text-gray-200">İsim</Label>
+              <Label htmlFor="name" className="">İsim</Label>
               <Input
                 id="name"
                 type="text"
@@ -140,12 +140,12 @@ export default function Register() {
                 onChange={(e) => setName(e.target.value)}
                 disabled={loading}
                 data-testid="input-name"
-                className="dark:bg-slate-700 dark:text-white dark:border-slate-600"
+                className="  "
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="dark:text-gray-200">Email</Label>
+              <Label htmlFor="email" className="">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -154,12 +154,12 @@ export default function Register() {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
                 data-testid="input-email"
-                className="dark:bg-slate-700 dark:text-white dark:border-slate-600"
+                className="  "
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="dark:text-gray-200">Şifre</Label>
+              <Label htmlFor="password" className="">Şifre</Label>
               <Input
                 id="password"
                 type="password"
@@ -168,12 +168,12 @@ export default function Register() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
                 data-testid="input-password"
-                className="dark:bg-slate-700 dark:text-white dark:border-slate-600"
+                className="  "
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="dark:text-gray-200">Şifre Tekrar</Label>
+              <Label htmlFor="confirmPassword" className="">Şifre Tekrar</Label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -182,7 +182,7 @@ export default function Register() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={loading}
                 data-testid="input-confirm-password"
-                className="dark:bg-slate-700 dark:text-white dark:border-slate-600"
+                className="  "
               />
             </div>
 
@@ -198,16 +198,16 @@ export default function Register() {
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <div className="text-sm text-center text-gray-600 dark:text-gray-300">
+          <div className="text-sm text-center text-gray-600 ">
             Zaten hesabın var mı?{' '}
-            <Link to="/login" className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium" data-testid="link-login">
+            <Link to="/login" className="text-indigo-600  hover:underline font-medium" data-testid="link-login">
               Giriş Yap
             </Link>
           </div>
           <Button 
             onClick={() => navigate('/')} 
             variant="ghost" 
-            className="w-full dark:text-gray-200 dark:hover:bg-slate-700"
+            className="w-full  "
             data-testid="btn-back-home"
           >
             Ana Sayfaya Dön

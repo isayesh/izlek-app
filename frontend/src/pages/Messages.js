@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Home, MessageSquare, Send, Users } from "lucide-react";
 
-import ThemeToggle from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -312,14 +311,13 @@ export default function Messages() {
           <CardContent className="p-6 sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4" data-testid="messages-header-content">
               <div>
-                <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100" data-testid="messages-title">DM Kutum</h1>
-                <p className="mt-2 text-base text-slate-600 dark:text-slate-300" data-testid="messages-subtitle">
+                <h1 className="text-4xl font-bold tracking-tight text-slate-900 " data-testid="messages-title">DM Kutum</h1>
+                <p className="mt-2 text-base text-slate-600 " data-testid="messages-subtitle">
                   Arkadaşlarınla bire bir konuşmaları buradan başlatabilir ve sürdürebilirsin.
                 </p>
               </div>
 
               <div className="flex flex-wrap items-center gap-2" data-testid="messages-header-actions">
-                <ThemeToggle className="h-10 w-10 rounded-xl border border-border/70 bg-background text-slate-700 hover:bg-secondary dark:text-slate-100" />
                 <Button variant="outline" onClick={() => navigate("/friends")} className="h-10 rounded-xl border-border/70 bg-background hover:bg-secondary" data-testid="messages-go-friends-button">
                   <Users className="mr-2 h-4 w-4" /> Arkadaşlar
                 </Button>
@@ -332,7 +330,7 @@ export default function Messages() {
         </Card>
 
         {error && (
-          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300" data-testid="messages-error-state">
+          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700   " data-testid="messages-error-state">
             {error}
           </div>
         )}
@@ -349,13 +347,13 @@ export default function Messages() {
               <ScrollArea className="h-[260px] lg:h-[72vh]" data-testid="messages-friends-scroll-area">
                 <div className="space-y-2 p-3" data-testid="messages-friends-list">
                   {friendsLoading ? (
-                    <p className="rounded-2xl px-3 py-8 text-center text-sm text-slate-600 dark:text-slate-300" data-testid="messages-friends-loading">
+                    <p className="rounded-2xl px-3 py-8 text-center text-sm text-slate-600 " data-testid="messages-friends-loading">
                       Arkadaşlar yükleniyor...
                     </p>
                   ) : friends.length === 0 ? (
                     <div className="rounded-2xl border border-dashed border-border/70 bg-background/60 px-4 py-8 text-center" data-testid="messages-friends-empty-state">
-                      <p className="text-sm font-medium text-slate-700 dark:text-slate-200">Henüz arkadaşın bulunmuyor.</p>
-                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Mesajlaşmak için önce arkadaş eklemelisin.</p>
+                      <p className="text-sm font-medium text-slate-700 ">Henüz arkadaşın bulunmuyor.</p>
+                      <p className="mt-1 text-xs text-slate-500 ">Mesajlaşmak için önce arkadaş eklemelisin.</p>
                     </div>
                   ) : (
                     friends.map((friend) => {
@@ -385,16 +383,16 @@ export default function Messages() {
                           <div className="min-w-0 flex-1">
                             <div className="flex items-start justify-between gap-3">
                               <div className="min-w-0 flex-1">
-                                <p className="truncate font-semibold text-slate-900 dark:text-slate-100" data-testid={`messages-friend-username-${friend.profile_id}`}>
+                                <p className="truncate font-semibold text-slate-900 " data-testid={`messages-friend-username-${friend.profile_id}`}>
                                   {getPublicUsername(friend)}
                                 </p>
-                                <p className="mt-1 truncate text-sm text-slate-500 dark:text-slate-400" data-testid={`messages-friend-preview-${friend.profile_id}`}>
+                                <p className="mt-1 truncate text-sm text-slate-500 " data-testid={`messages-friend-preview-${friend.profile_id}`}>
                                   {lastMessagePreview}
                                 </p>
                               </div>
                               <div className="flex shrink-0 flex-col items-end gap-1 pt-0.5">
                                 {lastMessageTime && (
-                                  <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500" data-testid={`messages-friend-time-${friend.profile_id}`}>
+                                  <span className="text-[11px] font-medium text-slate-400 " data-testid={`messages-friend-time-${friend.profile_id}`}>
                                     {lastMessageTime}
                                   </span>
                                 )}
@@ -420,11 +418,11 @@ export default function Messages() {
                   <div className="border-b border-border/60 px-5 py-4" data-testid="messages-conversation-header">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
-                        <p className="text-lg font-semibold text-slate-900 dark:text-slate-100" data-testid="messages-conversation-title">
+                        <p className="text-lg font-semibold text-slate-900 " data-testid="messages-conversation-title">
                           {getPublicUsername(selectedFriend)}
                         </p>
                         {selectedFriendHandle && (
-                          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400" data-testid="messages-conversation-handle">
+                          <p className="mt-1 text-sm text-slate-500 " data-testid="messages-conversation-handle">
                             {selectedFriendHandle}
                           </p>
                         )}
@@ -442,7 +440,7 @@ export default function Messages() {
                         >
                           <Users className="h-4 w-4" /> {sendingInvite ? "Gönderiliyor..." : "Odaya Davet Et"}
                         </Button>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400" data-testid="messages-active-room-hint">
+                        <p className="text-[11px] text-slate-500 " data-testid="messages-active-room-hint">
                           {roomInviteLoading
                             ? "Aktif room kontrol ediliyor..."
                             : activeRoomInviteTarget?.room_name
@@ -456,13 +454,13 @@ export default function Messages() {
                   <ScrollArea className="flex-1 bg-background/30 px-5 py-5" data-testid="messages-conversation-scroll-area">
                     {messagesLoading ? (
                       <div className="flex h-full min-h-[280px] items-center justify-center" data-testid="messages-conversation-loading">
-                        <p className="text-sm text-slate-600 dark:text-slate-300">Mesajlar yükleniyor...</p>
+                        <p className="text-sm text-slate-600 ">Mesajlar yükleniyor...</p>
                       </div>
                     ) : activeMessages.length === 0 ? (
                       <div className="flex h-full min-h-[280px] items-center justify-center rounded-2xl border border-dashed border-border/70 bg-background/60 px-6 text-center" data-testid="messages-conversation-empty-state">
                         <div>
-                          <p className="text-base font-semibold text-slate-900 dark:text-slate-100">Henüz mesaj yok</p>
-                          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">İlk mesajı göndererek konuşmayı başlat.</p>
+                          <p className="text-base font-semibold text-slate-900 ">Henüz mesaj yok</p>
+                          <p className="mt-2 text-sm text-slate-600 ">İlk mesajı göndererek konuşmayı başlat.</p>
                         </div>
                       </div>
                     ) : (
@@ -476,9 +474,9 @@ export default function Messages() {
                               {isRoomInvite ? (
                                 <div className={`max-w-[92%] rounded-2xl border px-4 py-3 text-sm shadow-sm ${isOwnMessage ? "border-primary/25 bg-primary/10 text-foreground" : "border-border/70 bg-background text-foreground"}`} data-testid={`messages-room-invite-card-${message.id}`}>
                                   <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/80">Oda Daveti</p>
-                                  <p className="mt-2 leading-6 text-slate-700 dark:text-slate-200">{getRoomInviteCopy(message, isOwnMessage)}</p>
+                                  <p className="mt-2 leading-6 text-slate-700 ">{getRoomInviteCopy(message, isOwnMessage)}</p>
                                   {message.room_invite?.room_name && (
-                                    <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">{message.room_invite.room_name}</p>
+                                    <p className="mt-2 text-sm font-semibold text-slate-900 ">{message.room_invite.room_name}</p>
                                   )}
                                   <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
                                     <p className="text-[11px] text-muted-foreground">{formatMessageTime(message.created_at)}</p>
@@ -525,9 +523,9 @@ export default function Messages() {
               ) : (
                 <div className="flex flex-1 items-center justify-center px-6 py-10" data-testid="messages-no-selection-state">
                   <div className="max-w-sm rounded-2xl border border-dashed border-border/70 bg-background/60 px-6 py-10 text-center">
-                    <MessageSquare className="mx-auto h-10 w-10 text-slate-400 dark:text-slate-500" />
-                    <p className="mt-4 text-base font-semibold text-slate-900 dark:text-slate-100">Mesajlaşmak için soldan bir arkadaş seç</p>
-                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                    <MessageSquare className="mx-auto h-10 w-10 text-slate-400 " />
+                    <p className="mt-4 text-base font-semibold text-slate-900 ">Mesajlaşmak için soldan bir arkadaş seç</p>
+                    <p className="mt-2 text-sm text-slate-600 ">
                       Bir kişiyi seçtiğinde konuşma alanı ve mesaj yazma bölümü burada açılacak.
                     </p>
                   </div>

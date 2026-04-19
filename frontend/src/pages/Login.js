@@ -58,8 +58,8 @@ export default function Login() {
   // Show Firebase configuration warning
   if (!firebaseConfigured) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-        <Card className="w-full max-w-md shadow-lg dark:bg-slate-800">
+      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-50 via-white to-blue-50   ">
+        <Card className="w-full max-w-md shadow-lg ">
           <CardHeader>
             <CardTitle className="text-2xl text-center flex items-center justify-center gap-2">
               <AlertCircle className="h-6 w-6 text-amber-500" />
@@ -100,10 +100,10 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      <Card className="w-full max-w-md shadow-lg dark:bg-slate-800" data-testid="login-card">
+    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-50 via-white to-blue-50   ">
+      <Card className="w-full max-w-md shadow-lg " data-testid="login-card">
         <CardHeader>
-          <CardTitle className="text-3xl text-center font-bold text-gray-900 dark:text-white">
+          <CardTitle className="text-3xl text-center font-bold text-gray-900 ">
             Giriş Yap
           </CardTitle>
         </CardHeader>
@@ -116,7 +116,7 @@ export default function Login() {
             )}
             
             <div className="space-y-2">
-              <Label htmlFor="email" className="dark:text-gray-200">Email</Label>
+              <Label htmlFor="email" className="">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -125,12 +125,12 @@ export default function Login() {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
                 data-testid="input-email"
-                className="dark:bg-slate-700 dark:text-white dark:border-slate-600"
+                className="  "
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="dark:text-gray-200">Şifre</Label>
+              <Label htmlFor="password" className="">Şifre</Label>
               <Input
                 id="password"
                 type="password"
@@ -139,7 +139,7 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
                 data-testid="input-password"
-                className="dark:bg-slate-700 dark:text-white dark:border-slate-600"
+                className="  "
               />
             </div>
 
@@ -155,16 +155,16 @@ export default function Login() {
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <div className="text-sm text-center text-gray-600 dark:text-gray-300">
+          <div className="text-sm text-center text-gray-600 ">
             Hesabın yok mu?{' '}
-            <Link to="/register" className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium" data-testid="link-register">
+            <Link to="/register" className="text-indigo-600  hover:underline font-medium" data-testid="link-register">
               Kayıt Ol
             </Link>
           </div>
           <Button 
             onClick={() => navigate('/')} 
             variant="ghost" 
-            className="w-full dark:text-gray-200 dark:hover:bg-slate-700"
+            className="w-full  "
             data-testid="btn-back-home"
           >
             Ana Sayfaya Dön

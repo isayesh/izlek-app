@@ -112,10 +112,10 @@ export default function RoomPage() {
     const participantAvatarUrl = getParticipantAvatarUrl(participant);
     const participantStatusLabel = participant.is_on_break ? "Molada" : isRunning ? "Çalışıyor" : "Hazır";
     const participantStatusPillClasses = participant.is_on_break
-      ? "border-yellow-200 bg-yellow-100 text-yellow-700 dark:border-yellow-500/20 dark:bg-yellow-500/10 dark:text-yellow-400"
+      ? "border-yellow-200 bg-yellow-100 text-yellow-700   "
       : isRunning
-        ? "border-green-200 bg-green-100 text-green-700 dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-400"
-        : "border-slate-200 bg-slate-100 text-slate-700 dark:border-slate-500/20 dark:bg-slate-500/10 dark:text-slate-300";
+        ? "border-green-200 bg-green-100 text-green-700   "
+        : "border-slate-200 bg-slate-100 text-slate-700   ";
 
     return (
       <div
@@ -836,7 +836,7 @@ export default function RoomPage() {
                     data-testid="btn-copy-code"
                   >
                     {copied ? (
-                      <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                      <Check className="h-3.5 w-3.5 text-emerald-600 " />
                     ) : (
                       <Copy className="h-3.5 w-3.5 text-muted-foreground" />
                     )}
@@ -946,12 +946,12 @@ export default function RoomPage() {
                     </div>
 
                     {isOnBreak && (
-                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-[inherit] border border-slate-200/70 bg-white/72 px-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-sm dark:border-white/10 dark:bg-slate-950/58 dark:ring-1 dark:ring-amber-200/5 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] dark:backdrop-blur-md" data-testid="break-mode-overlay" aria-hidden="true">
+                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-[inherit] border border-slate-200/70 bg-white/72 px-5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-sm      " data-testid="break-mode-overlay" aria-hidden="true">
                         <div className="pointer-events-none mx-auto flex max-w-[16rem] flex-col items-center justify-center">
-                          <div className="text-sm font-semibold leading-tight tracking-tight text-slate-700 sm:text-[0.95rem] dark:text-slate-50">
+                          <div className="text-sm font-semibold leading-tight tracking-tight text-slate-700 sm:text-[0.95rem] ">
                             Moladasın
                           </div>
-                          <div className="mt-1.5 text-[11px] font-medium leading-snug text-slate-500 sm:text-xs dark:text-slate-300/70">
+                          <div className="mt-1.5 text-[11px] font-medium leading-snug text-slate-500 sm:text-xs ">
                             Bu sürede çalışma süren artmaz
                           </div>
                         </div>
@@ -986,7 +986,7 @@ export default function RoomPage() {
                   <Button
                     onClick={handleToggleBreakMode}
                     size="lg"
-                    className={`h-12 w-full justify-center rounded-xl border px-5 shadow-[0_18px_30px_-24px_rgba(2,6,23,0.95)] sm:w-auto sm:min-w-[156px] ${isOnBreak ? 'border-green-200 bg-green-100 text-green-700 hover:bg-green-200 dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-400 dark:hover:bg-green-500/15' : 'border-yellow-200 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:border-yellow-500/20 dark:bg-yellow-500/10 dark:text-yellow-400 dark:hover:bg-yellow-500/15'}`}
+                    className={`h-12 w-full justify-center rounded-xl border px-5 shadow-[0_18px_30px_-24px_rgba(2,6,23,0.95)] sm:w-auto sm:min-w-[156px] ${isOnBreak ? 'border-green-200 bg-green-100 text-green-700 hover:bg-green-200    ' : 'border-yellow-200 bg-yellow-100 text-yellow-700 hover:bg-yellow-200    '}`}
                     data-testid="btn-break-mode-toggle"
                   >
                     {isOnBreak ? "Çalışmaya Dön" : "Mola Ver"}
@@ -1101,7 +1101,7 @@ export default function RoomPage() {
                               <div
                                 className={`inline-block rounded-2xl border px-3.5 py-3 shadow-sm ${
                                   isOwnMessage
-                                    ? 'border-transparent bg-slate-900 text-slate-50 dark:bg-slate-100 dark:text-slate-950'
+                                    ? 'border-transparent bg-slate-900 text-slate-50  '
                                     : 'border-border/60 bg-secondary/90 text-foreground'
                                 }`}
                                 data-testid={`message-bubble-${message.id}`}
@@ -1156,7 +1156,7 @@ export default function RoomPage() {
             {/* Locked glass overlay when chat is disabled */}
             {!chatEnabled && (
               <div
-                className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 rounded-b-2xl bg-background/50 px-6 text-center backdrop-blur-md dark:bg-slate-950/55"
+                className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 rounded-b-2xl bg-background/50 px-6 text-center backdrop-blur-md "
                 data-testid="chat-locked-overlay"
                 aria-live="polite"
               >

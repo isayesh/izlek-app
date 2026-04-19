@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import ThemeToggle from "@/components/ThemeToggle";
 import { API } from "@/App";
 import { Home, Users, Trophy } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -58,13 +57,13 @@ export default function Leaderboard() {
 
   const getRowClassName = (rank) => {
     if (rank === 1) {
-      return "border-amber-200/70 bg-amber-50/55 dark:border-amber-500/20 dark:bg-amber-500/[0.06]";
+      return "border-amber-200/70 bg-amber-50/55  ";
     }
     if (rank === 2) {
-      return "border-slate-300/80 bg-slate-50 dark:border-slate-600 dark:bg-slate-800/70";
+      return "border-slate-300/80 bg-slate-50  ";
     }
     if (rank === 3) {
-      return "border-orange-200/70 bg-orange-50/55 dark:border-orange-500/20 dark:bg-orange-500/[0.06]";
+      return "border-orange-200/70 bg-orange-50/55  ";
     }
     return "border-border/70 bg-card";
   };
@@ -92,10 +91,10 @@ export default function Leaderboard() {
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="space-y-4">
                 <div>
-                  <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-5xl lg:text-6xl" data-testid="leaderboard-title">
+                  <h1 className="text-4xl font-bold tracking-tight text-slate-900  sm:text-5xl lg:text-6xl" data-testid="leaderboard-title">
                     Liderlik Tablosu
                   </h1>
-                  <p className="mt-2 text-base text-slate-600 dark:text-slate-300 md:text-lg" data-testid="leaderboard-subtitle">
+                  <p className="mt-2 text-base text-slate-600  md:text-lg" data-testid="leaderboard-subtitle">
                     {periodConfig.subtitle}
                   </p>
                 </div>
@@ -110,7 +109,7 @@ export default function Leaderboard() {
                         type="button"
                         variant={isActive ? "default" : "ghost"}
                         onClick={() => setActivePeriod(period.key)}
-                        className={`h-10 rounded-xl px-4 text-sm font-semibold ${isActive ? "bg-slate-900 text-white shadow-sm hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200" : "text-slate-600 hover:bg-secondary dark:text-slate-300 dark:hover:bg-slate-800"}`}
+                        className={`h-10 rounded-xl px-4 text-sm font-semibold ${isActive ? "bg-slate-900 text-white shadow-sm hover:bg-slate-800   " : "text-slate-600 hover:bg-secondary  "}`}
                         data-testid={`leaderboard-period-${period.key}`}
                       >
                         {period.label}
@@ -121,11 +120,10 @@ export default function Leaderboard() {
               </div>
 
               <div className="flex items-center gap-2" data-testid="leaderboard-header-actions">
-                <ThemeToggle className="h-10 w-10 rounded-xl border border-border/70 bg-background text-slate-700 hover:bg-secondary dark:text-slate-100" />
                 <Button
                   variant="outline"
                   onClick={() => navigate("/rooms")}
-                  className="h-10 rounded-xl border-border/70 bg-background text-slate-700 hover:bg-secondary dark:text-slate-100"
+                  className="h-10 rounded-xl border-border/70 bg-background text-slate-700 hover:bg-secondary "
                   data-testid="btn-rooms"
                 >
                   <Users className="mr-2 h-4 w-4" />
@@ -134,7 +132,7 @@ export default function Leaderboard() {
                 <Button
                   variant="outline"
                   onClick={() => navigate("/dashboard")}
-                  className="h-10 rounded-xl border-border/70 bg-background text-slate-700 hover:bg-secondary dark:text-slate-100"
+                  className="h-10 rounded-xl border-border/70 bg-background text-slate-700 hover:bg-secondary "
                   data-testid="btn-dashboard"
                 >
                   <Home className="mr-2 h-4 w-4" />
@@ -149,17 +147,17 @@ export default function Leaderboard() {
           <Card className="rounded-2xl border border-border/70 bg-card shadow-[0_18px_36px_-28px_rgba(15,23,42,0.16)]" data-testid="my-rank-card">
             <CardContent className="p-4 sm:p-5">
               <div className="flex flex-wrap items-center justify-between gap-4" data-testid="my-rank-content">
-                <p className="text-sm font-semibold text-slate-600 dark:text-slate-300" data-testid="my-rank-title">
+                <p className="text-sm font-semibold text-slate-600 " data-testid="my-rank-title">
                   Senin Sıralaman
                 </p>
                 <div className="flex items-center gap-8" data-testid="my-rank-metrics">
                   <div className="text-right" data-testid="my-rank-value-wrap">
-                    <p className="text-xs text-slate-500 dark:text-slate-400" data-testid="my-rank-label">Sıra</p>
-                    <p className="text-lg font-bold text-slate-900 dark:text-slate-100" data-testid="my-rank-value">#{myEntry.rank}</p>
+                    <p className="text-xs text-slate-500 " data-testid="my-rank-label">Sıra</p>
+                    <p className="text-lg font-bold text-slate-900 " data-testid="my-rank-value">#{myEntry.rank}</p>
                   </div>
                   <div className="text-right" data-testid="my-time-value-wrap">
-                    <p className="text-xs text-slate-500 dark:text-slate-400" data-testid="my-time-label">{periodConfig.metricLabel}</p>
-                    <p className="text-lg font-semibold text-slate-900 dark:text-slate-100" data-testid="my-time-value">
+                    <p className="text-xs text-slate-500 " data-testid="my-time-label">{periodConfig.metricLabel}</p>
+                    <p className="text-lg font-semibold text-slate-900 " data-testid="my-time-value">
                       {formatStudyTime(myEntry.total_seconds)}
                     </p>
                   </div>
@@ -171,23 +169,23 @@ export default function Leaderboard() {
 
         <Card className="rounded-2xl border border-border/70 bg-card shadow-[0_18px_36px_-28px_rgba(15,23,42,0.16)]" data-testid="leaderboard-list-card">
           <CardHeader className="border-b border-border/70 pb-4">
-            <CardTitle className="flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-slate-100" data-testid="leaderboard-list-title">
-              <Trophy className="h-5 w-5 text-slate-800 dark:text-slate-200" />
+            <CardTitle className="flex items-center gap-2 text-xl font-bold text-slate-900 " data-testid="leaderboard-list-title">
+              <Trophy className="h-5 w-5 text-slate-800 " />
               {periodConfig.label} Sıralama
             </CardTitle>
           </CardHeader>
 
           <CardContent className="p-5 sm:p-6">
             {loading ? (
-              <p className="py-10 text-center text-slate-600 dark:text-slate-300" data-testid="leaderboard-loading-text">
+              <p className="py-10 text-center text-slate-600 " data-testid="leaderboard-loading-text">
                 Yükleniyor...
               </p>
             ) : error ? (
-              <p className="py-10 text-center text-red-600 dark:text-red-400" data-testid="leaderboard-error-text">
+              <p className="py-10 text-center text-red-600 " data-testid="leaderboard-error-text">
                 {error}
               </p>
             ) : entries.length === 0 ? (
-              <p className="py-10 text-center text-slate-600 dark:text-slate-300" data-testid="leaderboard-empty-text">
+              <p className="py-10 text-center text-slate-600 " data-testid="leaderboard-empty-text">
                 Bu dönem için henüz leaderboard verisi bulunmuyor.
               </p>
             ) : (
@@ -203,7 +201,7 @@ export default function Leaderboard() {
                       className={`grid grid-cols-[84px_1fr_auto] items-center gap-3 rounded-xl border p-4 shadow-sm transition-[border-color,box-shadow] duration-200 hover:shadow-[0_16px_30px_-24px_rgba(15,23,42,0.16)] ${getRowClassName(entry.rank)}`}
                       data-testid={`leaderboard-row-${entry.rank}`}
                     >
-                      <div className="flex items-center gap-2 text-slate-800 dark:text-slate-200" data-testid={`leaderboard-rank-${entry.rank}`}>
+                      <div className="flex items-center gap-2 text-slate-800 " data-testid={`leaderboard-rank-${entry.rank}`}>
                         {medal && <span className="text-xl leading-none" data-testid={`leaderboard-medal-${entry.rank}`}>{medal}</span>}
                         <span className="text-2xl font-bold">#{entry.rank}</span>
                       </div>
@@ -222,16 +220,16 @@ export default function Leaderboard() {
                           )}
                         </div>
                         <div className="min-w-0">
-                          <p className="truncate font-semibold text-slate-900 dark:text-slate-100" data-testid={`leaderboard-username-${entry.rank}`}>
+                          <p className="truncate font-semibold text-slate-900 " data-testid={`leaderboard-username-${entry.rank}`}>
                             {displayName}
                           </p>
-                          <p className="truncate text-xs text-slate-500 dark:text-slate-400" data-testid={`leaderboard-secondary-text-${entry.rank}`}>
+                          <p className="truncate text-xs text-slate-500 " data-testid={`leaderboard-secondary-text-${entry.rank}`}>
                             Çalışma süresi bazlı sıralama
                           </p>
                         </div>
                       </div>
                       <div className="text-right" data-testid={`leaderboard-time-wrap-${entry.rank}`}>
-                        <p className="font-semibold text-slate-900 dark:text-slate-100" data-testid={`leaderboard-time-${entry.rank}`}>
+                        <p className="font-semibold text-slate-900 " data-testid={`leaderboard-time-${entry.rank}`}>
                           {formatStudyTime(entry.total_seconds)}
                         </p>
                       </div>

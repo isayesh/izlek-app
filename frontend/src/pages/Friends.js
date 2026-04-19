@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import ThemeToggle from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -142,14 +141,13 @@ export default function Friends() {
           <CardContent className="p-6 sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4" data-testid="friends-header-content">
               <div>
-                <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100" data-testid="friends-title">Arkadaşlar</h1>
-                <p className="mt-2 text-base text-slate-600 dark:text-slate-300" data-testid="friends-subtitle">
+                <h1 className="text-4xl font-bold tracking-tight text-slate-900 " data-testid="friends-title">Arkadaşlar</h1>
+                <p className="mt-2 text-base text-slate-600 " data-testid="friends-subtitle">
                   Kullanıcı ara, arkadaşlık isteği gönder ve mevcut arkadaşlarını görüntüle.
                 </p>
               </div>
 
               <div className="flex flex-wrap items-center gap-2" data-testid="friends-header-actions">
-                <ThemeToggle className="h-10 w-10 rounded-xl border border-border/70 bg-background text-slate-700 hover:bg-secondary dark:text-slate-100" />
                 <Button variant="outline" onClick={() => navigate("/notifications")} className="h-10 rounded-xl border-border/70 bg-background hover:bg-secondary" data-testid="friends-go-notifications-button">
                   <Bell className="mr-2 h-4 w-4" /> Gelen İstekler
                 </Button>
@@ -163,7 +161,7 @@ export default function Friends() {
 
         {(error || success) && (
           <div
-            className={`rounded-2xl border px-4 py-3 text-sm font-medium ${error ? "border-red-200 bg-red-50 text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300" : "border-green-200 bg-green-50 text-green-700 dark:border-green-900/60 dark:bg-green-950/30 dark:text-green-300"}`}
+            className={`rounded-2xl border px-4 py-3 text-sm font-medium ${error ? "border-red-200 bg-red-50 text-red-700   " : "border-green-200 bg-green-50 text-green-700   "}`}
             data-testid={error ? "friends-error-message" : "friends-success-message"}
           >
             {error || success}
@@ -172,8 +170,8 @@ export default function Friends() {
 
         <Card className="rounded-2xl border border-border/70 bg-card shadow-[0_18px_36px_-28px_rgba(15,23,42,0.16)]" data-testid="friends-search-card">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-slate-100" data-testid="friends-search-title">
-              <Search className="h-5 w-5 text-slate-800 dark:text-slate-200" /> Kullanıcı Ara
+            <CardTitle className="flex items-center gap-2 text-xl font-bold text-slate-900 " data-testid="friends-search-title">
+              <Search className="h-5 w-5 text-slate-800 " /> Kullanıcı Ara
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
@@ -209,13 +207,13 @@ export default function Friends() {
 
                       <div className="min-w-0 flex-1 space-y-2" data-testid={`friends-search-details-${profile.profile_id}`}>
                         <div>
-                          <p className="font-semibold text-slate-900 dark:text-slate-100" data-testid={`friends-search-username-${profile.profile_id}`}>{getPublicUsername(profile)}</p>
+                          <p className="font-semibold text-slate-900 " data-testid={`friends-search-username-${profile.profile_id}`}>{getPublicUsername(profile)}</p>
                           {handleText && (
-                            <p className="text-sm text-slate-500 dark:text-slate-400" data-testid={`friends-search-handle-${profile.profile_id}`}>{handleText}</p>
+                            <p className="text-sm text-slate-500 " data-testid={`friends-search-handle-${profile.profile_id}`}>{handleText}</p>
                           )}
                         </div>
-                        <p className="text-sm text-slate-600 dark:text-slate-300" data-testid={`friends-search-goal-${profile.profile_id}`}>Hedef: {profile.study_goal || "Belirtilmedi"}</p>
-                        <p className="text-sm text-slate-600 dark:text-slate-300" data-testid={`friends-search-hours-${profile.profile_id}`}>Günlük Çalışma: {formatDailyStudyHours(profile.daily_study_hours)}</p>
+                        <p className="text-sm text-slate-600 " data-testid={`friends-search-goal-${profile.profile_id}`}>Hedef: {profile.study_goal || "Belirtilmedi"}</p>
+                        <p className="text-sm text-slate-600 " data-testid={`friends-search-hours-${profile.profile_id}`}>Günlük Çalışma: {formatDailyStudyHours(profile.daily_study_hours)}</p>
                         <Button
                           onClick={() => handleSendFriendRequest(profile.profile_id)}
                           disabled={isDisabled || actionProfileId === profile.profile_id}
@@ -232,7 +230,7 @@ export default function Friends() {
               })}
 
               {!searchLoading && searchQuery.trim() && searchResults.length === 0 && (
-                <p className="rounded-2xl border border-dashed border-slate-300 px-4 py-6 text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400" data-testid="friends-search-empty-state">
+                <p className="rounded-2xl border border-dashed border-slate-300 px-4 py-6 text-sm text-slate-500  " data-testid="friends-search-empty-state">
                   Aramana uygun kullanıcı bulunamadı.
                 </p>
               )}
@@ -242,15 +240,15 @@ export default function Friends() {
 
         <Card className="rounded-2xl border border-border/70 bg-card shadow-[0_18px_36px_-28px_rgba(15,23,42,0.16)]" data-testid="friends-list-card">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-slate-100" data-testid="friends-list-title">
-              <Users className="h-5 w-5 text-slate-800 dark:text-slate-200" /> Arkadaş Listen
+            <CardTitle className="flex items-center gap-2 text-xl font-bold text-slate-900 " data-testid="friends-list-title">
+              <Users className="h-5 w-5 text-slate-800 " /> Arkadaş Listen
             </CardTitle>
           </CardHeader>
           <CardContent>
             {friendsLoading ? (
-              <p className="py-10 text-center text-slate-600 dark:text-slate-300" data-testid="friends-list-loading">Yükleniyor...</p>
+              <p className="py-10 text-center text-slate-600 " data-testid="friends-list-loading">Yükleniyor...</p>
             ) : friends.length === 0 ? (
-              <p className="py-10 text-center text-slate-600 dark:text-slate-300" data-testid="friends-list-empty">Henüz arkadaşın bulunmuyor.</p>
+              <p className="py-10 text-center text-slate-600 " data-testid="friends-list-empty">Henüz arkadaşın bulunmuyor.</p>
             ) : (
               <div className="grid gap-4 md:grid-cols-2" data-testid="friends-list">
                 {friends.map((friend) => {
@@ -268,10 +266,10 @@ export default function Friends() {
                           </div>
 
                           <div className="min-w-0 flex-1 space-y-1" data-testid={`friends-list-details-${friend.profile_id}`}>
-                            <p className="font-semibold text-slate-900 dark:text-slate-100" data-testid={`friends-list-username-${friend.profile_id}`}>{getPublicUsername(friend)}</p>
-                            {handleText && <p className="text-sm text-slate-500 dark:text-slate-400" data-testid={`friends-list-handle-${friend.profile_id}`}>{handleText}</p>}
-                            <p className="text-sm text-slate-600 dark:text-slate-300" data-testid={`friends-list-goal-${friend.profile_id}`}>Hedef: {friend.study_goal || "Belirtilmedi"}</p>
-                            <p className="text-sm text-slate-600 dark:text-slate-300" data-testid={`friends-list-hours-${friend.profile_id}`}>Günlük Çalışma: {formatDailyStudyHours(friend.daily_study_hours)}</p>
+                            <p className="font-semibold text-slate-900 " data-testid={`friends-list-username-${friend.profile_id}`}>{getPublicUsername(friend)}</p>
+                            {handleText && <p className="text-sm text-slate-500 " data-testid={`friends-list-handle-${friend.profile_id}`}>{handleText}</p>}
+                            <p className="text-sm text-slate-600 " data-testid={`friends-list-goal-${friend.profile_id}`}>Hedef: {friend.study_goal || "Belirtilmedi"}</p>
+                            <p className="text-sm text-slate-600 " data-testid={`friends-list-hours-${friend.profile_id}`}>Günlük Çalışma: {formatDailyStudyHours(friend.daily_study_hours)}</p>
                           </div>
                         </div>
 
@@ -280,7 +278,7 @@ export default function Friends() {
                           variant="outline"
                           onClick={() => handleRemoveFriend(friend)}
                           disabled={removingFriendProfileId === friend.profile_id}
-                          className="h-10 shrink-0 rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-900/60 dark:text-red-300 dark:hover:bg-red-950/30"
+                          className="h-10 shrink-0 rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700   "
                           data-testid={`friends-remove-action-${friend.profile_id}`}
                         >
                           <UserMinus className="mr-2 h-4 w-4" />

@@ -4,13 +4,7 @@ export default function AppLogo({ className = "", alt = "Izlek" }) {
       <img
         src="/logo-light.svg"
         alt={alt}
-        className="block w-[140px] h-auto shrink-0 object-contain dark:hidden"
-        draggable="false"
-      />
-      <img
-        src="/logo-dark.svg"
-        alt={alt}
-        className="hidden w-[140px] h-auto shrink-0 object-contain dark:block"
+        className="block w-[140px] h-auto shrink-0 object-contain"
         draggable="false"
       />
     </span>
