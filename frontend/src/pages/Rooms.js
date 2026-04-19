@@ -373,13 +373,12 @@ export default function Rooms() {
           <section className="grid gap-6 lg:grid-cols-[55%_45%] lg:gap-7" data-testid="rooms-lobby-layout">
             <Card id="rooms-forms-section" className={surfaceCardClass} data-testid="rooms-left-panel">
               <CardHeader className="pb-2">
-                <div className="space-y-3">
-                  <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">Birlikte daha odaklı çalış</p>
+                <div className="space-y-2">
                   <h1 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl" data-testid="rooms-title">
                     Online Çalışma Odaları
                   </h1>
                   <p className="max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base" data-testid="rooms-subtitle">
-                    Oda oluştur ya da kodla katıl. Hemen aşağıdan modu seçip tek akışta devam et.
+                    Oda oluştur veya bir odaya katıl.
                   </p>
                 </div>
 
@@ -562,50 +561,70 @@ export default function Rooms() {
               </CardHeader>
 
               <CardContent className="pt-4">
-                {availableRoomsLoading ? (
-                  <div className="rounded-xl border border-border/60 bg-background/70 px-4 py-4 text-sm text-muted-foreground" data-testid="rooms-available-loading">
-                    Odalar yükleniyor...
+                <div className="rounded-xl border border-border/60 bg-background/75 overflow-hidden" data-testid="rooms-available-list-container">
+                  <div className="grid grid-cols-[1fr_auto_auto] items-center gap-2 border-b border-border/60 bg-indigo-50/40 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+                    <span>Oda</span>
+                    <span>Durum</span>
+                    <span className="text-right">Aksiyon</span>
                   </div>
-                ) : availableRooms.length > 0 ? (
-                  <div className="grid gap-3" data-testid="rooms-available-grid">
-                    {availableRooms.map((room) => {
-                      const participantCount = room?.participants?.length || 0;
-                      const isPrivate = room?.room_type === "private" || Boolean(room?.is_private);
 
-                      return (
-                        <div key={room.id} className="rounded-xl border border-border/60 bg-background/85 px-4 py-4" data-testid={`rooms-available-item-${room.id}`}>
-                          <div className="flex items-start justify-between gap-3">
+                  {availableRoomsLoading ? (
+                    <div className="px-4 py-4 text-sm text-muted-foreground" data-testid="rooms-available-loading">
+                      Odalar yükleniyor...
+                    </div>
+                  ) : availableRooms.length > 0 ? (
+                    <div className="divide-y divide-border/50" data-testid="rooms-available-grid">
+                      {availableRooms.map((room) => {
+                        const participantCount = room?.participants?.length || 0;
+                        const isPrivate = room?.room_type === "private" || Boolean(room?.is_private);
+
+                        return (
+                          <div key={room.id} className="grid grid-cols-[1fr_auto_auto] items-start gap-2 px-4 py-4" data-testid={`rooms-available-item-${room.id}`}>
                             <div>
-                              <p className="text-base font-semibold text-foreground">{room.name}</p>
-                              <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                              <p className="text-sm font-semibold text-foreground">{room.name}</p>
+                              <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
                                 <span className="inline-flex items-center gap-1.5">
-                                  <Users className="h-4 w-4 text-indigo-500" />
+                                  <Users className="h-3.5 w-3.5 text-indigo-500" />
                                   {participantCount} kişi
                                 </span>
                                 <span className="inline-flex items-center gap-1.5">
-                                  {isPrivate ? <Lock className="h-4 w-4 text-indigo-500" /> : <Globe className="h-4 w-4 text-indigo-500" />}
+                                  {isPrivate ? <Lock className="h-3.5 w-3.5 text-indigo-500" /> : <Globe className="h-3.5 w-3.5 text-indigo-500" />}
                                   {isPrivate ? "Özel" : "Herkese Açık"}
                                 </span>
                               </div>
                             </div>
 
-                            <Button
-                              onClick={() => handleAvailableRoomJoin(room)}
-                              className="h-9 rounded-lg bg-indigo-600 px-4 text-sm text-white shadow-sm transition-all duration-200 hover:bg-indigo-700"
-                              data-testid={`rooms-available-join-${room.id}`}
-                            >
-                              Katıl
-                            </Button>
+                            <span className="inline-flex h-7 items-center rounded-md bg-indigo-50 px-2 text-xs font-medium text-indigo-700">
+                              {participantCount > 0 ? "Aktif" : "Bekliyor"}
+                            </span>
+
+                            <div className="flex justify-end">
+                              <Button
+                                onClick={() => handleAvailableRoomJoin(room)}
+                                className="h-8 rounded-lg bg-indigo-600 px-3 text-xs text-white shadow-sm transition-all duration-200 hover:bg-indigo-700"
+                                data-testid={`rooms-available-join-${room.id}`}
+                              >
+                                Katıl
+                              </Button>
+                            </div>
                           </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="px-4 py-5" data-testid="rooms-available-empty">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-medium text-foreground">Lobi hazır</p>
+                          <p className="mt-1 text-sm text-muted-foreground">
+                            Aktif odalar burada listelenecek. Kodun varsa soldan hemen katılabilirsin.
+                          </p>
                         </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="rounded-xl border border-border/60 bg-background/70 px-4 py-4 text-sm text-muted-foreground" data-testid="rooms-available-empty">
-                    Henüz listelenen aktif oda görünmüyor. Oda koduyla katılabilir veya yeni bir oda oluşturabilirsin.
-                  </div>
-                )}
+                        <span className="inline-flex h-7 items-center rounded-md bg-indigo-50 px-2 text-xs font-medium text-indigo-700">Katılmaya hazır</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </section>
