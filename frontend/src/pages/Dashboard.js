@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   AlertTriangle,
@@ -154,6 +154,7 @@ function TaskFormFields({ draft, setDraft, prefix }) {
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { logout, currentUser } = useAuth();
 
   const [programs, setPrograms] = useState([]);
@@ -570,6 +571,16 @@ export default function Dashboard() {
     { label: "Arkadaşlar", icon: Users, onClick: () => navigate("/friends"), testId: "dashboard-btn-friends", badgeCount: pendingFriendRequestCount },
   ];
 
+  const navActivePaths = {
+    "Ana Sayfa": ["/", "/dashboard"],
+    "Net Takibi": ["/net-tracking"],
+    Odalar: ["/rooms"],
+    Liderlik: ["/leaderboard"],
+    Profil: ["/profile"],
+    "DM Kutum": ["/messages"],
+    Arkadaşlar: ["/friends"],
+  };
+
   const quickActions = [
     {
       label: "Oda Bul",
@@ -594,7 +605,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="px-4 pb-10 pt-4 sm:px-6 sm:pb-12 lg:px-10 xl:px-12">
         <div className="space-y-8 sm:space-y-10">
-          <header className="flex flex-col gap-3 border-b border-indigo-200/85 bg-indigo-50/35 pb-4 xl:flex-row xl:items-center xl:gap-4">
+          <header className="flex flex-col gap-3 border-b border-indigo-200 bg-indigo-50/35 pb-4 xl:flex-row xl:items-center xl:gap-4">
             <button
               type="button"
               onClick={() => navigate("/dashboard")}
@@ -610,13 +621,18 @@ export default function Dashboard() {
                 {navigationActions.map((action) => {
                   const Icon = action.icon;
                   const badgeLabel = action.badgeCount > 9 ? "9+" : action.badgeCount;
+                  const isActive = (navActivePaths[action.label] || []).includes(location.pathname);
                   return (
                     <Button
                       key={action.label}
                       variant="ghost"
                       size="sm"
                       onClick={action.onClick}
-                      className="h-11 shrink-0 rounded-[15px] border border-transparent px-5 text-sm font-semibold tracking-[0.01em] text-slate-500 shadow-none [&_svg]:size-4 hover:border-indigo-100/90 hover:bg-indigo-50/60 hover:text-indigo-600 active:bg-indigo-100/60"
+                      className={`h-11 shrink-0 rounded-[15px] border px-5 text-sm font-semibold tracking-[0.01em] shadow-none [&_svg]:size-4 transition-colors duration-200 ${
+                        isActive
+                          ? "border-indigo-200 bg-indigo-100/75 text-indigo-700"
+                          : "border-transparent text-slate-600 hover:border-indigo-200/90 hover:bg-indigo-100/70 hover:text-indigo-700 active:bg-indigo-100/80"
+                      }`}
                       data-testid={action.testId}
                     >
                       <span className="relative inline-flex items-center justify-center">
@@ -642,7 +658,7 @@ export default function Dashboard() {
                   await logout();
                   navigate("/");
                 }}
-                className="shrink-0 border-border/60 bg-white/70 text-foreground shadow-none hover:border-indigo-200 hover:bg-indigo-100/70 hover:text-indigo-700"
+                className="shrink-0 border-indigo-100/80 bg-white/85 text-slate-700 shadow-none hover:border-indigo-200 hover:bg-indigo-100/75 hover:text-indigo-700"
                 data-testid="btn-logout"
               >
                 <LogOut className="h-4 w-4" />
