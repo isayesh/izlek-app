@@ -741,15 +741,7 @@ export default function Dashboard() {
 
                   <div className="flex items-end justify-between gap-4" data-testid="dashboard-progress-summary">
                     <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-sm text-muted-foreground">Günlük ilerlemen</p>
-                        {isDailyGoalCompleted && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-medium text-indigo-700">
-                            <span aria-hidden="true">✓</span>
-                            Bugün tamamlandı
-                          </span>
-                        )}
-                      </div>
+                      <p className="text-sm text-muted-foreground">Günlük ilerlemen</p>
                       <p
                         className={`mt-1 text-3xl tracking-[-0.03em] ${
                           isDailyGoalCompleted ? "font-bold text-indigo-700" : "font-semibold text-foreground"
@@ -758,6 +750,9 @@ export default function Dashboard() {
                       >
                         %{progressValue}
                       </p>
+                      {isDailyGoalCompleted && (
+                        <p className="mt-1 text-sm font-medium text-foreground/80">Günlük hedef tamamlandı ✓</p>
+                      )}
                     </div>
                     <div className="text-right text-sm leading-6 text-muted-foreground">
                       <p>{completedTodayCount}/{todaysTasks.length || 0} görev bugün bitti</p>
