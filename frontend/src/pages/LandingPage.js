@@ -58,7 +58,7 @@ const OTHER_FEATURES = [
 function HeroRoomMockup() {
   return (
     <div
-      className="relative mx-auto w-full max-w-[560px] rounded-[28px] bg-white/90 p-5 shadow-[0_14px_30px_-28px_rgba(79,70,229,0.18)] sm:p-6"
+      className="relative mx-auto w-full max-w-[560px] rounded-[28px] bg-white/95 p-5 shadow-[0_12px_30px_-26px_rgba(79,70,229,0.16)] ring-1 ring-[#EEF0F6] sm:p-6"
       data-testid="landing-hero-mockup"
     >
       <div className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-[#4F46E5]/8 blur-2xl" />
@@ -68,31 +68,31 @@ function HeroRoomMockup() {
         <span className="rounded-full bg-[#EEF2FF] px-2.5 py-1 text-[11px] font-medium text-[#4F46E5]">18 kişi aktif</span>
       </div>
 
-      <div className="mt-5 flex items-center gap-2" data-testid="landing-mockup-participants">
+      <div className="mt-5 flex items-center gap-2.5" data-testid="landing-mockup-participants">
         {["A", "B", "C", "+15"].map((item, index) => (
           <div
             key={`${item}-${index}`}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F4F6] text-xs font-semibold text-[#374151]"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-xs font-semibold text-[#1F2937] ring-1 ring-[#E6EAF5] shadow-[0_6px_14px_-12px_rgba(17,24,39,0.35)]"
           >
             {item}
           </div>
         ))}
       </div>
 
-      <div className="mt-7 rounded-2xl bg-[#F8FAFF] px-4 py-6 text-center">
+      <div className="mt-7 rounded-[22px] bg-white px-4 py-7 text-center ring-1 ring-[#E9ECF6] shadow-[0_16px_30px_-24px_rgba(79,70,229,0.22)]">
         <p className="text-xs uppercase tracking-[0.14em] text-[#6B7280]">Ortak Timer</p>
-        <p className="mt-2 text-5xl font-semibold tracking-tight text-[#111827] sm:text-6xl">24:10</p>
+        <p className="mt-2 text-6xl font-semibold tracking-tight text-[#0F172A] sm:text-7xl">24:10</p>
       </div>
 
-      <div className="mt-6 space-y-2.5" data-testid="landing-mockup-chat">
-        <div className="ml-auto inline-flex max-w-[78%] items-center gap-1.5 rounded-2xl bg-[#EEF2FF] px-3 py-2 text-sm text-[#3730A3]">
-          <Timer className="h-3.5 w-3.5" />
-          <span>Bugün 2 odak turu daha</span>
-        </div>
-        <div className="inline-flex max-w-[82%] items-center gap-1.5 rounded-2xl bg-[#F3F4F6] px-3 py-2 text-sm text-[#374151]">
-          <MessageSquare className="h-3.5 w-3.5" />
-          <span>Başlıyorum, 25 dk odak</span>
-        </div>
+      <div className="mt-5 space-y-2" data-testid="landing-mockup-chat">
+        <p className="inline-flex items-center gap-1.5 text-xs text-[#6B7280]">
+          <Timer className="h-3.5 w-3.5 text-[#4F46E5]" />
+          Bugün 2 odak turu daha
+        </p>
+        <p className="inline-flex items-center gap-1.5 text-xs text-[#6B7280]">
+          <MessageSquare className="h-3.5 w-3.5 text-[#4F46E5]" />
+          Başlıyorum, 25 dk odak
+        </p>
       </div>
     </div>
   );
