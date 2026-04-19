@@ -435,17 +435,30 @@ export default function RoomPage() {
     }
   };
 
+  // Resolve scrollable viewport inside chat area
+  const getChatViewport = () => {
+    const container = chatContainerRef.current;
+    if (!container) return null;
+
+    return container.querySelector("[data-radix-scroll-area-viewport]") || container;
+  };
+
   // Check if user is at bottom of chat
   const isUserAtBottom = () => {
-    if (!chatContainerRef.current) return true;
-    const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+    const viewport = getChatViewport();
+    if (!viewport) return true;
+
+    const { scrollTop, scrollHeight, clientHeight } = viewport;
     // Consider user at bottom if within 100px of bottom
     return scrollHeight - scrollTop - clientHeight < 100;
   };
 
-  // Scroll to bottom of chat
+  // Scroll to bottom of chat (inside chat viewport only)
   const scrollToBottom = () => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const viewport = getChatViewport();
+    if (!viewport) return;
+
+    viewport.scrollTop = viewport.scrollHeight;
   };
 
   // Auto-scroll when messages change (only if user was at bottom)
