@@ -11,6 +11,11 @@ import { saveRoom } from "@/lib/storage";
 import { useAuth } from "@/contexts/AuthContext";
 
 const ROOM_PASSWORD_MIN_LENGTH = 6;
+const SHARED_ROOMS_STORAGE_KEY = "rooms_shared_public_v1";
+const SHARED_PUBLIC_ROOMS = [
+  { key: "izlek-ortak-oda", name: "İzlek Ortak Oda" },
+  { key: "sessiz-calisma-odasi", name: "Sessiz Çalışma Odası" }
+];
 
 export default function Rooms() {
   const navigate = useNavigate();
@@ -98,22 +103,88 @@ export default function Rooms() {
 
   useEffect(() => {
     const loadAvailableRooms = async () => {
-      const lastRoomId = localStorage.getItem("currentRoomId");
-      if (!lastRoomId) {
-        setAvailableRooms([]);
-        setAvailableRoomsLoading(false);
-        return;
-      }
-
       setAvailableRoomsLoading(true);
+
       try {
-        const response = await axios.get(`${API}/rooms/${lastRoomId}`);
-        const room = response.data;
-        if (room?.id) {
-          setAvailableRooms([room]);
-        } else {
-          setAvailableRooms([]);
+        const storedRaw = localStorage.getItem(SHARED_ROOMS_STORAGE_KEY);
+        let storedSharedRooms = {};
+
+        if (storedRaw) {
+          try {
+            storedSharedRooms = JSON.parse(storedRaw) || {};
+          } catch {
+            storedSharedRooms = {};
+          }
         }
+
+        const nextStoredSharedRooms = { ...storedSharedRooms };
+        const resolvedRooms = [];
+
+        for (const template of SHARED_PUBLIC_ROOMS) {
+          let room = null;
+          const savedCode = nextStoredSharedRooms?.[template.key]?.code;
+
+          if (savedCode) {
+            try {
+              const lookup = await axios.get(`${API}/rooms/code/${savedCode}`);
+              if (lookup.data?.id && !lookup.data?.is_private) {
+                room = lookup.data;
+              }
+            } catch {
+              room = null;
+            }
+          }
+
+          if (!room) {
+            const ownerId = currentUser?.uid || localStorage.getItem("userId") || "shared-lobby-system";
+            const ownerName = currentUser?.displayName?.trim() || localStorage.getItem("userName") || "İzlek Ortak";
+
+            try {
+              const createRes = await axios.post(`${API}/rooms`, {
+                name: template.name,
+                owner_name: ownerName,
+                owner_id: ownerId,
+                owner_avatar_url: null,
+                room_type: "public",
+                room_password: null
+              });
+
+              if (createRes.data?.id) {
+                room = createRes.data;
+                nextStoredSharedRooms[template.key] = {
+                  id: createRes.data.id,
+                  code: createRes.data.code
+                };
+              }
+            } catch (error) {
+              console.error(`Error creating shared room ${template.name}:`, error);
+            }
+          }
+
+          if (room?.id) {
+            resolvedRooms.push(room);
+          }
+        }
+
+        const lastRoomId = localStorage.getItem("currentRoomId");
+        if (lastRoomId) {
+          try {
+            const response = await axios.get(`${API}/rooms/${lastRoomId}`);
+            const room = response.data;
+            if (room?.id) {
+              resolvedRooms.push(room);
+            }
+          } catch {
+            // ignore stale current room id
+          }
+        }
+
+        const uniqueRooms = Array.from(
+          new Map(resolvedRooms.filter((room) => room?.id).map((room) => [room.id, room])).values()
+        );
+
+        localStorage.setItem(SHARED_ROOMS_STORAGE_KEY, JSON.stringify(nextStoredSharedRooms));
+        setAvailableRooms(uniqueRooms);
       } catch (error) {
         console.error("Error loading available rooms:", error);
         setAvailableRooms([]);
@@ -123,7 +194,7 @@ export default function Rooms() {
     };
 
     loadAvailableRooms();
-  }, []);
+  }, [currentUser?.uid]);
 
   const ensureHandleReady = () => {
     if (identityLoading) {
@@ -556,7 +627,7 @@ export default function Rooms() {
                   Aktif Odalar
                 </CardTitle>
                 <p className="text-sm text-muted-foreground" data-testid="rooms-available-subtitle">
-                  Hızlıca tarayıp hemen bir odaya katılabilirsin.
+                  Her zaman açık ortak odalara doğrudan katılabilirsin.
                 </p>
               </CardHeader>
 
@@ -577,11 +648,19 @@ export default function Rooms() {
                       {availableRooms.map((room) => {
                         const participantCount = room?.participants?.length || 0;
                         const isPrivate = room?.room_type === "private" || Boolean(room?.is_private);
+                        const isSharedRoom = SHARED_PUBLIC_ROOMS.some((template) => template.name === room?.name);
 
                         return (
                           <div key={room.id} className="grid grid-cols-[1fr_auto_auto] items-start gap-2 px-4 py-4" data-testid={`rooms-available-item-${room.id}`}>
                             <div>
-                              <p className="text-sm font-semibold text-foreground">{room.name}</p>
+                              <div className="flex items-center gap-2">
+                                <p className="text-sm font-semibold text-foreground">{room.name}</p>
+                                {isSharedRoom && (
+                                  <span className="inline-flex h-5 items-center rounded-md border border-indigo-200 bg-indigo-50 px-1.5 text-[10px] font-medium uppercase tracking-[0.08em] text-indigo-700">
+                                    Ortak
+                                  </span>
+                                )}
+                              </div>
                               <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
                                 <span className="inline-flex items-center gap-1.5">
                                   <Users className="h-3.5 w-3.5 text-indigo-500" />
@@ -615,12 +694,12 @@ export default function Rooms() {
                     <div className="px-4 py-5" data-testid="rooms-available-empty">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <p className="text-sm font-medium text-foreground">Lobi hazır</p>
+                          <p className="text-sm font-medium text-foreground">Ortak odalar şu an listelenemiyor</p>
                           <p className="mt-1 text-sm text-muted-foreground">
-                            Aktif odalar burada listelenecek. Kodun varsa soldan hemen katılabilirsin.
+                            Birkaç saniye sonra tekrar deneyebilir veya soldan oda kodu ile doğrudan katılabilirsin.
                           </p>
                         </div>
-                        <span className="inline-flex h-7 items-center rounded-md bg-indigo-50 px-2 text-xs font-medium text-indigo-700">Katılmaya hazır</span>
+                        <span className="inline-flex h-7 items-center rounded-md bg-indigo-50 px-2 text-xs font-medium text-indigo-700">Lobi</span>
                       </div>
                     </div>
                   )}
