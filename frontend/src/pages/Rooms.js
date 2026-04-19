@@ -333,7 +333,7 @@ export default function Rooms() {
     <div className="min-h-screen bg-background text-foreground" data-testid="rooms-page">
       <div className="px-4 pb-10 pt-6 sm:px-6 sm:pb-12 lg:px-10 xl:px-12">
         <div className="space-y-10 sm:space-y-12">
-          <header className="flex flex-col gap-3 border-b border-indigo-200 bg-indigo-50/35 pb-4 lg:flex-row lg:items-center lg:justify-between">
+          <header className="flex flex-col gap-3 border-b border-indigo-200 bg-indigo-50/35 pb-4 lg:flex-row lg:items-center lg:gap-4">
             <button
               type="button"
               onClick={() => navigate("/dashboard")}
@@ -344,13 +344,13 @@ export default function Rooms() {
               <span className="font-display text-4xl font-extrabold tracking-[-0.03em] leading-none text-gray-900">izlek</span>
             </button>
 
-            <div className="w-full max-w-full flex-1 overflow-x-auto pb-1 lg:flex lg:items-center lg:justify-end lg:pb-0" data-testid="rooms-theme-toggle-wrap">
-              <div className="ml-auto flex w-fit items-center gap-3 rounded-[16px] border border-indigo-100/70 bg-white/70 p-1">
+            <div className="w-full max-w-full flex-1 overflow-x-auto pb-1 lg:pb-0" data-testid="rooms-theme-toggle-wrap">
+              <div className="flex w-full items-center justify-center gap-3 lg:justify-end lg:pr-2">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => navigate("/")}
-                  className="h-11 shrink-0 rounded-[15px] border border-transparent bg-transparent px-5 text-sm font-semibold tracking-[0.01em] text-slate-700 shadow-none [&_svg]:size-4 transition-colors duration-200 hover:border-indigo-200 hover:bg-indigo-100/70 hover:text-indigo-700 active:bg-indigo-100/80 focus-visible:border-indigo-200 focus-visible:bg-indigo-100/70"
+                  className="h-11 shrink-0 rounded-[15px] border border-transparent bg-transparent px-5 text-sm font-semibold tracking-[0.01em] text-slate-600 shadow-none [&_svg]:size-4 transition-colors duration-200 hover:border-indigo-200 hover:bg-indigo-100/70 hover:text-indigo-700 active:bg-indigo-100/80 focus-visible:border-indigo-200 focus-visible:bg-indigo-100/70"
                   data-testid="btn-home"
                 >
                   <Home className="h-4 w-4" />
@@ -360,7 +360,7 @@ export default function Rooms() {
                   variant="ghost"
                   size="sm"
                   onClick={() => navigate("/leaderboard")}
-                  className="h-11 shrink-0 rounded-[15px] border border-transparent bg-transparent px-5 text-sm font-semibold tracking-[0.01em] text-slate-700 shadow-none [&_svg]:size-4 transition-colors duration-200 hover:border-indigo-200 hover:bg-indigo-100/70 hover:text-indigo-700 active:bg-indigo-100/80 focus-visible:border-indigo-200 focus-visible:bg-indigo-100/70"
+                  className="h-11 shrink-0 rounded-[15px] border border-transparent bg-transparent px-5 text-sm font-semibold tracking-[0.01em] text-slate-600 shadow-none [&_svg]:size-4 transition-colors duration-200 hover:border-indigo-200 hover:bg-indigo-100/70 hover:text-indigo-700 active:bg-indigo-100/80 focus-visible:border-indigo-200 focus-visible:bg-indigo-100/70"
                   data-testid="btn-leaderboard"
                 >
                   <Trophy className="h-4 w-4" />
