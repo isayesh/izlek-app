@@ -107,6 +107,10 @@ export default function RoomPage() {
   };
 
   const allParticipants = room?.participants || [];
+  const HEADER_VISIBLE_PARTICIPANTS = 6;
+  const headerVisibleParticipants = allParticipants.slice(0, HEADER_VISIBLE_PARTICIPANTS);
+  const headerHiddenParticipantsCount = Math.max(0, allParticipants.length - HEADER_VISIBLE_PARTICIPANTS);
+  const headerAvatarSizeClass = allParticipants.length <= 3 ? "h-11 w-11" : allParticipants.length <= 6 ? "h-10 w-10" : "h-9 w-9";
 
   const renderParticipantItem = (participant, variant = "card") => {
     const participantAvatarUrl = getParticipantAvatarUrl(participant);
@@ -831,7 +835,7 @@ export default function RoomPage() {
       {/* Header */}
       <div className="mb-4 w-full shrink-0" data-testid="room-header-wrapper">
         <div className="rounded-xl border border-slate-200/90 bg-white/88 p-4 shadow-[0_10px_24px_-18px_rgba(79,70,229,0.25)] sm:p-5" data-testid="room-header-card">
-          <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex items-center gap-4">
               <Button
                 variant="outline"
@@ -866,6 +870,57 @@ export default function RoomPage() {
                   </Button>
                 </div>
               </div>
+            </div>
+
+            <div className="flex items-center gap-2" data-testid="room-header-participants-row">
+              {headerVisibleParticipants.map((participant) => {
+                const participantAvatarUrl = getParticipantAvatarUrl(participant);
+                return (
+                  <button
+                    key={`header-participant-${participant.id}`}
+                    type="button"
+                    onClick={() => setShowParticipantsModal(true)}
+                    className={`${headerAvatarSizeClass} flex items-center justify-center overflow-hidden rounded-full border border-slate-200/90 bg-white text-xs font-semibold text-foreground shadow-sm transition-colors duration-200 hover:bg-indigo-50/70`}
+                    data-testid={`header-participant-avatar-${participant.id}`}
+                    title={participant.name}
+                  >
+                    {participantAvatarUrl ? (
+                      <img
+                        src={participantAvatarUrl}
+                        alt={`${participant.name} avatar`}
+                        className="h-full w-full object-cover"
+                        data-testid={`header-participant-avatar-image-${participant.id}`}
+                        onError={() => setFailedParticipantAvatars((prev) => ({ ...prev, [participant.id]: true }))}
+                      />
+                    ) : (
+                      getInitial(participant.name)
+                    )}
+                  </button>
+                );
+              })}
+
+              {headerHiddenParticipantsCount > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setShowParticipantsModal(true)}
+                  className={`${headerAvatarSizeClass} inline-flex items-center justify-center rounded-full border border-slate-200/90 bg-white text-xs font-semibold text-muted-foreground shadow-sm transition-colors duration-200 hover:bg-indigo-50/70`}
+                  data-testid="header-participants-overflow"
+                  title={`${headerHiddenParticipantsCount} kişi daha`}
+                >
+                  +{headerHiddenParticipantsCount}
+                </button>
+              )}
+
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowParticipantsModal(true)}
+                className="h-8 shrink-0 rounded-full border border-slate-200 bg-white/75 px-3 text-xs font-semibold text-muted-foreground hover:bg-indigo-50/65 hover:text-foreground"
+                data-testid="participants-show-more-button"
+              >
+                Tümünü Gör
+              </Button>
             </div>
           </div>
         </div>
@@ -994,32 +1049,6 @@ export default function RoomPage() {
                 </div>
               </div>
 
-              <section className="mt-9 border-t border-indigo-100/80 pt-6" data-testid="participants-card">
-                <div className="mb-4 flex items-center justify-between gap-3">
-                  <CardTitle className="flex items-center gap-2 text-xl font-semibold text-foreground" data-testid="participants-title">
-                    <Users className="h-5 w-5 text-indigo-600" />
-                    Katılımcılar ({room.participants.length})
-                  </CardTitle>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowParticipantsModal(true)}
-                    className="h-8 shrink-0 rounded-full border border-slate-200 bg-white/75 px-3 text-xs font-semibold text-muted-foreground hover:bg-indigo-50/65 hover:text-foreground"
-                    data-testid="participants-show-more-button"
-                  >
-                    Tümünü Gör
-                  </Button>
-                </div>
-
-                {allParticipants.length > 0 ? (
-                  <div className={`grid gap-x-3 gap-y-4 ${allParticipants.length <= 4 ? "grid-cols-2 sm:grid-cols-3" : allParticipants.length <= 8 ? "grid-cols-3 sm:grid-cols-4" : "grid-cols-3 sm:grid-cols-4 lg:grid-cols-5"}`} data-testid="participants-panel-grid">
-                    {allParticipants.map((participant) => renderParticipantItem(participant, "panel"))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground" data-testid="participants-panel-empty">Henüz katılımcı yok.</p>
-                )}
-              </section>
             </div>
           </div>
         </div>
