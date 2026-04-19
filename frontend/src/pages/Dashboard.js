@@ -602,7 +602,7 @@ export default function Dashboard() {
               data-testid="dashboard-header-brand"
               aria-label="Dashboard"
             >
-              <span className="font-display text-3xl font-bold tracking-tight text-gray-900">izlek</span>
+              <span className="font-display text-4xl font-bold tracking-tight leading-none text-gray-900">izlek</span>
             </button>
 
             <div className="flex flex-col gap-3 xl:items-end">
