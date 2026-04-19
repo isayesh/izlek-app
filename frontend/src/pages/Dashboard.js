@@ -506,12 +506,6 @@ export default function Dashboard() {
     return selectedProgram?.tasks.filter((task) => normalizeTaskDay(task.day) === currentDay) || [];
   };
 
-  const getProgress = () => {
-    if (!selectedProgram || selectedProgram.tasks.length === 0) return 0;
-    const completed = selectedProgram.tasks.filter((task) => task.completed).length;
-    return Math.round((completed / selectedProgram.tasks.length) * 100);
-  };
-
   const groupTasksByDay = () => {
     const grouped = Object.fromEntries(DAY_ORDER.map((day) => [day, []]));
 
@@ -557,8 +551,8 @@ export default function Dashboard() {
 
   const todaysTasks = getTodaysTasks();
   const tasksByDay = groupTasksByDay();
-  const progressValue = getProgress();
   const completedTodayCount = todaysTasks.filter((task) => task.completed).length;
+  const progressValue = todaysTasks.length === 0 ? 0 : Math.round((completedTodayCount / todaysTasks.length) * 100);
   const shouldShowStreakReminder =
     profileData.streak_count > 0 && profileData.last_active_date !== getTodayDateString();
 
@@ -746,7 +740,7 @@ export default function Dashboard() {
 
                   <div className="flex items-end justify-between gap-4" data-testid="dashboard-progress-summary">
                     <div>
-                      <p className="text-sm text-muted-foreground">Genel ilerleme</p>
+                      <p className="text-sm text-muted-foreground">Günlük ilerlemen</p>
                       <p className="mt-1 text-3xl font-semibold tracking-[-0.03em] text-foreground" data-testid="progress-percentage">
                         %{progressValue}
                       </p>
