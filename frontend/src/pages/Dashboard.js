@@ -594,7 +594,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="px-4 pb-10 pt-4 sm:px-6 sm:pb-12 lg:px-10 xl:px-12">
         <div className="space-y-8 sm:space-y-10">
-          <header className="flex flex-col gap-3 border-b border-indigo-100/80 bg-indigo-50/20 pb-4 xl:flex-row xl:items-center xl:gap-4">
+          <header className="flex flex-col gap-3 border-b border-indigo-200/85 bg-indigo-50/35 pb-4 xl:flex-row xl:items-center xl:gap-4">
             <button
               type="button"
               onClick={() => navigate("/dashboard")}
@@ -642,7 +642,7 @@ export default function Dashboard() {
                   await logout();
                   navigate("/");
                 }}
-                className="shrink-0 border-border/50 bg-background/70 text-foreground shadow-none hover:border-indigo-200 hover:bg-indigo-50/70 hover:text-indigo-700"
+                className="shrink-0 border-border/60 bg-white/70 text-foreground shadow-none hover:border-indigo-200 hover:bg-indigo-100/70 hover:text-indigo-700"
                 data-testid="btn-logout"
               >
                 <LogOut className="h-4 w-4" />
@@ -1103,4 +1103,5 @@ export default function Dashboard() {
       </Dialog>
     </div>
   );
+}
 }
