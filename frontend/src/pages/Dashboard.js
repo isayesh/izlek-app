@@ -602,7 +602,7 @@ export default function Dashboard() {
               data-testid="dashboard-header-brand"
               aria-label="Dashboard"
             >
-              <span className="font-display text-xl font-bold tracking-tight text-gray-900">izlek</span>
+              <span className="font-display text-2xl font-bold tracking-tight text-gray-900">izlek</span>
             </button>
 
             <div className="flex flex-col gap-3 xl:items-end">
@@ -848,12 +848,6 @@ export default function Dashboard() {
                   </div>
 
                   <div className="flex flex-wrap items-center justify-end gap-3">
-                    <div className="text-right">
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Bugün</p>
-                      <p className="mt-1 text-lg font-semibold text-foreground">
-                        {completedTodayCount}/{todaysTasks.length}
-                      </p>
-                    </div>
                     <Button
                       onClick={() => setShowAddTask(true)}
                       className="h-auto rounded-lg bg-indigo-600 px-3 py-1.5 text-white shadow-sm transition-all duration-200 hover:bg-indigo-700 hover:shadow-md"
