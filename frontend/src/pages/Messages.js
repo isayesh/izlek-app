@@ -305,9 +305,9 @@ export default function Messages() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6 md:p-10" data-testid="messages-page">
+    <div className="min-h-screen bg-[#F3F5FC] p-6 md:p-10" data-testid="messages-page">
       <div className="mx-auto max-w-6xl space-y-6" data-testid="messages-page-container">
-        <Card className="rounded-2xl border border-border/70 bg-card shadow-[0_18px_36px_-28px_rgba(15,23,42,0.16)]" data-testid="messages-header-card">
+        <Card className="rounded-2xl border border-gray-200/70 bg-white/80 shadow-sm" data-testid="messages-header-card">
           <CardContent className="p-6 sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4" data-testid="messages-header-content">
               <div>
@@ -335,7 +335,7 @@ export default function Messages() {
           </div>
         )}
 
-        <Card className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-[0_18px_36px_-28px_rgba(15,23,42,0.16)]" data-testid="messages-main-card">
+        <Card className="overflow-hidden rounded-2xl border border-gray-200/70 bg-white/70 shadow-sm" data-testid="messages-main-card">
           <div className="grid min-h-[72vh] grid-cols-1 lg:grid-cols-[320px_minmax(0,1fr)]">
             <div className="border-b border-border/60 lg:border-b-0 lg:border-r" data-testid="messages-sidebar">
               <div className="border-b border-border/60 px-5 py-4">
@@ -451,7 +451,7 @@ export default function Messages() {
                     </div>
                   </div>
 
-                  <ScrollArea className="flex-1 bg-background/30 px-5 py-5" data-testid="messages-conversation-scroll-area">
+                  <ScrollArea className="flex-1 bg-white/45 px-5 py-6" data-testid="messages-conversation-scroll-area">
                     {messagesLoading ? (
                       <div className="flex h-full min-h-[280px] items-center justify-center" data-testid="messages-conversation-loading">
                         <p className="text-sm text-slate-600 ">Mesajlar yükleniyor...</p>
@@ -467,12 +467,17 @@ export default function Messages() {
                       <div className="space-y-3" data-testid="messages-conversation-list">
                         {activeMessages.map((message) => {
                           const isOwnMessage = message.sender_uid === currentUser?.uid;
+                          const isSystemMessage = message.message_type === "system" || message.message_type === "room_event";
                           const isRoomInvite = message.message_type === ROOM_INVITE_MESSAGE_TYPE && message.room_invite?.room_id;
 
                           return (
-                            <div key={message.id} className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`} data-testid={`messages-conversation-item-${message.id}`}>
-                              {isRoomInvite ? (
-                                <div className={`max-w-[92%] rounded-2xl border px-4 py-3 text-sm shadow-sm ${isOwnMessage ? "border-primary/25 bg-primary/10 text-foreground" : "border-border/70 bg-background text-foreground"}`} data-testid={`messages-room-invite-card-${message.id}`}>
+                            <div key={message.id} className={`flex ${isSystemMessage ? "justify-center" : isOwnMessage ? "justify-end" : "justify-start"}`} data-testid={`messages-conversation-item-${message.id}`}>
+                              {isSystemMessage ? (
+                                <span className="inline-flex rounded-full border border-gray-200/70 bg-gray-100/80 px-3 py-1 text-xs text-gray-600" data-testid={`system-message-content-${message.id}`}>
+                                  {message.message}
+                                </span>
+                              ) : isRoomInvite ? (
+                                <div className={`max-w-[92%] rounded-2xl border px-4 py-3 text-sm shadow-sm ${isOwnMessage ? "border-indigo-200 bg-indigo-50/70 text-foreground" : "border-gray-200/70 bg-white/80 text-foreground"}`} data-testid={`messages-room-invite-card-${message.id}`}>
                                   <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary/80">Oda Daveti</p>
                                   <p className="mt-2 leading-6 text-slate-700 ">{getRoomInviteCopy(message, isOwnMessage)}</p>
                                   {message.room_invite?.room_name && (
@@ -493,9 +498,9 @@ export default function Messages() {
                                   </div>
                                 </div>
                               ) : (
-                                <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm ${isOwnMessage ? "rounded-br-md bg-primary text-primary-foreground" : "rounded-bl-md border border-border/70 bg-background text-foreground"}`}>
+                                <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm ${isOwnMessage ? "rounded-br-md bg-[#4F46E5] text-white" : "rounded-bl-md border border-gray-200/70 bg-white/80 text-foreground"}`}>
                                   <p>{message.message}</p>
-                                  <p className={`mt-2 text-[11px] ${isOwnMessage ? "text-primary-foreground/75" : "text-muted-foreground"}`}>{formatMessageTime(message.created_at)}</p>
+                                  <p className={`mt-2 text-[11px] ${isOwnMessage ? "text-white/80" : "text-muted-foreground"}`}>{formatMessageTime(message.created_at)}</p>
                                 </div>
                               )}
                             </div>
@@ -505,16 +510,16 @@ export default function Messages() {
                     )}
                   </ScrollArea>
 
-                  <form onSubmit={handleSendMessage} className="border-t border-border/60 bg-background/60 px-5 py-4" data-testid="messages-composer-form">
+                  <form onSubmit={handleSendMessage} className="border-t border-gray-200/70 bg-white/75 px-5 py-5" data-testid="messages-composer-form">
                     <div className="flex flex-col gap-3 sm:flex-row">
                       <Input
                         value={draftMessage}
                         onChange={(event) => setDraftMessage(event.target.value)}
                         placeholder="Mesajını yaz..."
-                        className="h-11 rounded-xl"
+                        className="h-11 rounded-xl border border-gray-200 bg-[#F9FAFB] focus-visible:border-indigo-400 focus-visible:ring-2 focus-visible:ring-indigo-100 focus-visible:ring-offset-0"
                         data-testid="messages-composer-input"
                       />
-                      <Button type="submit" className="h-11 rounded-xl px-5" disabled={!draftMessage.trim() || sendingMessage} data-testid="messages-composer-send-button">
+                      <Button type="submit" className="h-11 rounded-xl bg-[#4F46E5] px-5 text-white shadow-md transition-colors duration-200 hover:bg-[#4338CA]" disabled={!draftMessage.trim() || sendingMessage} data-testid="messages-composer-send-button">
                         <Send className="mr-2 h-4 w-4" /> {sendingMessage ? "Gönderiliyor..." : "Gönder"}
                       </Button>
                     </div>
@@ -523,7 +528,7 @@ export default function Messages() {
               ) : (
                 <div className="flex flex-1 items-center justify-center px-6 py-10" data-testid="messages-no-selection-state">
                   <div className="max-w-sm rounded-2xl border border-dashed border-border/70 bg-background/60 px-6 py-10 text-center">
-                    <MessageSquare className="mx-auto h-10 w-10 text-slate-400 " />
+                    <MessageSquare className="mx-auto h-10 w-10 text-indigo-600" />
                     <p className="mt-4 text-base font-semibold text-slate-900 ">Mesajlaşmak için soldan bir arkadaş seç</p>
                     <p className="mt-2 text-sm text-slate-600 ">
                       Bir kişiyi seçtiğinde konuşma alanı ve mesaj yazma bölümü burada açılacak.
@@ -537,4 +542,5 @@ export default function Messages() {
       </div>
     </div>
   );
+}
 }
