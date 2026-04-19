@@ -739,7 +739,12 @@ export default function Dashboard() {
 
                   <div className="my-5 h-px bg-border/60" />
 
-                  <div className="flex items-end justify-between gap-4" data-testid="dashboard-progress-summary">
+                  <div
+                    className={`flex gap-4 ${
+                      isDailyGoalCompleted ? "items-start justify-start" : "items-end justify-between"
+                    }`}
+                    data-testid="dashboard-progress-summary"
+                  >
                     <div>
                       <p className="text-sm text-muted-foreground">Günlük ilerlemen</p>
                       <p
@@ -751,15 +756,17 @@ export default function Dashboard() {
                         %{progressValue}
                       </p>
                       {isDailyGoalCompleted && (
-                        <p className="mt-1 inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600">
+                        <p className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600">
                           <span className="text-indigo-700" aria-hidden="true">✓</span>
                           Günlük hedef tamamlandı
                         </p>
                       )}
                     </div>
-                    <div className="text-right text-sm leading-6 text-muted-foreground">
-                      <p>{completedTodayCount}/{todaysTasks.length || 0} görev bugün bitti</p>
-                    </div>
+                    {!isDailyGoalCompleted && (
+                      <div className="text-right text-sm leading-6 text-muted-foreground">
+                        <p>{completedTodayCount}/{todaysTasks.length || 0} görev bugün bitti</p>
+                      </div>
+                    )}
                   </div>
                   <Progress value={progressValue} className="mt-4 h-2.5 bg-secondary/80" />
 
