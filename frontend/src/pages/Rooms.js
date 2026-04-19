@@ -617,12 +617,3 @@ export default function Rooms() {
     </div>
   );
 }
- </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
-  );
-}
