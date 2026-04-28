@@ -54,6 +54,7 @@ export default function RoomPage() {
   // Chat auto-scroll refs
   const chatEndRef = useRef(null);
   const chatContainerRef = useRef(null);
+  const shouldAutoScrollRef = useRef(true);
 
   const firebaseUid = currentUser?.uid || localStorage.getItem("userId");
   const currentUserId = localStorage.getItem("currentUserId") || firebaseUid;
@@ -453,8 +454,7 @@ export default function RoomPage() {
     if (!viewport) return true;
 
     const { scrollTop, scrollHeight, clientHeight } = viewport;
-    // Consider user at bottom if within 100px of bottom
-    return scrollHeight - scrollTop - clientHeight < 100;
+    return scrollHeight - scrollTop - clientHeight < 50;
   };
 
   // Scroll to bottom of chat (inside chat viewport only)
@@ -463,11 +463,31 @@ export default function RoomPage() {
     if (!viewport) return;
 
     viewport.scrollTop = viewport.scrollHeight;
+    shouldAutoScrollRef.current = true;
   };
 
-  // Auto-scroll when messages change (only if user was at bottom)
+  // Track whether user is near bottom while scrolling
   useEffect(() => {
-    if (messages.length > 0 && isUserAtBottom()) {
+    const viewport = getChatViewport();
+    if (!viewport) {
+      return;
+    }
+
+    const handleViewportScroll = () => {
+      shouldAutoScrollRef.current = isUserAtBottom();
+    };
+
+    shouldAutoScrollRef.current = isUserAtBottom();
+    viewport.addEventListener("scroll", handleViewportScroll);
+
+    return () => {
+      viewport.removeEventListener("scroll", handleViewportScroll);
+    };
+  }, [roomId, messages.length]);
+
+  // Auto-scroll when messages change (only if user was already at bottom)
+  useEffect(() => {
+    if (messages.length > 0 && shouldAutoScrollRef.current) {
       scrollToBottom();
     }
   }, [messages]);
@@ -1112,8 +1132,7 @@ export default function RoomPage() {
                         const isSystemMessage = message.user_id === "system";
                         const isOwnMessage = message.user_id === currentUserId;
                         const messageAvatarUrl = getMessageAvatarUrl(message);
-                        const messageLength = message.content.length;
-                        const widthClass = messageLength < 20 ? 'max-w-[45%]' : messageLength < 50 ? 'max-w-[65%]' : 'max-w-[85%]';
+                        const widthClass = 'max-w-[75%] w-fit';
 
                         if (isSystemMessage) {
                           return (
@@ -1155,7 +1174,7 @@ export default function RoomPage() {
                               <div className="w-8 flex-shrink-0"></div>
                             )}
 
-                            <div className={`${widthClass} ${isOwnMessage ? 'text-right' : ''}`}>
+                            <div className={`${widthClass} min-w-0 ${isOwnMessage ? 'text-right' : ''}`}>
                               {/* Sender name: only show if not grouped (first message of sender) */}
                               {!isGrouped && (
                                 <div className={`flex items-center gap-2 mb-1 ${isOwnMessage ? 'justify-end' : ''}`} data-testid={`message-meta-${message.id}`}>
@@ -1164,14 +1183,14 @@ export default function RoomPage() {
                               )}
 
                               <div
-                                className={`inline-block rounded-2xl border px-3.5 py-3 shadow-sm ${
+                                className={`inline-block w-fit max-w-full rounded-2xl border px-3.5 py-3 shadow-sm ${
                                   isOwnMessage
                                     ? 'border-transparent bg-slate-900 text-slate-50  '
                                     : 'border-border/60 bg-secondary/90 text-foreground'
                                 }`}
                                 data-testid={`message-bubble-${message.id}`}
                               >
-                                <p className="text-sm break-words" data-testid={`message-content-${message.id}`}>{message.content}</p>
+                                <p className="text-sm break-words [overflow-wrap:anywhere]" data-testid={`message-content-${message.id}`}>{message.content}</p>
                               </div>
 
                               {/* Timestamp: show only on last message in group for cleaner look */}
