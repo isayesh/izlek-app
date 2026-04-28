@@ -2,6 +2,7 @@ import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import ActiveRoomIndicator from "@/components/ActiveRoomIndicator";
 
 // Pages
 import LandingPage from "@/pages/LandingPage";
@@ -36,6 +37,7 @@ function App() {
     <div className="App min-h-screen bg-background text-foreground">
       <AuthProvider>
         <BrowserRouter>
+          <ActiveRoomIndicator />
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
