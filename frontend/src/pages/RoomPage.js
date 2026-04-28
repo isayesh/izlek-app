@@ -719,8 +719,19 @@ export default function RoomPage() {
     }
   };
 
-  const handleBackToRooms = async () => {
+  const handleBackToRooms = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate("/dashboard");
+  };
+
+  const handleLeaveRoom = async () => {
     await leaveRoom();
+    localStorage.removeItem("active_room");
+    localStorage.removeItem("currentRoomId");
     navigate("/rooms");
   };
 
@@ -872,7 +883,7 @@ export default function RoomPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2" data-testid="room-header-participants-row">
+            <div className="flex min-w-0 flex-wrap items-center justify-end gap-2" data-testid="room-header-participants-row">
               {headerVisibleParticipants.map((participant) => {
                 const participantAvatarUrl = getParticipantAvatarUrl(participant);
                 return (
@@ -920,6 +931,17 @@ export default function RoomPage() {
                 data-testid="participants-show-more-button"
               >
                 Tümünü Gör
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleLeaveRoom}
+                className="h-9 shrink-0 rounded-lg border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-700 hover:bg-red-100 hover:text-red-800 sm:h-10 sm:px-4 sm:text-sm"
+                data-testid="btn-leave-room"
+              >
+                <span className="hidden sm:inline">Odadan Ayrıl</span>
+                <span className="sm:hidden">Ayrıl</span>
               </Button>
             </div>
           </div>
