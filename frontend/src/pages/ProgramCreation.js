@@ -149,23 +149,21 @@ function SelectionCard({ option, selected, onSelect, testId }) {
       onClick={() => onSelect(option.value)}
       className={cn(
         "group flex w-full items-start justify-between gap-4 rounded-2xl border px-4 py-4 text-left transition-[background-color,border-color,box-shadow,transform] duration-200",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-200 focus-visible:ring-offset-2 focus-visible:ring-offset-white",
         selected
-          ? "border-slate-900 bg-slate-900 text-slate-50 shadow-lg   "
-          : "border-border/80 bg-background/80 text-slate-900 shadow-sm hover:-translate-y-0.5 hover:border-slate-300 hover:bg-card hover:shadow-md     "
+          ? "border-indigo-500 bg-indigo-50 text-gray-900 shadow-sm"
+          : "border-gray-200 bg-white text-gray-900 shadow-sm hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md"
       )}
       data-testid={testId}
     >
-      <div className="space-y-1" data-testid={`${testId}-content`}>
-        <div className="text-base font-semibold" data-testid={`${testId}-title`}>
+      <div className="space-y-1 min-w-0" data-testid={`${testId}-content`}>
+        <div className="text-base font-semibold text-gray-900" data-testid={`${testId}-title`}>
           {option.title}
         </div>
         <p
           className={cn(
             "text-sm leading-6",
-            selected
-              ? "text-slate-200 "
-              : "text-slate-600 "
+            selected ? "text-gray-600" : "text-gray-500"
           )}
           data-testid={`${testId}-description`}
         >
@@ -177,8 +175,8 @@ function SelectionCard({ option, selected, onSelect, testId }) {
         className={cn(
           "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-[background-color,border-color,color] duration-200",
           selected
-            ? "border-current bg-white/15 text-white  "
-            : "border-slate-300 text-transparent "
+            ? "border-indigo-500 bg-indigo-500 text-white"
+            : "border-gray-300 text-transparent"
         )}
         data-testid={`${testId}-indicator`}
       >
@@ -363,37 +361,37 @@ export default function ProgramCreation() {
   };
 
   return (
-    <div className="min-h-screen bg-background px-4 py-6 text-slate-900  sm:px-6 sm:py-10" data-testid="program-create-page">
-      <div className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-2xl items-center justify-center" data-testid="program-create-page-container">
+    <div className="min-h-screen bg-gray-50 px-4 py-6 text-gray-900 sm:px-6 sm:py-10" data-testid="program-create-page">
+      <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-2xl items-center justify-center" data-testid="program-create-page-container">
         <Card
-          className="w-full border border-border/70 bg-card/95 shadow-[0_24px_60px_-38px_rgba(15,23,42,0.38)] backdrop-blur"
+          className="w-full rounded-2xl border border-gray-200 bg-white shadow-sm"
           data-testid="program-creation-card"
         >
           <CardHeader className="space-y-6" data-testid="program-create-header">
             <div className="space-y-3" data-testid="program-create-header-copy">
               <div className="flex items-center justify-between gap-3" data-testid="program-create-step-meta-row">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 " data-testid="program-create-step-eyebrow">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-indigo-600" data-testid="program-create-step-eyebrow">
                   {currentStepContent.eyebrow}
                 </p>
-                <p className="text-sm font-medium text-slate-500 " data-testid="program-create-step-counter">
+                <p className="text-sm font-medium text-gray-500" data-testid="program-create-step-counter">
                   Adım {step} / {TOTAL_STEPS}
                 </p>
               </div>
 
               <div className="space-y-2" data-testid="program-create-title-group">
-                <CardTitle className="text-4xl font-bold tracking-tight text-slate-900 " data-testid="program-create-title">
+                <CardTitle className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl" data-testid="program-create-title">
                   {currentStepContent.title}
                 </CardTitle>
-                <CardDescription className="max-w-xl text-base leading-7 text-slate-600 " data-testid="program-create-description">
+                <CardDescription className="max-w-xl text-base leading-7 text-gray-500" data-testid="program-create-description">
                   {currentStepContent.description}
                 </CardDescription>
               </div>
             </div>
 
             <div className="space-y-3" data-testid="program-create-progress-group">
-              <div className="h-1.5 rounded-full bg-slate-200 " data-testid="program-create-progress-track">
+              <div className="h-1.5 rounded-full bg-gray-200" data-testid="program-create-progress-track">
                 <div
-                  className="h-1.5 rounded-full bg-slate-900 transition-[width] duration-300 "
+                  className="h-1.5 rounded-full bg-indigo-600 transition-[width] duration-300"
                   style={{ width: `${progressValue}%` }}
                   data-testid="program-create-progress-bar"
                 />
@@ -405,7 +403,7 @@ export default function ProgramCreation() {
           {/* Error Message */}
           {error && (
               <div
-                className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700   "
+                className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
                 data-testid="program-create-error-message"
               >
               {error}
@@ -415,7 +413,7 @@ export default function ProgramCreation() {
             {step === 1 && (
               <div className="space-y-5" data-testid="program-create-step-name">
                 <div className="space-y-2.5" data-testid="program-create-name-field-group">
-                  <Label htmlFor="name" className="text-sm font-semibold text-slate-800 " data-testid="program-create-name-label">
+                  <Label htmlFor="name" className="text-sm font-semibold text-gray-800" data-testid="program-create-name-label">
                     Takma isim
                   </Label>
                 <Input
@@ -423,11 +421,11 @@ export default function ProgramCreation() {
                   placeholder="Örn: atlas"
                   value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="h-12 border-border/80 bg-background/90 text-base text-slate-900 placeholder:text-slate-400 focus-visible:ring-slate-400    "
+                    className="h-12 rounded-xl border-gray-200 bg-white text-base text-gray-900 placeholder:text-gray-400 focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-100"
                     data-testid="program-create-name-input"
                     autoFocus
                 />
-                  <p className="text-sm text-slate-500 " data-testid="program-create-name-helper">
+                  <p className="text-sm text-gray-500" data-testid="program-create-name-helper">
                     İstediğin zaman profilinden güncelleyebilirsin.
                   </p>
               </div>
@@ -437,11 +435,11 @@ export default function ProgramCreation() {
             {step === 2 && (
               <div className="space-y-5" data-testid="program-create-step-handle">
                 <div className="space-y-2.5" data-testid="program-create-handle-field-group">
-                  <Label htmlFor="handle" className="text-sm font-semibold text-slate-800 " data-testid="program-create-handle-label">
+                  <Label htmlFor="handle" className="text-sm font-semibold text-gray-800" data-testid="program-create-handle-label">
                     @handle
                   </Label>
                   <div className="relative" data-testid="program-create-handle-input-wrap">
-                    <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-base text-slate-500 " data-testid="program-create-handle-prefix">
+                    <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-base text-gray-500" data-testid="program-create-handle-prefix">
                       @
                     </span>
                     <Input
@@ -450,8 +448,8 @@ export default function ProgramCreation() {
                       onChange={(e) => setFormData({ ...formData, handle: e.target.value.replace(/^@+/, "").toLowerCase() })}
                       placeholder="ornek_handle"
                       className={cn(
-                        "h-12 border-border/80 bg-background/90 pl-8 text-base text-slate-900 placeholder:text-slate-400 focus-visible:ring-slate-400    ",
-                        handleFeedback.tone === "error" && normalizedHandle ? "border-red-300 focus-visible:ring-red-400 " : ""
+                        "h-12 rounded-xl border-gray-200 bg-white pl-8 text-base text-gray-900 placeholder:text-gray-400 focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-100",
+                        handleFeedback.tone === "error" && normalizedHandle ? "border-red-300 focus-visible:border-red-400 focus-visible:ring-red-100" : ""
                       )}
                       data-testid="program-create-handle-input"
                       autoFocus
@@ -461,16 +459,16 @@ export default function ProgramCreation() {
                     className={cn(
                       "text-sm",
                       handleFeedback.tone === "error"
-                        ? "text-red-600 "
+                        ? "text-red-600"
                         : handleFeedback.tone === "success"
-                          ? "text-emerald-600 "
-                          : "text-slate-500 "
+                          ? "text-emerald-600"
+                          : "text-gray-500"
                     )}
                     data-testid="program-create-handle-feedback"
                   >
                     {handleFeedback.text}
                   </p>
-                  <p className="text-sm text-slate-500 " data-testid="program-create-handle-helper">
+                  <p className="text-sm text-gray-500" data-testid="program-create-handle-helper">
                     Arkadaşların seni bu kullanıcı adıyla bulabilecek.
                   </p>
                 </div>
@@ -525,7 +523,7 @@ export default function ProgramCreation() {
               variant="outline"
               onClick={() => step === 1 ? navigate("/") : setStep(step - 1)}
               disabled={loading}
-                className="h-11 rounded-xl border-border/70 bg-background/90 text-slate-700 hover:bg-secondary "
+                className="h-11 rounded-xl border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                 data-testid="program-create-back-button"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -535,7 +533,7 @@ export default function ProgramCreation() {
             <Button
               onClick={handleNext}
               disabled={loading}
-                className="h-11 rounded-xl px-5 shadow-sm hover:shadow-md"
+                className="h-11 rounded-xl bg-indigo-600 px-5 text-white shadow-sm hover:bg-indigo-700 hover:shadow-md focus-visible:ring-2 focus-visible:ring-indigo-300"
                 data-testid="program-create-next-button"
             >
                 {loading ? "Hazırlanıyor..." : step === TOTAL_STEPS ? (
