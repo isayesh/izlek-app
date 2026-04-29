@@ -84,15 +84,19 @@ function FocusRoomMockup({ timerValue = "24:32", className = "" }) {
         ))}
       </div>
 
-      <div className="mt-6 space-y-2">
-        <p className="inline-flex items-center gap-1.5 text-xs text-[#6B7280]">
-          <Timer className="h-3.5 w-3.5 text-[#4F46E5]" />
-          Sessiz oda akışı aktif
-        </p>
-        <p className="flex items-center gap-2 text-xs leading-none text-[#6B7280]">
-          <MessageSquare className="h-4 w-4 mr-2 text-[#4F46E5]" />
-          Sade sohbet ile devam et
-        </p>
+      <div className="mt-6 flex flex-col gap-2">
+        <div className="flex items-center gap-2 text-xs text-[#6B7280]">
+          <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center">
+            <Timer className="h-3.5 w-3.5 text-[#4F46E5]" />
+          </span>
+          <span className="text-left leading-tight">Sessiz oda akışı aktif</span>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-[#6B7280]">
+          <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center">
+            <MessageSquare className="h-4 w-4 text-[#4F46E5]" />
+          </span>
+          <span className="text-left leading-tight">Sade sohbet ile devam et</span>
+        </div>
       </div>
     </div>
   );
