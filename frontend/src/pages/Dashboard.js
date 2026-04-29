@@ -533,10 +533,55 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center px-6 py-10">
-        <div className="rounded-2xl border border-border/70 bg-card px-8 py-10 text-center shadow-sm">
-          <p className="font-display text-2xl font-semibold text-foreground">Dashboard hazırlanıyor</p>
-          <p className="mt-2 text-sm text-muted-foreground">Programın ve günlük görevlerin yükleniyor.</p>
+      <div className="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 lg:px-10">
+        <div className="mx-auto w-full max-w-6xl">
+          <div className="flex justify-center">
+            <span className="font-display text-3xl font-extrabold tracking-[-0.03em] text-gray-900">izlek</span>
+          </div>
+
+          <div className="mx-auto mt-5 max-w-2xl text-center">
+            <p className="text-xl font-semibold leading-relaxed text-gray-900 sm:text-2xl">
+              Sen odaklanmaya hazırlanırken, biz de ortamını kuruyoruz.
+            </p>
+            <p className="mt-2 text-sm text-gray-500 sm:text-base">
+              Programın, görevlerin ve çalışma alanın yükleniyor.
+            </p>
+          </div>
+
+          <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]">
+            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+              <div className="h-5 w-40 rounded-xl bg-gray-100 animate-pulse" />
+              <div className="mt-4 space-y-3">
+                <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                  <div className="h-4 w-2/3 rounded-xl bg-gray-100 animate-pulse" />
+                  <div className="mt-2 h-3 w-1/3 rounded-xl bg-gray-100 animate-pulse" />
+                </div>
+                <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                  <div className="h-4 w-3/4 rounded-xl bg-gray-100 animate-pulse" />
+                  <div className="mt-2 h-3 w-2/5 rounded-xl bg-gray-100 animate-pulse" />
+                </div>
+                <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                  <div className="h-4 w-1/2 rounded-xl bg-gray-100 animate-pulse" />
+                  <div className="mt-2 h-3 w-1/4 rounded-xl bg-gray-100 animate-pulse" />
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+              <div className="h-5 w-36 rounded-xl bg-gray-100 animate-pulse" />
+              <div className="mt-4 grid grid-cols-4 gap-2">
+                <div className="h-8 rounded-xl bg-gray-100 animate-pulse" />
+                <div className="h-8 rounded-xl bg-gray-100 animate-pulse" />
+                <div className="h-8 rounded-xl bg-gray-100 animate-pulse" />
+                <div className="h-8 rounded-xl bg-gray-100 animate-pulse" />
+              </div>
+              <div className="mt-4 space-y-3">
+                <div className="h-12 rounded-xl bg-gray-100 animate-pulse" />
+                <div className="h-12 rounded-xl bg-gray-100 animate-pulse" />
+                <div className="h-12 rounded-xl bg-gray-100 animate-pulse" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
