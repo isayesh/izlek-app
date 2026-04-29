@@ -145,7 +145,7 @@ export default function Login() {
 
             <Button 
               type="submit" 
-              className="w-full" 
+              className="w-full bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm hover:shadow-md rounded-xl transition-all active:scale-[0.99]" 
               disabled={loading}
               data-testid="btn-login-submit"
             >
