@@ -973,13 +973,13 @@ export default function Dashboard() {
 
               <CardContent className="pt-4">
                 <Tabs value={activeWeeklyDay} onValueChange={setActiveWeeklyDay} className="space-y-4" data-testid="weekly-program-tabs">
-                  <div className="w-full overflow-hidden pb-2">
-                    <TabsList className="flex h-auto w-full flex-nowrap gap-1 rounded-[20px] border border-border/50 bg-background/50 p-1">
+                  <div className="w-full">
+                    <TabsList className="flex w-full flex-nowrap gap-1 rounded-xl bg-gray-50 p-1">
                       {DAY_ORDER.map((day) => (
                         <TabsTrigger
                           key={day}
                           value={day}
-                          className="min-w-0 flex-1 whitespace-nowrap rounded-[16px] border border-transparent px-2 py-2 text-[13px] leading-none text-muted-foreground data-[state=active]:border-indigo-200 data-[state=active]:bg-indigo-100/85 data-[state=active]:text-indigo-800 data-[state=active]:shadow-none"
+                          className="min-w-0 flex-1 rounded-lg px-2 py-2 text-xs text-gray-600 whitespace-nowrap transition hover:bg-gray-100 md:text-sm data-[state=active]:bg-indigo-600 data-[state=active]:text-white data-[state=active]:hover:bg-indigo-600"
                           data-testid={`weekly-program-tab-${day.toLocaleLowerCase("tr-TR").replace(/[^a-z0-9]+/g, "-")}`}
                         >
                           {day}
