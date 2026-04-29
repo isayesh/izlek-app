@@ -38,17 +38,17 @@ export default function Login() {
     } catch (error) {
       console.error('Login error:', error);
       
-      // Friendly error messages in Turkish
-      if (error.code === 'auth/user-not-found') {
-        setError('Bu email ile kayıtlı kullanıcı bulunamadı');
-      } else if (error.code === 'auth/wrong-password') {
-        setError('Hatalı şifre');
-      } else if (error.code === 'auth/invalid-email') {
-        setError('Geçersiz email adresi');
+      // Kullanıcı dostu hata mesajları
+      if (
+        error.code === 'auth/invalid-credential' ||
+        error.code === 'auth/wrong-password' ||
+        error.code === 'auth/user-not-found'
+      ) {
+        setError('E-posta veya şifre hatalı. Bilgilerini kontrol edip tekrar dene.');
       } else if (error.code === 'auth/too-many-requests') {
         setError('Çok fazla deneme. Lütfen daha sonra tekrar deneyin');
       } else {
-        setError(error.message || 'Giriş yapılırken bir hata oluştu');
+        setError('Bir şeyler ters gitti. Lütfen tekrar dene.');
       }
     } finally {
       setLoading(false);

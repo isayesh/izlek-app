@@ -55,15 +55,15 @@ export default function Register() {
     } catch (error) {
       console.error('Register error:', error);
       
-      // Friendly error messages in Turkish
+      // Kullanıcı dostu hata mesajları
       if (error.code === 'auth/email-already-in-use') {
-        setError('Bu email adresi zaten kullanımda');
-      } else if (error.code === 'auth/invalid-email') {
-        setError('Geçersiz email adresi');
+        setError('Bu e-posta ile zaten bir hesap var. Giriş yapmayı dene.');
       } else if (error.code === 'auth/weak-password') {
-        setError('Şifre çok zayıf. Daha güçlü bir şifre kullanın');
+        setError('Şifren en az 6 karakter olmalı.');
+      } else if (error.code === 'auth/invalid-email') {
+        setError('Geçerli bir e-posta adresi gir.');
       } else {
-        setError(error.message || 'Kayıt olunurken bir hata oluştu');
+        setError('Bir şeyler ters gitti. Lütfen tekrar dene.');
       }
     } finally {
       setLoading(false);
