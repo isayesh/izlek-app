@@ -142,11 +142,10 @@ export default function LandingPage() {
             <p className="font-display text-xl font-bold tracking-tight text-gray-900" data-testid="landing-brand-name">izlek</p>
           </button>
 
-          <div className="flex items-center gap-8" data-testid="landing-nav-actions">
+          <div className="flex items-center gap-10" data-testid="landing-nav-actions">
             <Button
-              variant="ghost"
               onClick={() => navigate("/login")}
-              className="font-medium text-gray-700 transition-colors duration-200 hover:bg-transparent hover:text-black"
+              className="rounded-full border border-gray-300 bg-white px-4 py-2 text-gray-800 transition-all hover:bg-gray-50 hover:border-gray-400"
               data-testid="landing-nav-login-button"
             >
               Giriş Yap
