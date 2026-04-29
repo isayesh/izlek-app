@@ -548,6 +548,23 @@ export default function Dashboard() {
             </p>
           </div>
 
+          <div className="mx-auto mt-5 w-full max-w-xl" aria-hidden="true">
+            <div className="relative h-1.5 overflow-hidden rounded-full bg-indigo-50">
+              <div className="dashboard-loading-progress absolute inset-y-0 left-0 rounded-full bg-indigo-600" />
+            </div>
+          </div>
+
+          <style>{`
+            @keyframes dashboardLoadingProgress {
+              0% { transform: translateX(-120%); width: 28%; }
+              50% { transform: translateX(120%); width: 40%; }
+              100% { transform: translateX(360%); width: 28%; }
+            }
+            .dashboard-loading-progress {
+              animation: dashboardLoadingProgress 1.9s ease-in-out infinite;
+            }
+          `}</style>
+
           <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]">
             <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
               <div className="h-5 w-40 rounded-xl bg-gray-100 animate-pulse" />
