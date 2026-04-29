@@ -179,16 +179,16 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-6 md:p-10" data-testid="profile-page">
-      <div className="mx-auto max-w-4xl space-y-6" data-testid="profile-page-container">
-        <Card className="rounded-2xl border border-border/70 bg-card shadow-[0_18px_36px_-28px_rgba(15,23,42,0.16)]" data-testid="profile-header-card">
-          <CardContent className="p-6 sm:p-8">
-            <div className="flex flex-wrap items-start justify-between gap-4" data-testid="profile-header-content">
+    <div className="min-h-screen bg-background px-4 py-6 sm:px-6 lg:px-10 lg:py-8" data-testid="profile-page">
+      <div className="mx-auto w-full max-w-6xl space-y-5" data-testid="profile-page-container">
+        <Card className="rounded-2xl border border-transparent bg-transparent shadow-none" data-testid="profile-header-card">
+          <CardContent className="px-0 py-2 sm:py-3">
+            <div className="flex flex-wrap items-start justify-between gap-3" data-testid="profile-header-content">
               <div>
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 " data-testid="profile-title">
+                <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl" data-testid="profile-title">
                   Profil
                 </h1>
-                <p className="mt-2 text-base md:text-lg text-slate-600 " data-testid="profile-subtitle">
+                <p className="mt-1 text-sm text-gray-500" data-testid="profile-subtitle">
                   Hesap bilgilerini görüntüle ve profil detaylarını güncelle.
                 </p>
               </div>
@@ -197,7 +197,7 @@ export default function Profile() {
                 <Button
                   variant="outline"
                   onClick={() => navigate("/dashboard")}
-                  className="h-10 rounded-xl border-border/70 bg-background text-slate-700 hover:bg-secondary "
+                  className="h-10 rounded-lg border-gray-200 bg-white text-slate-700 hover:bg-indigo-50 hover:text-indigo-700"
                   data-testid="profile-dashboard-button"
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
@@ -206,7 +206,7 @@ export default function Profile() {
                 <Button
                   variant="outline"
                   onClick={() => navigate("/")}
-                  className="h-10 rounded-xl border-border/70 bg-background text-slate-700 hover:bg-secondary "
+                  className="h-10 rounded-lg border-gray-200 bg-white text-slate-700 hover:bg-indigo-50 hover:text-indigo-700"
                   data-testid="profile-home-button"
                 >
                   <Home className="mr-2 h-4 w-4" />
@@ -230,17 +230,17 @@ export default function Profile() {
           </div>
         )}
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]" data-testid="profile-content-grid">
-          <Card className="rounded-2xl border border-border/70 bg-card shadow-[0_18px_36px_-28px_rgba(15,23,42,0.16)]" data-testid="profile-form-card">
-            <CardHeader className="pb-4 border-b border-border/70">
-              <CardTitle className="text-xl font-bold text-slate-900 " data-testid="profile-form-title">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)] lg:items-start" data-testid="profile-content-grid">
+          <Card className="rounded-2xl border border-gray-200 bg-white shadow-sm" data-testid="profile-form-card">
+            <CardHeader className="border-b border-gray-100 pb-3">
+              <CardTitle className="text-lg font-semibold text-slate-900" data-testid="profile-form-title">
                 {profileExists ? "Profil Bilgileri" : "Profil Oluştur"}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-5 sm:p-6">
-              <form className="space-y-5" onSubmit={handleSubmit} data-testid="profile-form">
-                <div className="space-y-2">
-                  <Label htmlFor="profile-username" className="font-semibold text-slate-700 " data-testid="profile-username-label">
+              <form className="space-y-4" onSubmit={handleSubmit} data-testid="profile-form">
+                <div className="space-y-1.5">
+                  <Label htmlFor="profile-username" className="text-sm font-medium text-gray-700" data-testid="profile-username-label">
                     Kullanıcı Adı
                   </Label>
                   <Input
@@ -248,17 +248,17 @@ export default function Profile() {
                     value={formData.username}
                     onChange={(event) => handleChange("username", event.target.value)}
                     placeholder="Örn: Ayşe"
-                    className="h-11 rounded-xl border-border/70 bg-background"
+                    className="h-11 rounded-lg border-gray-200 bg-white focus-visible:border-indigo-500 focus-visible:ring-indigo-500"
                     data-testid="profile-username-input"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="profile-handle" className="font-semibold text-slate-700 " data-testid="profile-handle-label">
+                <div className="space-y-1.5">
+                  <Label htmlFor="profile-handle" className="text-sm font-medium text-gray-700" data-testid="profile-handle-label">
                     Handle
                   </Label>
                   <div className="relative" data-testid="profile-handle-input-wrap">
-                    <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 " data-testid="profile-handle-prefix">
+                    <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400" data-testid="profile-handle-prefix">
                       @
                     </span>
                     <Input
@@ -266,40 +266,40 @@ export default function Profile() {
                       value={formData.handle}
                       onChange={(event) => handleChange("handle", event.target.value.replace(/^@+/, "").toLowerCase())}
                       placeholder="ornek_handle"
-                      className="h-11 rounded-xl border-border/70 bg-background pl-8"
+                      className="h-11 rounded-lg border-gray-200 bg-white pl-8 focus-visible:border-indigo-500 focus-visible:ring-indigo-500"
                       data-testid="profile-handle-input"
                     />
                   </div>
-                  <p className="text-sm text-slate-500 " data-testid="profile-handle-helper-text">
+                  <p className="text-xs text-slate-500" data-testid="profile-handle-helper-text">
                     3-20 karakter, sadece küçük harf, rakam ve underscore.
                   </p>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="profile-email" className="font-semibold text-slate-700 " data-testid="profile-email-label">
+                <div className="space-y-1.5">
+                  <Label htmlFor="profile-email" className="text-sm font-medium text-gray-700" data-testid="profile-email-label">
                     E-posta
                   </Label>
                   <Input
                     id="profile-email"
                     value={currentUser?.email || formData.email}
                     readOnly
-                    className="h-11 rounded-xl border-border/70 bg-secondary text-slate-600 "
+                    className="h-11 rounded-lg border-gray-200 bg-gray-100 text-slate-500 focus-visible:border-indigo-500 focus-visible:ring-indigo-500"
                     data-testid="profile-email-input"
                   />
-                  <p className="text-sm text-slate-500 " data-testid="profile-email-helper-text">
+                  <p className="text-xs text-slate-500" data-testid="profile-email-helper-text">
                     Bu alan giriş yaptığın hesapla eşleşir ve düzenlenemez.
                   </p>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="profile-grade-level" className="font-semibold text-slate-700 " data-testid="profile-grade-level-label">
+                <div className="space-y-1.5">
+                  <Label htmlFor="profile-grade-level" className="text-sm font-medium text-gray-700" data-testid="profile-grade-level-label">
                     Sınıf Durumu
                   </Label>
                   <select
                     id="profile-grade-level"
                     value={formData.grade_level}
                     onChange={(event) => handleChange("grade_level", event.target.value)}
-                    className="h-11 w-full rounded-xl border border-border/70 bg-background px-3 text-sm text-slate-900 outline-none ring-offset-background transition-[border-color,box-shadow] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 "
+                    className="h-11 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm text-slate-900 outline-none ring-offset-background transition-[border-color,box-shadow] focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-0"
                     data-testid="profile-grade-level-select"
                   >
                     <option value="">Seçiniz</option>
@@ -311,15 +311,15 @@ export default function Profile() {
                   </select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="profile-study-field" className="font-semibold text-slate-700 " data-testid="profile-study-field-label">
+                <div className="space-y-1.5">
+                  <Label htmlFor="profile-study-field" className="text-sm font-medium text-gray-700" data-testid="profile-study-field-label">
                     Alan
                   </Label>
                   <select
                     id="profile-study-field"
                     value={formData.study_field}
                     onChange={(event) => handleChange("study_field", event.target.value)}
-                    className="h-11 w-full rounded-xl border border-border/70 bg-background px-3 text-sm text-slate-900 outline-none ring-offset-background transition-[border-color,box-shadow] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 "
+                    className="h-11 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm text-slate-900 outline-none ring-offset-background transition-[border-color,box-shadow] focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-0"
                     data-testid="profile-study-field-select"
                   >
                     <option value="">Seçiniz</option>
@@ -331,8 +331,8 @@ export default function Profile() {
                   </select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="profile-avatar-url" className="font-semibold text-slate-700 " data-testid="profile-avatar-url-label">
+                <div className="space-y-1.5">
+                  <Label htmlFor="profile-avatar-url" className="text-sm font-medium text-gray-700" data-testid="profile-avatar-url-label">
                     Avatar URL
                   </Label>
                   <Input
@@ -340,7 +340,7 @@ export default function Profile() {
                     value={formData.avatar_url}
                     onChange={(event) => handleChange("avatar_url", event.target.value)}
                     placeholder="https://..."
-                    className="h-11 rounded-xl border-border/70 bg-background"
+                    className="h-11 rounded-lg border-gray-200 bg-white focus-visible:border-indigo-500 focus-visible:ring-indigo-500"
                     data-testid="profile-avatar-url-input"
                   />
                 </div>
@@ -348,7 +348,7 @@ export default function Profile() {
                 <Button
                   type="submit"
                   disabled={saving}
-                  className="h-11 w-full rounded-xl bg-primary text-primary-foreground hover:bg-slate-800"
+                  className="h-12 w-full rounded-lg bg-indigo-600 text-white shadow-sm hover:bg-indigo-700 disabled:opacity-70"
                   data-testid="profile-form-submit-button"
                 >
                   <Save className="mr-2 h-4 w-4" />
@@ -358,67 +358,96 @@ export default function Profile() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-2xl border border-border/70 bg-card shadow-[0_18px_36px_-28px_rgba(15,23,42,0.16)]" data-testid="profile-preview-card">
-            <CardHeader className="pb-4 border-b border-border/70">
-              <CardTitle className="text-xl font-bold text-slate-900 " data-testid="profile-preview-title">
+          <Card className="rounded-2xl border border-gray-200 bg-white shadow-sm" data-testid="profile-preview-card">
+            <CardHeader className="border-b border-gray-100 pb-3">
+              <CardTitle className="text-lg font-semibold text-slate-900" data-testid="profile-preview-title">
                 Önizleme
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-6 space-y-5">
-              <div className="flex justify-center" data-testid="profile-avatar-preview-wrap">
-                {formData.avatar_url.trim() ? (
-                  <img
-                    src={formData.avatar_url}
-                    alt="Avatar önizleme"
-                    className="h-24 w-24 rounded-2xl border border-border/70 object-cover shadow-sm"
-                    data-testid="profile-avatar-preview-image"
-                  />
-                ) : (
-                  <div className="flex h-24 w-24 items-center justify-center rounded-2xl border border-dashed border-border/70 bg-background text-sm text-slate-500 " data-testid="profile-avatar-preview-placeholder">
-                    Avatar yok
-                  </div>
-                )}
+            <CardContent className="space-y-5 p-5 sm:p-6">
+              <div className="rounded-xl border border-gray-100 bg-gradient-to-b from-indigo-50/60 to-white p-4">
+                <div className="flex flex-col items-center text-center" data-testid="profile-avatar-preview-wrap">
+                  {formData.avatar_url.trim() ? (
+                    <img
+                      src={formData.avatar_url}
+                      alt="Avatar önizleme"
+                      className="h-20 w-20 rounded-2xl border border-gray-200 object-cover shadow-sm"
+                      data-testid="profile-avatar-preview-image"
+                    />
+                  ) : (
+                    <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-white text-xs text-slate-500" data-testid="profile-avatar-preview-placeholder">
+                      Avatar yok
+                    </div>
+                  )}
+
+                  <p className="mt-3 text-lg font-semibold text-slate-900" data-testid="profile-preview-handle-value">
+                    {formData.handle ? `@${formData.handle}` : "@handle"}
+                  </p>
+                  <p className="text-sm text-slate-500" data-testid="profile-preview-username-value">
+                    {formData.username || "Kullanıcı adı"}
+                  </p>
+
+                  {formData.streak_count > 0 && (
+                    <span className="mt-3 inline-flex items-center rounded-full bg-orange-50 px-2 py-1 text-xs font-semibold text-orange-600" data-testid="profile-streak-value">
+                      🔥 {formData.streak_count} Günlük Seri
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-3" data-testid="profile-preview-details">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500 " data-testid="profile-preview-handle-label">
+                  <p className="text-xs uppercase tracking-[0.18em] text-slate-500" data-testid="profile-preview-handle-label">
                     Handle
                   </p>
-                  <p className="mt-1 text-lg font-semibold text-slate-900 " data-testid="profile-preview-handle-value">
-                    {formData.handle ? `@${formData.handle}` : "Henüz eklenmedi"}
+                  <p className="mt-1 text-sm font-semibold text-slate-900">
+                    {formData.handle ? `@${formData.handle}` : "Belirtilmedi"}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500 " data-testid="profile-preview-username-label">
+                  <p className="text-xs uppercase tracking-[0.18em] text-slate-500" data-testid="profile-preview-username-label">
                     Kullanıcı Adı
                   </p>
-                  <p className="mt-1 text-lg font-semibold text-slate-900 " data-testid="profile-preview-username-value">
-                    {formData.username || "Henüz eklenmedi"}
+                  <p className="mt-1 text-sm text-slate-600">
+                    {formData.username || "Belirtilmedi"}
                   </p>
-                  {formData.streak_count > 0 && (
-                    <p className="mt-2 text-sm font-semibold text-orange-600 " data-testid="profile-streak-value">
-                      🔥 {formData.streak_count} Günlük Seri
-                    </p>
-                  )}
                 </div>
 
                 <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500 " data-testid="profile-preview-email-label">
+                  <p className="text-xs uppercase tracking-[0.18em] text-slate-500" data-testid="profile-preview-email-label">
                     E-posta
                   </p>
-                  <p className="mt-1 text-sm text-slate-700  break-all" data-testid="profile-preview-email-value">
+                  <p className="mt-1 text-sm text-slate-700 break-all" data-testid="profile-preview-email-value">
                     {currentUser?.email || formData.email || "Bulunamadı"}
                   </p>
                 </div>
 
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500" data-testid="profile-preview-grade-label">
+                      Sınıf
+                    </p>
+                    <p className="mt-1 text-sm text-slate-700" data-testid="profile-preview-grade-value">
+                      {GRADE_LEVEL_LABELS[formData.grade_level] || "Belirtilmedi"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500" data-testid="profile-preview-field-label">
+                      Alan
+                    </p>
+                    <p className="mt-1 text-sm text-slate-700" data-testid="profile-preview-field-value">
+                      {STUDY_FIELD_LABELS[formData.study_field] || formData.study_field || "Belirtilmedi"}
+                    </p>
+                  </div>
+                </div>
+
                 {profileMetaLine && (
                   <div data-testid="profile-preview-meta-wrap">
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500 " data-testid="profile-preview-meta-label">
+                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500" data-testid="profile-preview-meta-label">
                       Profil Özeti
                     </p>
-                    <p className="mt-1 text-sm text-slate-700 " data-testid="profile-preview-meta-value">
+                    <p className="mt-1 text-sm text-slate-600" data-testid="profile-preview-meta-value">
                       {profileMetaLine}
                     </p>
                   </div>
