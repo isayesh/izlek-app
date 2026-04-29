@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { LogIn, AlertCircle } from 'lucide-react';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '@/firebase';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -14,6 +16,7 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [resetSuccess, setResetSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -24,6 +27,7 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setResetSuccess('');
     
     if (!email || !password) {
       setError('Lütfen tüm alanları doldurun');
@@ -52,6 +56,24 @@ export default function Login() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    setError('');
+    setResetSuccess('');
+
+    if (!email) {
+      setError('Şifre sıfırlama bağlantısı göndermek için e-posta adresini gir.');
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setResetSuccess('Şifre sıfırlama bağlantısı e-posta adresine gönderildi.');
+    } catch (error) {
+      console.error('Password reset error:', error);
+      setError('Şifre sıfırlama bağlantısı gönderilemedi. E-posta adresini kontrol edip tekrar dene.');
     }
   };
 
@@ -114,6 +136,12 @@ export default function Login() {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
+
+            {resetSuccess && (
+              <Alert data-testid="login-reset-success">
+                <AlertDescription>{resetSuccess}</AlertDescription>
+              </Alert>
+            )}
             
             <div className="space-y-2">
               <Label htmlFor="email" className="">Email</Label>
@@ -141,6 +169,14 @@ export default function Login() {
                 data-testid="input-password"
                 className="  "
               />
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                className="text-sm text-indigo-600 hover:text-indigo-700 hover:underline mt-2 block"
+                data-testid="link-forgot-password"
+              >
+                Şifremi unuttum?
+              </button>
             </div>
 
             <Button 
