@@ -539,8 +539,8 @@ export default function Dashboard() {
             <span className="font-display text-3xl font-extrabold tracking-[-0.03em] text-gray-900">izlek</span>
           </div>
 
-          <div className="mx-auto mt-5 max-w-2xl text-center">
-            <p className="text-xl font-semibold leading-relaxed text-gray-900 sm:text-2xl">
+          <div className="mx-auto mt-5 w-full max-w-none text-center">
+            <p className="mx-auto max-w-none overflow-hidden text-ellipsis whitespace-nowrap text-lg font-semibold leading-relaxed text-gray-900 sm:text-xl lg:text-2xl">
               Sen odaklanmaya hazırlanırken, biz de ortamını kuruyoruz.
             </p>
             <p className="mt-2 text-sm text-gray-500 sm:text-base">
