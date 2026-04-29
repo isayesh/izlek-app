@@ -49,6 +49,16 @@ const DAY_ORDER = [
   "Pazar",
 ];
 
+const DAY_SHORT_LABELS = {
+  Pazartesi: "Pzt",
+  "Salı": "Sal",
+  "Çarşamba": "Çar",
+  "Perşembe": "Per",
+  Cuma: "Cum",
+  Cumartesi: "Cmt",
+  Pazar: "Paz",
+};
+
 const findKnownDayName = (dayName = "") => {
   const normalizedInput = dayName.toLocaleLowerCase("tr-TR");
   return DAY_ORDER.find((day) => day.toLocaleLowerCase("tr-TR") === normalizedInput) || null;
@@ -974,15 +984,16 @@ export default function Dashboard() {
               <CardContent className="pt-4">
                 <Tabs value={activeWeeklyDay} onValueChange={setActiveWeeklyDay} className="space-y-4" data-testid="weekly-program-tabs">
                   <div className="w-full">
-                    <TabsList className="flex w-full flex-nowrap gap-1 rounded-xl bg-gray-50 p-1">
+                    <TabsList className="flex w-full flex-nowrap gap-1 rounded-xl border border-gray-200 bg-gray-50 p-1">
                       {DAY_ORDER.map((day) => (
                         <TabsTrigger
                           key={day}
                           value={day}
-                          className="min-w-0 flex-1 rounded-lg px-2 py-2 text-xs text-gray-600 whitespace-nowrap transition hover:bg-gray-100 md:text-sm data-[state=active]:bg-indigo-600 data-[state=active]:text-white data-[state=active]:hover:bg-indigo-600"
+                          className="min-w-0 flex-1 overflow-hidden rounded-lg border border-transparent bg-transparent px-1.5 py-2 text-center text-[11px] font-medium leading-none text-gray-600 whitespace-nowrap transition-colors duration-200 hover:bg-gray-100 sm:px-2 sm:text-xs xl:text-sm data-[state=active]:border-indigo-200 data-[state=active]:bg-indigo-100 data-[state=active]:text-indigo-700 data-[state=active]:shadow-sm data-[state=active]:hover:bg-indigo-100"
                           data-testid={`weekly-program-tab-${day.toLocaleLowerCase("tr-TR").replace(/[^a-z0-9]+/g, "-")}`}
                         >
-                          {day}
+                          <span className="xl:hidden">{DAY_SHORT_LABELS[day] || day}</span>
+                          <span className="hidden xl:inline">{day}</span>
                         </TabsTrigger>
                       ))}
                     </TabsList>
