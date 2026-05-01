@@ -1199,7 +1199,7 @@ export default function RoomPage() {
                         return (
                           <div
   key={message.id}
-  className={`flex items-start gap-1.5 ${isOwnMessage ? 'justify-end' : 'justify-start'} ${isGrouped ? 'mt-1.5' : 'mt-4'}`}
+  className={`flex items-start gap-1.5 ${isOwnMessage ? 'justify-end pr-1' : 'justify-start'} ${isGrouped ? 'mt-1.5' : 'mt-4'}`}
   data-testid={`message-${message.id}`}
 >
                             {!isOwnMessage && (
@@ -1222,7 +1222,7 @@ export default function RoomPage() {
                               )
                             )}
 
-                            <div className={`${widthClass} min-w-0 ${isOwnMessage ? 'text-right' : 'text-left'}`}>
+                            <div className={`${widthClass} min-w-0 ${isOwnMessage ? 'text-right flex flex-col items-end' : 'text-left'}`}>
                               {/* Sender name: only show if not grouped (first message of sender) */}
                               {!isGrouped && !isOwnMessage && (
                                 <div className="mb-1 flex items-center gap-2" data-testid={`message-meta-${message.id}`}>
@@ -1231,9 +1231,9 @@ export default function RoomPage() {
                               )}
 
                               <div
-                                className={`inline-block w-fit max-w-full rounded-2xl border px-3 py-2.5 shadow-sm ${
+                                className={`inline-block w-fit min-w-[44px] max-w-full rounded-2xl border px-3 py-2.5 shadow-sm ${
                                   isOwnMessage
-                                    ? 'border-transparent bg-slate-900 text-slate-50  '
+                                    ? 'border-transparent bg-indigo-700 text-white'
                                     : 'border-border/60 bg-secondary/90 text-foreground'
                                 }`}
                                 data-testid={`message-bubble-${message.id}`}
