@@ -1931,26 +1931,30 @@ async def get_leaderboard(period: str = Query("all", pattern="^(daily|weekly|all
                     }
 
         leaderboard_entries = []
-rank = 1
+        for index, entry in enumerate(grouped_results, start=1):
+            user_id = entry.get("_id", "")
+            total_seconds = int(entry.get("total_seconds", 0))
 
-for entry in grouped_results:
-    user_id = entry.get("_id", "")
-    total_seconds = int(entry.get("total_seconds", 0))
+            fallback_name = "Bilinmeyen Kullanıcı"
+            profile_identity = profile_identity_map.get(user_id, {})
+            room_identity = room_identity_map.get(user_id, {})
+            user_name = profile_identity.get("user_name") or room_identity.get("user_name") or fallback_name
+            avatar_url = (
+                profile_identity.get("avatar_url")
+                if user_id in profile_identity_map
+                else room_identity.get("avatar_url")
+            )
 
-    if total_seconds < 60 or not user_id:
-        continue
+            leaderboard_entries.append(
+                LeaderboardEntry(
+                    rank=index,
+                    user_id=user_id,
+                    user_name=user_name,
+                    avatar_url=avatar_url,
+                    total_seconds=total_seconds
+                )
+            )
 
-    leaderboard_entries.append(
-        LeaderboardEntry(
-            rank=rank,
-            user_id=user_id,
-            user_name=user_name,
-            avatar_url=avatar_url,
-            total_seconds=total_seconds
-        )
-    )
-
-    rank += 1
         return leaderboard_entries
     except Exception as e:
         logging.error(f"Error loading leaderboard: {e}")
