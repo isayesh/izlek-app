@@ -1935,9 +1935,8 @@ async def get_leaderboard(period: str = Query("all", pattern="^(daily|weekly|all
 for entry in grouped_results:
             user_id = entry.get("_id", "")
             total_seconds = int(entry.get("total_seconds", 0))
-            if total_seconds <= 0:
-        continue
-
+            if total_seconds < 60:
+      continue
             fallback_name = "Bilinmeyen Kullanıcı"
             profile_identity = profile_identity_map.get(user_id, {})
             room_identity = room_identity_map.get(user_id, {})
