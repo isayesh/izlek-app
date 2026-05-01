@@ -1231,7 +1231,7 @@ export default function RoomPage() {
                               )}
 
                               <div
-                                className={`inline-block w-fit min-w-[44px] max-w-full rounded-2xl border px-3 py-2.5 shadow-sm ${
+                                className={`inline-block w-fit max-w-full rounded-2xl border px-3 py-2.5 shadow-sm ${isOwnMessage ? '' : 'min-w-[44px]'} ${
                                   isOwnMessage
                                     ? 'border-transparent bg-indigo-700 text-white'
                                     : 'border-border/60 bg-secondary/90 text-foreground'
