@@ -1202,28 +1202,30 @@ export default function RoomPage() {
   className={`flex items-start gap-1.5 ${isOwnMessage ? 'justify-end' : 'justify-start'} ${isGrouped ? 'mt-1.5' : 'mt-4'}`}
   data-testid={`message-${message.id}`}
 >
-                            {!isGrouped ? (
-                              <div className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-secondary text-xs font-semibold text-foreground shadow-sm ring-1 ring-border/60 ${isOwnMessage ? 'order-2' : 'order-1'}`} data-testid={`message-avatar-${message.id}`}>
-                                {messageAvatarUrl ? (
-                                  <img
-                                    src={messageAvatarUrl}
-                                    alt={`${message.user_name} avatar`}
-                                    className="h-full w-full object-cover"
-                                    data-testid={`message-avatar-image-${message.id}`}
-                                    onError={() => setFailedMessageAvatars((prev) => ({ ...prev, [message.id]: true }))}
-                                  />
-                                ) : (
-                                  getInitial(message.user_name)
-                                )}
-                              </div>
-                            ) : (
-                              <div className={`w-8 flex-shrink-0 ${isOwnMessage ? 'order-2' : 'order-1'}`}></div>
+                            {!isOwnMessage && (
+                              !isGrouped ? (
+                                <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-secondary text-xs font-semibold text-foreground shadow-sm ring-1 ring-border/60" data-testid={`message-avatar-${message.id}`}>
+                                  {messageAvatarUrl ? (
+                                    <img
+                                      src={messageAvatarUrl}
+                                      alt={`${message.user_name} avatar`}
+                                      className="h-full w-full object-cover"
+                                      data-testid={`message-avatar-image-${message.id}`}
+                                      onError={() => setFailedMessageAvatars((prev) => ({ ...prev, [message.id]: true }))}
+                                    />
+                                  ) : (
+                                    getInitial(message.user_name)
+                                  )}
+                                </div>
+                              ) : (
+                                <div className="w-8 flex-shrink-0"></div>
+                              )
                             )}
 
-                            <div className={`${widthClass} min-w-0 ${isOwnMessage ? 'order-1 text-right' : 'order-2 text-left'}`}>
+                            <div className={`${widthClass} min-w-0 ${isOwnMessage ? 'text-right' : 'text-left'}`}>
                               {/* Sender name: only show if not grouped (first message of sender) */}
-                              {!isGrouped && (
-                                <div className={`flex items-center gap-2 mb-1 ${isOwnMessage ? 'justify-end' : ''}`} data-testid={`message-meta-${message.id}`}>
+                              {!isGrouped && !isOwnMessage && (
+                                <div className="mb-1 flex items-center gap-2" data-testid={`message-meta-${message.id}`}>
                                   <span className="text-sm font-semibold text-foreground/90" data-testid={`message-user-name-${message.id}`}>{message.user_name}</span>
                                 </div>
                               )}
