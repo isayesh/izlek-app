@@ -55,6 +55,10 @@ export default function RoomPage() {
   const chatEndRef = useRef(null);
   const chatContainerRef = useRef(null);
   const shouldAutoScrollRef = useRef(true);
+  const prevMessageCountRef = useRef(0);
+  const hasInitializedMessagesRef = useRef(false);
+  const CHAT_BOTTOM_THRESHOLD_PX = 100;
+  const [newMessagesCount, setNewMessagesCount] = useState(0);
 
   const firebaseUid = currentUser?.uid || localStorage.getItem("userId");
   const currentUserId = localStorage.getItem("currentUserId") || firebaseUid;
@@ -440,6 +444,13 @@ export default function RoomPage() {
     }
   };
 
+  useEffect(() => {
+    setNewMessagesCount(0);
+    prevMessageCountRef.current = 0;
+    hasInitializedMessagesRef.current = false;
+    shouldAutoScrollRef.current = true;
+  }, [roomId]);
+
   // Resolve scrollable viewport inside chat area
   const getChatViewport = () => {
     const container = chatContainerRef.current;
@@ -454,7 +465,7 @@ export default function RoomPage() {
     if (!viewport) return true;
 
     const { scrollTop, scrollHeight, clientHeight } = viewport;
-    return scrollHeight - scrollTop - clientHeight < 50;
+    return scrollHeight - scrollTop - clientHeight <= CHAT_BOTTOM_THRESHOLD_PX;
   };
 
   // Scroll to bottom of chat (inside chat viewport only)
@@ -464,6 +475,12 @@ export default function RoomPage() {
 
     viewport.scrollTop = viewport.scrollHeight;
     shouldAutoScrollRef.current = true;
+    setNewMessagesCount(0);
+  };
+
+  const handleNewMessagesIndicatorClick = () => {
+    scrollToBottom();
+    setNewMessagesCount(0);
   };
 
   // Track whether user is near bottom while scrolling
@@ -474,7 +491,12 @@ export default function RoomPage() {
     }
 
     const handleViewportScroll = () => {
-      shouldAutoScrollRef.current = isUserAtBottom();
+      const isNearBottom = isUserAtBottom();
+      shouldAutoScrollRef.current = isNearBottom;
+
+      if (isNearBottom) {
+        setNewMessagesCount(0);
+      }
     };
 
     shouldAutoScrollRef.current = isUserAtBottom();
@@ -485,11 +507,35 @@ export default function RoomPage() {
     };
   }, [roomId, messages.length]);
 
-  // Auto-scroll when messages change (only if user was already at bottom)
+  // Auto-scroll when messages change (only if user is already near bottom)
   useEffect(() => {
-    if (messages.length > 0 && shouldAutoScrollRef.current) {
-      scrollToBottom();
+    const currentMessageCount = messages.length;
+
+    if (!hasInitializedMessagesRef.current) {
+      hasInitializedMessagesRef.current = true;
+      prevMessageCountRef.current = currentMessageCount;
+
+      if (currentMessageCount > 0 && shouldAutoScrollRef.current) {
+        scrollToBottom();
+      }
+
+      setNewMessagesCount(0);
+      return;
     }
+
+    const addedMessagesCount = currentMessageCount - prevMessageCountRef.current;
+    const isNearBottom = shouldAutoScrollRef.current || isUserAtBottom();
+
+    if (isNearBottom) {
+      if (currentMessageCount > 0) {
+        scrollToBottom();
+      }
+      setNewMessagesCount(0);
+    } else if (addedMessagesCount > 0) {
+      setNewMessagesCount((prev) => prev + addedMessagesCount);
+    }
+
+    prevMessageCountRef.current = currentMessageCount;
   }, [messages]);
 
   const sendMessage = async () => {
@@ -1214,6 +1260,19 @@ export default function RoomPage() {
                   </div>
                 </ScrollArea>
               </div>
+
+              {newMessagesCount > 0 && (
+                <div className="px-5 pb-2" data-testid="new-messages-indicator-wrapper">
+                  <button
+                    type="button"
+                    onClick={handleNewMessagesIndicatorClick}
+                    className="mx-auto inline-flex items-center rounded-full border border-indigo-200/80 bg-indigo-50/90 px-3 py-1 text-xs font-medium text-indigo-700 shadow-sm transition-colors duration-200 hover:bg-indigo-100"
+                    data-testid="new-messages-indicator"
+                  >
+                    {`${newMessagesCount} yeni mesaj ↓`}
+                  </button>
+                </div>
+              )}
 
               {/* Message Input */}
               <div className="flex items-center gap-3 border-t border-slate-200/90 bg-white/72 px-5 py-5 backdrop-blur-sm" data-testid="chat-input-row">
