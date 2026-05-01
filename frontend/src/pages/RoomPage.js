@@ -55,6 +55,7 @@ export default function RoomPage() {
   const chatEndRef = useRef(null);
   const chatContainerRef = useRef(null);
   const shouldAutoScrollRef = useRef(true);
+  const wasNearBottomBeforeUpdateRef = useRef(true);
   const prevMessageCountRef = useRef(0);
   const hasInitializedMessagesRef = useRef(false);
   const CHAT_BOTTOM_THRESHOLD_PX = 100;
@@ -403,6 +404,7 @@ export default function RoomPage() {
   const loadMessages = async () => {
     try {
       const res = await axios.get(`${API}/messages/${roomId}`);
+      wasNearBottomBeforeUpdateRef.current = isUserAtBottom();
       setMessages(res.data);
     } catch (error) {
       console.error("Error loading messages:", error);
@@ -449,6 +451,7 @@ export default function RoomPage() {
     prevMessageCountRef.current = 0;
     hasInitializedMessagesRef.current = false;
     shouldAutoScrollRef.current = true;
+    wasNearBottomBeforeUpdateRef.current = true;
   }, [roomId]);
 
   // Resolve scrollable viewport inside chat area
@@ -515,7 +518,7 @@ export default function RoomPage() {
       hasInitializedMessagesRef.current = true;
       prevMessageCountRef.current = currentMessageCount;
 
-      if (currentMessageCount > 0 && shouldAutoScrollRef.current) {
+      if (currentMessageCount > 0) {
         scrollToBottom();
       }
 
@@ -524,9 +527,9 @@ export default function RoomPage() {
     }
 
     const addedMessagesCount = currentMessageCount - prevMessageCountRef.current;
-    const isNearBottom = shouldAutoScrollRef.current || isUserAtBottom();
+    const wasNearBottomBeforeUpdate = wasNearBottomBeforeUpdateRef.current;
 
-    if (isNearBottom) {
+    if (wasNearBottomBeforeUpdate) {
       if (currentMessageCount > 0) {
         scrollToBottom();
       }
@@ -559,8 +562,6 @@ export default function RoomPage() {
 
       setNewMessage("");
       await loadMessages();
-      // Always scroll to bottom after sending message
-      setTimeout(() => scrollToBottom(), 100);
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -579,7 +580,6 @@ export default function RoomPage() {
       setRoom(response.data);
       // Refresh messages so the newly inserted system status message shows up immediately
       await loadMessages();
-      setTimeout(() => scrollToBottom(), 100);
     } catch (error) {
       console.error("Error toggling chat enabled:", error);
     }
@@ -1178,7 +1178,7 @@ export default function RoomPage() {
                         const isSystemMessage = message.user_id === "system";
                         const isOwnMessage = message.user_id === currentUserId;
                         const messageAvatarUrl = getMessageAvatarUrl(message);
-                        const widthClass = 'max-w-[75%] w-fit';
+                        const widthClass = 'max-w-[90%] sm:max-w-[82%] lg:max-w-[70%] w-fit';
 
                         if (isSystemMessage) {
                           return (
@@ -1199,11 +1199,11 @@ export default function RoomPage() {
                         return (
                           <div
   key={message.id}
-  className={`flex gap-2 ${isOwnMessage ? 'justify-end' : 'justify-start'} ${isGrouped ? 'mt-1.5' : 'mt-4'}`}
+  className={`flex items-start gap-1.5 ${isOwnMessage ? 'justify-end' : 'justify-start'} ${isGrouped ? 'mt-1.5' : 'mt-4'}`}
   data-testid={`message-${message.id}`}
 >
                             {!isGrouped ? (
-                              <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-secondary text-xs font-semibold text-foreground shadow-sm ring-1 ring-border/60" data-testid={`message-avatar-${message.id}`}>
+                              <div className="mt-0.5 flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-secondary text-xs font-semibold text-foreground shadow-sm ring-1 ring-border/60" data-testid={`message-avatar-${message.id}`}>
                                 {messageAvatarUrl ? (
                                   <img
                                     src={messageAvatarUrl}
@@ -1229,14 +1229,14 @@ export default function RoomPage() {
                               )}
 
                               <div
-                                className={`inline-block w-fit max-w-full rounded-2xl border px-3.5 py-3 shadow-sm ${
+                                className={`inline-block w-fit max-w-full rounded-2xl border px-3 py-2.5 shadow-sm ${
                                   isOwnMessage
                                     ? 'border-transparent bg-slate-900 text-slate-50  '
                                     : 'border-border/60 bg-secondary/90 text-foreground'
                                 }`}
                                 data-testid={`message-bubble-${message.id}`}
                               >
-                                <p className="text-sm break-words [overflow-wrap:anywhere]" data-testid={`message-content-${message.id}`}>{message.content}</p>
+                                <p className="text-sm leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere]" data-testid={`message-content-${message.id}`}>{message.content}</p>
                               </div>
 
                               {/* Timestamp: show only on last message in group for cleaner look */}
@@ -1266,7 +1266,7 @@ export default function RoomPage() {
                   <button
                     type="button"
                     onClick={handleNewMessagesIndicatorClick}
-                    className="mx-auto inline-flex items-center rounded-full border border-indigo-200/80 bg-indigo-50/90 px-3 py-1 text-xs font-medium text-indigo-700 shadow-sm transition-colors duration-200 hover:bg-indigo-100"
+                    className="mx-auto inline-flex max-w-full items-center rounded-full border border-indigo-200/80 bg-indigo-50/90 px-3 py-1 text-xs font-medium whitespace-nowrap text-indigo-700 shadow-sm transition-colors duration-200 hover:bg-indigo-100"
                     data-testid="new-messages-indicator"
                   >
                     {`${newMessagesCount} yeni mesaj ↓`}
