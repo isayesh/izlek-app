@@ -154,7 +154,7 @@ export default function Leaderboard() {
               <div className="flex items-center gap-6 sm:gap-10" data-testid="my-rank-metrics">
                 <div className="text-right" data-testid="my-rank-value-wrap">
                   <p className="text-[11px] uppercase tracking-wide text-gray-500" data-testid="my-rank-label">Sıra</p>
-                  <p className="text-lg font-bold text-indigo-600 sm:text-xl" data-testid="my-rank-value">#{myEntry.rank}</p>
+                  <p className="text-lg font-bold text-indigo-600 sm:text-xl" data-testid="my-rank-value">#{mydisplayRank}</p>
                 </div>
                 <div className="text-right" data-testid="my-time-value-wrap">
                   <p className="text-[11px] uppercase tracking-wide text-gray-500" data-testid="my-time-label">{periodConfig.metricLabel}</p>
@@ -195,12 +195,15 @@ export default function Leaderboard() {
               </p>
             ) : (
               <div className="space-y-1.5" data-testid="leaderboard-list">
-                {entries.map((entry) => {
+               {entries
+  .filter((entry) => entry.total_seconds >= 60)
+  .map((entry, index) => (
                   const displayName = getEntryDisplayName(entry);
                   const avatarUrl = getEntryAvatarUrl(entry);
-                  const medal = getRankMedal(entry.rank);
-                  const isTopOne = entry.rank === 1;
-                  const isTopThree = entry.rank <= 3;
+                  const displayRank = index + 1;
+const medal = getRankMedal(displayRank);
+const isTopOne = displayRank === 1;
+const isTopThree = displayRank <= 3;
                   const rowSpacing = isTopOne
                     ? "px-4 py-4 sm:px-5 sm:py-5 shadow-sm"
                     : "px-3 py-2.5 sm:px-4 sm:py-3";
@@ -217,21 +220,21 @@ export default function Leaderboard() {
                   return (
                     <div
                       key={entry.user_id}
-                      className={`grid grid-cols-[56px_1fr_auto] items-center gap-3 rounded-xl border transition-colors duration-150 sm:grid-cols-[68px_1fr_auto] ${rowSpacing} ${getRowClassName(entry.rank)}`}
-                      data-testid={`leaderboard-row-${entry.rank}`}
+                      className={`grid grid-cols-[56px_1fr_auto] items-center gap-3 rounded-xl border transition-colors duration-150 sm:grid-cols-[68px_1fr_auto] ${rowSpacing} ${getRowClassName(displayRank)}`}
+                      data-testid={`leaderboard-row-${displayRank}`}
                     >
-                      <div className="flex items-center gap-1.5 text-gray-700" data-testid={`leaderboard-rank-${entry.rank}`}>
-                        {medal && <span className="leading-none sm:text-lg" data-testid={`leaderboard-medal-${entry.rank}`}>{medal}</span>}
-                        <span className={`font-bold text-gray-900 ${rankSize}`}>#{entry.rank}</span>
+                      <div className="flex items-center gap-1.5 text-gray-700" data-testid={`leaderboard-rank-${displayRank}`}>
+                        {medal && <span className="leading-none sm:text-lg" data-testid={`leaderboard-medal-${displayRank}`}>{medal}</span>}
+                        <span className={`font-bold text-gray-900 ${rankSize}`}>#{displayRank}</span>
                       </div>
                       <div className="min-w-0 flex items-center gap-3">
-                        <div className={`flex flex-shrink-0 items-center justify-center overflow-hidden rounded-full text-sm font-bold ${avatarSize} ${avatarTone}`} data-testid={`leaderboard-avatar-${entry.rank}`}>
+                        <div className={`flex flex-shrink-0 items-center justify-center overflow-hidden rounded-full text-sm font-bold ${avatarSize} ${avatarTone}`} data-testid={`leaderboard-avatar-${displayRank}`}>
                           {avatarUrl ? (
                             <img
                               src={avatarUrl}
                               alt={`${displayName} avatar`}
                               className="h-full w-full object-cover"
-                              data-testid={`leaderboard-avatar-image-${entry.rank}`}
+                              data-testid={`leaderboard-avatar-image-${displayRank}`}
                               onError={() => setFailedAvatars((prev) => ({ ...prev, [entry.user_id]: true }))}
                             />
                           ) : (
@@ -239,16 +242,16 @@ export default function Leaderboard() {
                           )}
                         </div>
                         <div className="min-w-0">
-                          <p className={`truncate font-semibold text-gray-900 ${nameSize}`} data-testid={`leaderboard-username-${entry.rank}`}>
+                          <p className={`truncate font-semibold text-gray-900 ${nameSize}`} data-testid={`leaderboard-username-${displayRank}`}>
                             {displayName}
                           </p>
-                          <p className="truncate text-xs text-gray-500" data-testid={`leaderboard-secondary-text-${entry.rank}`}>
+                          <p className="truncate text-xs text-gray-500" data-testid={`leaderboard-secondary-text-${displayRank}`}>
                             {isTopOne ? "Lider" : isTopThree ? "Podyumda" : "Çalışma süresi bazlı sıralama"}
                           </p>
                         </div>
                       </div>
-                      <div className="text-right" data-testid={`leaderboard-time-wrap-${entry.rank}`}>
-                        <p className={`whitespace-nowrap font-semibold text-gray-900 ${timeSize}`} data-testid={`leaderboard-time-${entry.rank}`}>
+                      <div className="text-right" data-testid={`leaderboard-time-wrap-${displayRank}`}>
+                        <p className={`whitespace-nowrap font-semibold text-gray-900 ${timeSize}`} data-testid={`leaderboard-time-${displayRank}`}>
                           {formatStudyTime(entry.total_seconds)}
                         </p>
                       </div>
