@@ -1203,7 +1203,7 @@ export default function RoomPage() {
   data-testid={`message-${message.id}`}
 >
                             {!isGrouped ? (
-                              <div className="mt-0.5 flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-secondary text-xs font-semibold text-foreground shadow-sm ring-1 ring-border/60" data-testid={`message-avatar-${message.id}`}>
+                              <div className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-secondary text-xs font-semibold text-foreground shadow-sm ring-1 ring-border/60 ${isOwnMessage ? 'order-2' : 'order-1'}`} data-testid={`message-avatar-${message.id}`}>
                                 {messageAvatarUrl ? (
                                   <img
                                     src={messageAvatarUrl}
@@ -1217,10 +1217,10 @@ export default function RoomPage() {
                                 )}
                               </div>
                             ) : (
-                              <div className="w-8 flex-shrink-0"></div>
+                              <div className={`w-8 flex-shrink-0 ${isOwnMessage ? 'order-2' : 'order-1'}`}></div>
                             )}
 
-                            <div className={`${widthClass} min-w-0 ${isOwnMessage ? 'text-right' : ''}`}>
+                            <div className={`${widthClass} min-w-0 ${isOwnMessage ? 'order-1 text-right' : 'order-2 text-left'}`}>
                               {/* Sender name: only show if not grouped (first message of sender) */}
                               {!isGrouped && (
                                 <div className={`flex items-center gap-2 mb-1 ${isOwnMessage ? 'justify-end' : ''}`} data-testid={`message-meta-${message.id}`}>
