@@ -252,28 +252,28 @@ export default function Profile() {
               <div className="h-36 w-full bg-gradient-to-r from-indigo-600/85 via-purple-600/75 to-indigo-500/85" />
               <CardContent className="space-y-7 p-6 pt-6 sm:p-7 sm:pt-7">
                 <div className="-mt-12 flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="flex items-start gap-4 sm:gap-5">
+                  <div className="flex items-start gap-3.5 sm:gap-4">
                     {profileData.avatar_url.trim() ? (
                       <img
                         src={profileData.avatar_url}
                         alt="Profil avatarı"
-                        className="h-24 w-24 rounded-full border-4 border-white object-cover shadow-sm"
+                        className="h-24 w-24 rounded-full border-4 border-white object-cover shadow-sm sm:h-28 sm:w-28"
                       />
                     ) : (
-                      <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br from-slate-700 to-slate-900 text-2xl font-semibold text-white shadow-sm">
+                      <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br from-slate-700 to-slate-900 text-2xl font-semibold text-white shadow-sm sm:h-28 sm:w-28">
                         {getInitials(displayName)}
                       </div>
                     )}
-                    <div className="pt-10 sm:pt-11">
-                      <p className="text-2xl font-bold tracking-tight text-foreground">{displayName}</p>
-                      <p className="text-sm text-muted-foreground">@{username}</p>
+                    <div className="pt-8 sm:pt-9">
+                      <p className="text-2xl font-bold leading-tight tracking-tight text-foreground">{displayName}</p>
+                      <p className="text-xs text-muted-foreground sm:text-sm">@{username}</p>
                     </div>
                   </div>
 
                   <Button
                     type="button"
                     onClick={() => navigate("/profile/edit")}
-                    className="h-10 rounded-lg bg-indigo-600 px-4 text-sm font-semibold text-white hover:bg-indigo-700 sm:mt-11"
+                    className="h-10 rounded-lg bg-indigo-600 px-4 text-sm font-semibold text-white hover:bg-indigo-700 sm:mt-9"
                     data-testid="profile-edit-button"
                   >
                     Profili düzenle
