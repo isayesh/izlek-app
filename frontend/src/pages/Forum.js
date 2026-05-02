@@ -510,17 +510,19 @@ export default function Forum() {
 
               <div className="space-y-4" data-testid="forum-feed-list">
                 {posts.map((post) => {
-                  const inferredTopic = inferMainTopicFromText(post.content || "");
-                  const authorProfile = getForumUserProfile(post.username, post.displayName);
                   const sourcePost = post.sharedFromPostId ? getForumPostById(post.sharedFromPostId) : null;
+                  const isPureRepost = Boolean(post.sharedFromPostId) && !(post.content || "").trim();
+                  const visiblePost = isPureRepost && sourcePost ? sourcePost : post;
+                  const inferredTopic = inferMainTopicFromText(visiblePost.content || "");
+                  const authorProfile = getForumUserProfile(post.username, post.displayName);
                   const sourceAuthorProfile = sourcePost
                     ? getForumUserProfile(sourcePost.username, sourcePost.displayName)
                     : null;
+                  const visibleAuthorProfile = isPureRepost && sourceAuthorProfile ? sourceAuthorProfile : authorProfile;
                   const hasCommentsExpanded = Boolean(expandedCommentsByPost[post.id]);
                   const hasShareExpanded = Boolean(expandedShareByPost[post.id]);
                   const hasShareMenuOpen = Boolean(shareMenuByPost[post.id]);
-                  const hasImageError = Boolean(imageLoadErrorByPost[post.id]);
-                  const isPureRepost = Boolean(post.sharedFromPostId) && !(post.content || "").trim();
+                  const hasImageError = Boolean(imageLoadErrorByPost[visiblePost.id]);
 
                   return (
                     <Card
@@ -532,20 +534,20 @@ export default function Forum() {
                         <div className="flex items-start gap-3">
                           <button
                             type="button"
-                            onClick={() => setActiveProfileUsername(authorProfile.username)}
+                            onClick={() => setActiveProfileUsername(visibleAuthorProfile.username)}
                             className="group flex min-w-0 flex-1 items-start gap-3 text-left"
                           >
                             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-700 to-slate-900 text-sm font-semibold text-white transition-transform duration-200 group-hover:scale-[1.03]">
-                              {getInitials(authorProfile.displayName)}
+                              {getInitials(visibleAuthorProfile.displayName)}
                             </div>
 
                             <div className="min-w-0 flex-1">
                               <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
                                 <span className="font-semibold text-foreground transition-colors duration-200 group-hover:text-indigo-700">
-                                  {authorProfile.displayName}
+                                  {visibleAuthorProfile.displayName}
                                 </span>
-                                <span className="text-muted-foreground">@{authorProfile.username}</span>
-                                <span className="text-muted-foreground">· {getRelativeTimeLabel(post.createdAt)}</span>
+                                <span className="text-muted-foreground">@{visibleAuthorProfile.username}</span>
+                                <span className="text-muted-foreground">· {getRelativeTimeLabel(visiblePost.createdAt)}</span>
                               </div>
 
                               <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full border border-indigo-200/80 bg-indigo-50 px-2.5 py-1 text-[11px] font-semibold text-indigo-700">
@@ -570,33 +572,33 @@ export default function Forum() {
                             </p>
                           )}
 
-                          {post.content && (
+                          {visiblePost.content && (
                             <p className="whitespace-pre-wrap text-sm leading-6 text-slate-700 sm:text-[15px]">
-                              {renderTextWithMentions(post.content, handleMentionNavigation, `post-${post.id}`)}
+                              {renderTextWithMentions(visiblePost.content, handleMentionNavigation, `post-${visiblePost.id}`)}
                             </p>
                           )}
 
-                          {post.imagePreviewUrl && (
+                          {visiblePost.imagePreviewUrl && (
                             <div
                               role="button"
                               tabIndex={0}
-                              onClick={(event) => openImagePreview(event, post)}
+                              onClick={(event) => openImagePreview(event, visiblePost)}
                               onKeyDown={(event) => {
                                 if (event.key === "Enter" || event.key === " ") {
-                                  openImagePreview(event, post);
+                                  openImagePreview(event, visiblePost);
                                 }
                               }}
                               className="h-[300px] overflow-hidden rounded-xl border border-border/70 bg-muted/20 sm:h-[380px] md:h-[440px]"
                             >
                               {!hasImageError ? (
                                 <img
-                                  src={post.imagePreviewUrl}
+                                  src={visiblePost.imagePreviewUrl}
                                   alt="Paylaşım görseli"
                                   className="h-full w-full object-cover"
                                   onError={() =>
                                     setImageLoadErrorByPost((prev) => ({
                                       ...prev,
-                                      [post.id]: true,
+                                      [visiblePost.id]: true,
                                     }))
                                   }
                                 />
@@ -609,7 +611,7 @@ export default function Forum() {
                             </div>
                           )}
 
-                          {post.sharedFromPostId && sourcePost && (
+                          {!isPureRepost && post.sharedFromPostId && sourcePost && (
                             <div className="rounded-xl border border-border/70 bg-slate-50/70 p-3 dark:bg-slate-900/25">
                               <div className="flex items-start gap-2.5">
                                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-700 to-slate-900 text-xs font-semibold text-white">

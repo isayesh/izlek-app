@@ -127,7 +127,8 @@ export default function PostDetail() {
   const post = postMap[id] || null;
   const sourcePost = post?.sharedFromPostId ? getForumPostById(post.sharedFromPostId) : null;
   const isPureRepost = Boolean(post?.sharedFromPostId) && !(post?.content || "").trim();
-  const hasImageError = Boolean(imageLoadErrorByPost[post?.id || ""]);
+  const visiblePost = isPureRepost && sourcePost ? sourcePost : post;
+  const hasImageError = Boolean(imageLoadErrorByPost[visiblePost?.id || ""]);
 
   useEffect(() => {
     if (!post?.id) return;
@@ -292,20 +293,20 @@ export default function PostDetail() {
                 <div className="flex items-start gap-3">
                   <button
                     type="button"
-                    onClick={() => navigate(`/user/${post.username}`)}
+                    onClick={() => navigate(`/user/${visiblePost.username}`)}
                     className="group flex min-w-0 flex-1 items-start gap-3 text-left"
                   >
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-700 to-slate-900 text-sm font-semibold text-white transition-transform duration-200 group-hover:scale-[1.03]">
-                      {getInitials(post.displayName)}
+                      {getInitials(visiblePost.displayName)}
                     </div>
 
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
                         <span className="font-semibold text-foreground transition-colors duration-200 group-hover:text-indigo-700">
-                          {post.displayName}
+                          {visiblePost.displayName}
                         </span>
-                        <span className="text-muted-foreground">@{post.username}</span>
-                        <span className="text-muted-foreground">· {getRelativeTimeLabel(post.createdAt)}</span>
+                        <span className="text-muted-foreground">@{visiblePost.username}</span>
+                        <span className="text-muted-foreground">· {getRelativeTimeLabel(visiblePost.createdAt)}</span>
                       </div>
                     </div>
                   </button>
@@ -319,23 +320,23 @@ export default function PostDetail() {
                   </p>
                 )}
 
-                {post.content && (
+                {visiblePost.content && (
                   <p className="whitespace-pre-wrap text-sm leading-6 text-slate-700 sm:text-[15px]">
-                    {renderTextWithMentions(post.content, (username) => navigate(`/user/${username}`), `detail-${post.id}`)}
+                    {renderTextWithMentions(visiblePost.content, (username) => navigate(`/user/${username}`), `detail-${visiblePost.id}`)}
                   </p>
                 )}
 
-                {post.imagePreviewUrl && (
+                {visiblePost.imagePreviewUrl && (
                   <div className="overflow-hidden rounded-xl border border-border/70 bg-muted/20 p-2">
                     {!hasImageError ? (
                       <img
-                        src={post.imagePreviewUrl}
+                        src={visiblePost.imagePreviewUrl}
                         alt="Paylaşım görseli"
                         className="mx-auto max-h-[70vh] h-auto w-auto max-w-full object-contain"
                         onError={() =>
                           setImageLoadErrorByPost((prev) => ({
                             ...prev,
-                            [post.id]: true,
+                            [visiblePost.id]: true,
                           }))
                         }
                       />
@@ -348,7 +349,7 @@ export default function PostDetail() {
                   </div>
                 )}
 
-                {post.sharedFromPostId && sourcePost && (
+                {!isPureRepost && post.sharedFromPostId && sourcePost && (
                   <div className="rounded-xl border border-border/70 bg-slate-50/70 p-3 dark:bg-slate-900/25">
                     <div className="flex items-start gap-2.5">
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-700 to-slate-900 text-xs font-semibold text-white">
