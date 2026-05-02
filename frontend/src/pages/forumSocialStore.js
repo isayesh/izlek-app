@@ -7,7 +7,7 @@ const FORUM_USERS = {
     bio: "Düzenli çalışıp netlerini istikrarlı artırmaya odaklanıyorsun.",
     studyFocus: "AYT Matematik",
     stats: {
-      posts: 8,
+      posts: 0,
       followers: 52,
       following: 37,
       studyHours: 214,
@@ -148,6 +148,107 @@ const followStateByUsername = {};
 const followerDeltaByUsername = {};
 const followListeners = new Set();
 
+const initialForumFeedPosts = [
+  {
+    id: "seed-1",
+    displayName: "Mert Analiz",
+    username: "merttaktik",
+    content:
+      "Derbide 4-2-3-1 yerine ikinci yarı 4-3-3'e dönüş kritik oldu. Orta sahada bir ekstra oyuncu kazanınca hem ikinci toplar hem de geçiş savunması toparlandı.",
+    createdAt: minutesAgo(18),
+    likeCount: 42,
+    liked: false,
+    comments: [
+      {
+        id: "seed-1-comment-1",
+        author: "oyunkurucu10",
+        text: "Kesinlikle, özellikle 60'tan sonra merkezde üstünlük netti.",
+        createdAt: minutesAgo(11),
+      },
+      {
+        id: "seed-1-comment-2",
+        author: "savunmaci5",
+        text: "Beklerin içe kat etmesi de pas açılarını çok artırdı.",
+        createdAt: minutesAgo(7),
+      },
+    ],
+    imageName: "",
+    imagePreviewUrl: "",
+  },
+  {
+    id: "seed-2",
+    displayName: "Transfer Radarı",
+    username: "transferhatti",
+    content:
+      "Fenerbahçe'nin sol bek rotasyonu için iki isim daha gündeme girmiş. Biri tempolu çizgi oyuncusu, diğeri ise oyun kurulumunda daha güçlü bir profil.",
+    createdAt: minutesAgo(54),
+    likeCount: 65,
+    liked: false,
+    comments: [
+      {
+        id: "seed-2-comment-1",
+        author: "sari_lacivertli",
+        text: "Top ayağında sakin bir bek daha mantıklı olur gibi.",
+        createdAt: minutesAgo(42),
+      },
+    ],
+    imageName: "",
+    imagePreviewUrl: "",
+  },
+  {
+    id: "seed-3",
+    displayName: "Kartal Tribune",
+    username: "kartaltribune",
+    content:
+      "Beşiktaş'ın genç oyunculara verdiği süre artarsa ligin ikinci yarısında çok daha atletik bir yapı görebiliriz. Rotasyon doğru yönetilirse tavan çok yüksek.",
+    createdAt: minutesAgo(96),
+    likeCount: 38,
+    liked: false,
+    comments: [],
+    imageName: "",
+    imagePreviewUrl: "",
+  },
+  {
+    id: "seed-4",
+    displayName: "Aslan Gündem",
+    username: "aslan_gundem",
+    content:
+      "Galatasaray'da son haftalarda ön alan pres tetikleyicileri daha net. Forvetin gölge markajı ve 8 numaranın sıçraması rakibin çıkışını ciddi şekilde yavaşlattı.",
+    createdAt: minutesAgo(140),
+    likeCount: 71,
+    liked: false,
+    comments: [
+      {
+        id: "seed-4-comment-1",
+        author: "pas_oyunu",
+        text: "Özellikle iç sahada rakipler rahat çıkamıyor, çok doğru tespit.",
+        createdAt: minutesAgo(112),
+      },
+    ],
+    imageName: "",
+    imagePreviewUrl: "",
+  },
+  {
+    id: "seed-5",
+    displayName: "Anadolu Scout",
+    username: "anadolusc",
+    content:
+      "Bu hafta alt sıralar kadar Avrupa hattı da çok karışacak. İkili averaj hesapları devreye girince her puan altın değerinde.",
+    createdAt: minutesAgo(215),
+    likeCount: 24,
+    liked: false,
+    comments: [],
+    imageName: "",
+    imagePreviewUrl: "",
+  },
+].map((post) => ({
+  ...post,
+  commentCount: post.comments.length,
+}));
+
+let forumFeedPosts = [...initialForumFeedPosts];
+const forumFeedListeners = new Set();
+
 const notifyFollowListeners = () => {
   followListeners.forEach((listener) => listener());
 };
@@ -173,6 +274,109 @@ export const toggleForumFollow = (username = "") => {
   return nextFollowing;
 };
 
+const notifyForumFeedListeners = () => {
+  forumFeedListeners.forEach((listener) => listener());
+};
+
+export const subscribeForumFeedStore = (listener) => {
+  forumFeedListeners.add(listener);
+  return () => {
+    forumFeedListeners.delete(listener);
+  };
+};
+
+export const getForumFeedPosts = () =>
+  forumFeedPosts.map((post) => ({
+    ...post,
+    comments: [...(post.comments || [])],
+  }));
+
+export const createForumPost = ({
+  displayName = "Sen",
+  username = "sen",
+  content = "",
+  imageName = "",
+  imagePreviewUrl = "",
+}) => {
+  const trimmedContent = content.trim();
+  if (!trimmedContent) return null;
+
+  const nextPost = {
+    id: `post-${Date.now()}`,
+    displayName,
+    username,
+    content: trimmedContent,
+    createdAt: new Date().toISOString(),
+    likeCount: 0,
+    liked: false,
+    comments: [],
+    commentCount: 0,
+    imageName,
+    imagePreviewUrl,
+  };
+
+  forumFeedPosts = [nextPost, ...forumFeedPosts];
+  notifyForumFeedListeners();
+  return nextPost;
+};
+
+export const toggleForumPostLike = (postId = "") => {
+  if (!postId) return;
+
+  forumFeedPosts = forumFeedPosts.map((post) => {
+    if (post.id !== postId) return post;
+    const nextLiked = !post.liked;
+    return {
+      ...post,
+      liked: nextLiked,
+      likeCount: Math.max(0, post.likeCount + (nextLiked ? 1 : -1)),
+    };
+  });
+
+  notifyForumFeedListeners();
+};
+
+export const addForumPostComment = (postId = "", text = "", author = "sen") => {
+  const trimmedText = text.trim();
+  if (!postId || !trimmedText) return null;
+
+  const nextComment = {
+    id: `comment-${Date.now()}`,
+    author,
+    text: trimmedText,
+    createdAt: new Date().toISOString(),
+  };
+
+  forumFeedPosts = forumFeedPosts.map((post) => {
+    if (post.id !== postId) return post;
+    const nextComments = [...(post.comments || []), nextComment];
+    return {
+      ...post,
+      comments: nextComments,
+      commentCount: nextComments.length,
+    };
+  });
+
+  notifyForumFeedListeners();
+  return nextComment;
+};
+
+export const getForumCurrentUserComments = (username = "sen") =>
+  forumFeedPosts.flatMap((post) =>
+    (post.comments || [])
+      .filter((comment) => comment.author === username)
+      .map((comment) => ({
+        ...comment,
+        postId: post.id,
+        postContent: post.content,
+      }))
+  );
+
+export const getForumCurrentUserLikedPosts = () => forumFeedPosts.filter((post) => post.liked);
+
+export const getForumCurrentUserPosts = (username = "sen") =>
+  forumFeedPosts.filter((post) => post.username === username);
+
 export const getForumUserProfile = (username = "", fallbackDisplayName = "") => {
   const knownProfile = FORUM_USERS[username];
   if (knownProfile) return knownProfile;
@@ -181,8 +385,11 @@ export const getForumUserProfile = (username = "", fallbackDisplayName = "") => 
 
 export const getForumUserStats = (username = "") => {
   const profile = getForumUserProfile(username);
+  const dynamicPostCount = forumFeedPosts.filter((post) => post.username === username).length;
+  const resolvedPostCount = username === "sen" ? dynamicPostCount : Math.max(profile.stats.posts, dynamicPostCount);
+
   return {
-    posts: profile.stats.posts,
+    posts: resolvedPostCount,
     followers: Math.max(0, profile.stats.followers + (followerDeltaByUsername[username] || 0)),
     following: profile.stats.following,
     studyHours: profile.stats.studyHours,

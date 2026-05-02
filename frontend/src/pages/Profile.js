@@ -18,12 +18,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { API } from "@/App";
 import {
+  getForumCurrentUserComments,
+  getForumCurrentUserLikedPosts,
+  getForumCurrentUserPosts,
   getForumUserProfile,
   getForumUserStats,
   getForumUsersByUsernames,
   isForumFollowing,
-  PUBLIC_PROFILE_ACTIVITY,
-  PUBLIC_PROFILE_POSTS,
+  subscribeForumFeedStore,
   subscribeForumFollowStore,
   toggleForumFollow,
 } from "@/pages/forumSocialStore";
@@ -101,6 +103,15 @@ export default function Profile() {
   const [profileData, setProfileData] = useState(getDefaultProfileData(currentUser));
   const [listModalState, setListModalState] = useState({ open: false, type: "followers" });
   const [, setFollowStoreVersion] = useState(0);
+  const [feedStoreVersion, setFeedStoreVersion] = useState(0);
+
+  useEffect(() => {
+    const unsubscribeFeed = subscribeForumFeedStore(() => {
+      setFeedStoreVersion((prev) => prev + 1);
+    });
+
+    return unsubscribeFeed;
+  }, []);
 
   useEffect(() => {
     const unsubscribe = subscribeForumFollowStore(() => {
@@ -149,8 +160,9 @@ export default function Profile() {
 
   const socialProfile = useMemo(() => getForumUserProfile("sen", displayName), [displayName]);
   const profileStats = getForumUserStats("sen");
-  const ownPosts = useMemo(() => PUBLIC_PROFILE_POSTS.filter((post) => post.username === "sen"), []);
-  const activity = PUBLIC_PROFILE_ACTIVITY.sen || { comments: [], likes: [] };
+  const ownPosts = useMemo(() => getForumCurrentUserPosts("sen"), [feedStoreVersion]);
+  const ownComments = useMemo(() => getForumCurrentUserComments("sen"), [feedStoreVersion]);
+  const likedPosts = useMemo(() => getForumCurrentUserLikedPosts(), [feedStoreVersion]);
 
   const listUsers = useMemo(() => {
     const sourceList = listModalState.type === "followers" ? socialProfile.followersList : socialProfile.followingList;
@@ -230,16 +242,16 @@ export default function Profile() {
           </header>
 
           {error && (
-            <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700" data-testid="profile-error-message">
+            <div className="mx-auto w-full max-w-5xl rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700" data-testid="profile-error-message">
               {error}
             </div>
           )}
 
-          <main className="mx-auto w-full max-w-4xl space-y-5">
+          <main className="mx-auto w-full max-w-5xl space-y-6">
             <Card className="overflow-hidden border-border/70 bg-card/95">
               <div className="h-28 w-full bg-gradient-to-r from-indigo-600/85 via-purple-600/75 to-indigo-500/85" />
-              <CardContent className="space-y-5 p-5 pt-0 sm:p-6 sm:pt-0">
-                <div className="-mt-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <CardContent className="space-y-6 p-6 pt-0 sm:p-7 sm:pt-0">
+                <div className="-mt-12 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
                   <div className="flex items-end gap-4">
                     {profileData.avatar_url.trim() ? (
                       <img
@@ -273,7 +285,7 @@ export default function Profile() {
                   <p className="text-sm font-medium text-indigo-700">Odak: {profileMetaLine || socialProfile.studyFocus}</p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
                   <div className="rounded-xl border border-border/70 bg-background/80 px-3 py-2.5 text-center">
                     <p className="text-base font-semibold text-foreground">{profileStats.posts}</p>
                     <p className="text-xs text-muted-foreground">Gönderi</p>
@@ -330,36 +342,38 @@ export default function Profile() {
                       ))
                     ) : (
                       <div className="rounded-xl border border-dashed border-border/80 bg-background/70 px-4 py-8 text-center text-sm text-muted-foreground">
-                        Henüz paylaşım yok.
+                        Henüz paylaşım yapmadın.
                       </div>
                     )}
                   </TabsContent>
 
                   <TabsContent value="comments" className="mt-4 space-y-3">
-                    {activity.comments.length > 0 ? (
-                      activity.comments.map((comment) => (
+                    {ownComments.length > 0 ? (
+                      ownComments.map((comment) => (
                         <div key={comment.id} className="rounded-xl border border-border/70 bg-background/85 p-4">
                           <p className="text-sm text-slate-700">{comment.text}</p>
+                          <p className="mt-1 truncate text-xs text-muted-foreground">Paylaşım: {comment.postContent}</p>
                           <p className="mt-1 text-xs text-muted-foreground">{getRelativeTimeLabel(comment.createdAt)}</p>
                         </div>
                       ))
                     ) : (
                       <div className="rounded-xl border border-dashed border-border/80 bg-background/70 px-4 py-8 text-center text-sm text-muted-foreground">
-                        Henüz yorum yok.
+                        Henüz yorum yapmadın.
                       </div>
                     )}
                   </TabsContent>
 
                   <TabsContent value="likes" className="mt-4 space-y-3">
-                    {activity.likes.length > 0 ? (
-                      activity.likes.map((like) => (
-                        <div key={like.id} className="rounded-xl border border-border/70 bg-background/85 p-4 text-sm text-slate-700">
-                          {like.text}
+                    {likedPosts.length > 0 ? (
+                      likedPosts.map((post) => (
+                        <div key={post.id} className="rounded-xl border border-border/70 bg-background/85 p-4">
+                          <p className="text-sm leading-6 text-slate-700">{post.content}</p>
+                          <p className="mt-1 text-xs text-muted-foreground">@{post.username}</p>
                         </div>
                       ))
                     ) : (
                       <div className="rounded-xl border border-dashed border-border/80 bg-background/70 px-4 py-8 text-center text-sm text-muted-foreground">
-                        Henüz beğeni etkinliği yok.
+                        Henüz beğeni yok.
                       </div>
                     )}
                   </TabsContent>

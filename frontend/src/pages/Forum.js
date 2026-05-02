@@ -19,112 +19,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
+  addForumPostComment,
+  createForumPost,
+  getForumFeedPosts,
   getForumUserProfile,
   getForumUserStats,
   isForumFollowing,
+  subscribeForumFeedStore,
   subscribeForumFollowStore,
   toggleForumFollow,
+  toggleForumPostLike,
 } from "@/pages/forumSocialStore";
-
-const minutesAgo = (minutes) => new Date(Date.now() - minutes * 60 * 1000).toISOString();
-
-const FORUM_SEED_POSTS = [
-  {
-    id: "seed-1",
-    displayName: "Mert Analiz",
-    username: "merttaktik",
-    content:
-      "Derbide 4-2-3-1 yerine ikinci yarı 4-3-3'e dönüş kritik oldu. Orta sahada bir ekstra oyuncu kazanınca hem ikinci toplar hem de geçiş savunması toparlandı.",
-    createdAt: minutesAgo(18),
-    likeCount: 42,
-    commentCount: 0,
-    liked: false,
-    comments: [
-      {
-        id: "seed-1-comment-1",
-        author: "oyunkurucu10",
-        text: "Kesinlikle, özellikle 60'tan sonra merkezde üstünlük netti.",
-        createdAt: minutesAgo(11),
-      },
-      {
-        id: "seed-1-comment-2",
-        author: "savunmaci5",
-        text: "Beklerin içe kat etmesi de pas açılarını çok artırdı.",
-        createdAt: minutesAgo(7),
-      },
-    ],
-    commentsExpanded: false,
-  },
-  {
-    id: "seed-2",
-    displayName: "Transfer Radarı",
-    username: "transferhatti",
-    content:
-      "Fenerbahçe'nin sol bek rotasyonu için iki isim daha gündeme girmiş. Biri tempolu çizgi oyuncusu, diğeri ise oyun kurulumunda daha güçlü bir profil.",
-    createdAt: minutesAgo(54),
-    likeCount: 65,
-    commentCount: 0,
-    liked: false,
-    comments: [
-      {
-        id: "seed-2-comment-1",
-        author: "sari_lacivertli",
-        text: "Top ayağında sakin bir bek daha mantıklı olur gibi.",
-        createdAt: minutesAgo(42),
-      },
-    ],
-    commentsExpanded: false,
-  },
-  {
-    id: "seed-3",
-    displayName: "Kartal Tribune",
-    username: "kartaltribune",
-    content:
-      "Beşiktaş'ın genç oyunculara verdiği süre artarsa ligin ikinci yarısında çok daha atletik bir yapı görebiliriz. Rotasyon doğru yönetilirse tavan çok yüksek.",
-    createdAt: minutesAgo(96),
-    likeCount: 38,
-    commentCount: 0,
-    liked: false,
-    comments: [],
-    commentsExpanded: false,
-  },
-  {
-    id: "seed-4",
-    displayName: "Aslan Gündem",
-    username: "aslan_gundem",
-    content:
-      "Galatasaray'da son haftalarda ön alan pres tetikleyicileri daha net. Forvetin gölge markajı ve 8 numaranın sıçraması rakibin çıkışını ciddi şekilde yavaşlattı.",
-    createdAt: minutesAgo(140),
-    likeCount: 71,
-    commentCount: 0,
-    liked: false,
-    comments: [
-      {
-        id: "seed-4-comment-1",
-        author: "pas_oyunu",
-        text: "Özellikle iç sahada rakipler rahat çıkamıyor, çok doğru tespit.",
-        createdAt: minutesAgo(112),
-      },
-    ],
-    commentsExpanded: false,
-  },
-  {
-    id: "seed-5",
-    displayName: "Anadolu Scout",
-    username: "anadolusc",
-    content:
-      "Bu hafta alt sıralar kadar Avrupa hattı da çok karışacak. İkili averaj hesapları devreye girince her puan altın değerinde.",
-    createdAt: minutesAgo(215),
-    likeCount: 24,
-    commentCount: 0,
-    liked: false,
-    comments: [],
-    commentsExpanded: false,
-  },
-].map((post) => ({
-  ...post,
-  commentCount: post.comments.length,
-}));
 
 const TOPIC_KEYWORDS = [
   { topic: "TYT", keywords: ["tyt", "problem", "paragraf"] },
@@ -182,13 +87,22 @@ export default function Forum() {
   const location = useLocation();
   const imageInputRef = useRef(null);
 
-  const [posts, setPosts] = useState(FORUM_SEED_POSTS);
+  const [posts, setPosts] = useState(() => getForumFeedPosts());
   const [composerText, setComposerText] = useState("");
   const [composerImage, setComposerImage] = useState(null);
   const [commentDrafts, setCommentDrafts] = useState({});
+  const [expandedCommentsByPost, setExpandedCommentsByPost] = useState({});
   const [shareFeedbackByPost, setShareFeedbackByPost] = useState({});
   const [activeProfileUsername, setActiveProfileUsername] = useState("");
   const [, setFollowStoreVersion] = useState(0);
+
+  useEffect(() => {
+    const unsubscribeFeed = subscribeForumFeedStore(() => {
+      setPosts(getForumFeedPosts());
+    });
+
+    return unsubscribeFeed;
+  }, []);
 
   useEffect(() => {
     const unsubscribe = subscribeForumFollowStore(() => {
@@ -281,22 +195,14 @@ export default function Forum() {
     event.preventDefault();
     if (!canSubmitPost) return;
 
-    const newPost = {
-      id: `post-${Date.now()}`,
+    createForumPost({
       displayName: "Sen",
       username: "sen",
-      content: composerText.trim(),
-      createdAt: new Date().toISOString(),
-      likeCount: 0,
-      commentCount: 0,
-      liked: false,
-      comments: [],
-      commentsExpanded: false,
+      content: composerText,
       imageName: composerImage?.name || "",
       imagePreviewUrl: composerImage?.previewUrl || "",
-    };
+    });
 
-    setPosts((prevPosts) => [newPost, ...prevPosts]);
     resetComposer();
   };
 
@@ -317,55 +223,25 @@ export default function Forum() {
   };
 
   const toggleLike = (postId) => {
-    setPosts((prevPosts) =>
-      prevPosts.map((post) => {
-        if (post.id !== postId) return post;
-        const nextLiked = !post.liked;
-        return {
-          ...post,
-          liked: nextLiked,
-          likeCount: Math.max(0, post.likeCount + (nextLiked ? 1 : -1)),
-        };
-      })
-    );
+    toggleForumPostLike(postId);
   };
 
   const toggleCommentArea = (postId) => {
-    setPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === postId
-          ? {
-              ...post,
-              commentsExpanded: !post.commentsExpanded,
-            }
-          : post
-      )
-    );
+    setExpandedCommentsByPost((prevState) => ({
+      ...prevState,
+      [postId]: !prevState[postId],
+    }));
   };
 
   const submitComment = (postId) => {
     const draft = (commentDrafts[postId] || "").trim();
     if (!draft) return;
 
-    const newComment = {
-      id: `comment-${Date.now()}`,
-      author: "sen",
-      text: draft,
-      createdAt: new Date().toISOString(),
-    };
-
-    setPosts((prevPosts) =>
-      prevPosts.map((post) => {
-        if (post.id !== postId) return post;
-        const nextComments = [...post.comments, newComment];
-        return {
-          ...post,
-          comments: nextComments,
-          commentCount: nextComments.length,
-          commentsExpanded: true,
-        };
-      })
-    );
+    addForumPostComment(postId, draft, "sen");
+    setExpandedCommentsByPost((prevState) => ({
+      ...prevState,
+      [postId]: true,
+    }));
 
     setCommentDrafts((prev) => ({
       ...prev,
@@ -599,7 +475,7 @@ export default function Forum() {
                         </Button>
                       </div>
 
-                      {post.commentsExpanded && (
+                      {expandedCommentsByPost[post.id] && (
                         <div className="space-y-3 rounded-xl border border-border/70 bg-muted/20 p-3 sm:p-4">
                           {post.comments.length > 0 ? (
                             <div className="space-y-2.5">
