@@ -511,7 +511,7 @@ export default function Forum() {
                   return (
                     <Card
                       key={post.id}
-                      className="overflow-hidden border-border/70 bg-card/95 transition-all duration-200 hover:border-indigo-200/90 hover:shadow-[0_18px_38px_-28px_rgba(79,70,229,0.4)]"
+                      className="border-border/70 bg-card/95 transition-all duration-200 hover:border-indigo-200/90 hover:shadow-[0_18px_38px_-28px_rgba(79,70,229,0.4)]"
                       data-testid={`forum-post-${post.id}`}
                     >
                       <CardHeader className="space-y-3 p-4 pb-2 sm:p-5 sm:pb-2">
@@ -619,7 +619,7 @@ export default function Forum() {
                             <span>{post.commentCount}</span>
                           </Button>
 
-                          <div className="relative">
+                          <div className="relative z-30">
                             <Button
                               type="button"
                               variant="ghost"
@@ -633,7 +633,7 @@ export default function Forum() {
                             </Button>
 
                             {hasShareMenuOpen && (
-                              <div className="absolute left-0 top-10 z-20 w-44 overflow-hidden rounded-lg border border-border/80 bg-white shadow-lg">
+                              <div className="absolute left-0 top-10 z-[80] w-44 overflow-hidden rounded-lg border border-border/80 bg-white shadow-lg">
                                 <button
                                   type="button"
                                   className="flex w-full items-center px-3 py-2 text-left text-sm text-slate-700 hover:bg-indigo-50"

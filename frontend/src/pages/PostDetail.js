@@ -283,7 +283,7 @@ export default function PostDetail() {
               Foruma dön
             </Button>
 
-            <Card className="overflow-hidden border-border/70 bg-card/95">
+            <Card className="border-border/70 bg-card/95">
               <CardHeader className="space-y-3 p-4 pb-2 sm:p-5 sm:pb-2">
                 <div className="flex items-start gap-3">
                   <button
@@ -363,7 +363,7 @@ export default function PostDetail() {
                     <span>{post.commentCount}</span>
                   </div>
 
-                  <div className="relative">
+                  <div className="relative z-30">
                     <Button
                       type="button"
                       variant="ghost"
@@ -376,7 +376,7 @@ export default function PostDetail() {
                     </Button>
 
                     {shareMenuOpen && (
-                      <div className="absolute left-0 top-10 z-20 w-44 overflow-hidden rounded-lg border border-border/80 bg-white shadow-lg">
+                      <div className="absolute left-0 top-10 z-[80] w-44 overflow-hidden rounded-lg border border-border/80 bg-white shadow-lg">
                         <button
                           type="button"
                           className="flex w-full items-center px-3 py-2 text-left text-sm text-slate-700 hover:bg-indigo-50"
