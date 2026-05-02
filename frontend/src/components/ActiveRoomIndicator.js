@@ -46,6 +46,7 @@ export default function ActiveRoomIndicator() {
       "/messages",
       "/program/create",
       "/profile",
+      "/profile/edit",
       "/friends",
       "/notifications",
       "/leaderboard",

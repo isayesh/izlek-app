@@ -103,7 +103,7 @@ export default function UserProfile() {
     Odalar: ["/rooms"],
     Liderlik: ["/leaderboard"],
     Forum: ["/forum"],
-    Profil: ["/profile"],
+    Profil: ["/profile", "/profile/edit"],
     "DM Kutum": ["/messages"],
     Arkadaşlar: ["/friends"],
   };

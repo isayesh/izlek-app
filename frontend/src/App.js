@@ -15,6 +15,7 @@ import RoomPage from "@/pages/RoomPage";
 import NetTracking from "@/pages/NetTracking";
 import Leaderboard from "@/pages/Leaderboard";
 import Profile from "@/pages/Profile";
+import ProfileEdit from "@/pages/ProfileEdit";
 import Friends from "@/pages/Friends";
 import Notifications from "@/pages/Notifications";
 import Messages from "@/pages/Messages";
@@ -100,6 +101,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile/edit"
+              element={
+                <ProtectedRoute>
+                  <ProfileEdit />
                 </ProtectedRoute>
               }
             />

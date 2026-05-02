@@ -1,71 +1,114 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import {
+  BarChart3,
+  Home,
+  MessageCircle,
+  MessageSquare,
+  Trophy,
+  User,
+  Users,
+} from "lucide-react";
+
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
-import { saveProfile } from "@/lib/storage";
 import { API } from "@/App";
-import { ArrowLeft, Home, Save } from "lucide-react";
+import {
+  getForumUserProfile,
+  getForumUserStats,
+  getForumUsersByUsernames,
+  isForumFollowing,
+  PUBLIC_PROFILE_ACTIVITY,
+  PUBLIC_PROFILE_POSTS,
+  subscribeForumFollowStore,
+  toggleForumFollow,
+} from "@/pages/forumSocialStore";
 
-const getDefaultFormData = (currentUser) => ({
-  username: localStorage.getItem("userName") || currentUser?.displayName || "",
-  handle: "",
-  streak_count: 0,
-  email: currentUser?.email || "",
-  grade_level: "",
-  study_field: "",
-  avatar_url: ""
-});
+const GRADE_LEVEL_LABELS = {
+  "11": "11. Sınıf",
+  "12": "12. Sınıf",
+  mezun: "Mezun",
+};
 
-const mapProfileToFormData = (profile, currentUser) => ({
-  username: profile?.username || profile?.name || localStorage.getItem("userName") || currentUser?.displayName || "",
-  handle: profile?.handle || "",
-  streak_count: profile?.streak_count || 0,
-  email: currentUser?.email || profile?.email || "",
-  grade_level: profile?.grade_level || "",
-  study_field: profile?.study_field || "",
-  avatar_url: profile?.avatar_url || ""
-});
-
-const HANDLE_PATTERN = /^[a-z0-9_]{3,20}$/;
-const GRADE_LEVEL_OPTIONS = [
-  { value: "11", label: "11. Sınıf" },
-  { value: "12", label: "12. Sınıf" },
-  { value: "mezun", label: "Mezun" }
-];
-const GRADE_LEVEL_LABELS = Object.fromEntries(GRADE_LEVEL_OPTIONS.map((option) => [option.value, option.label]));
-const STUDY_FIELD_OPTIONS = [
-  { value: "Sayısal", label: "Sayısal" },
-  { value: "EA", label: "Eşit Ağırlık" },
-  { value: "Sözel", label: "Sözel" },
-  { value: "Dil", label: "Dil" }
-];
 const STUDY_FIELD_LABELS = {
   Sayısal: "Sayısal",
   EA: "Eşit Ağırlık",
   "Eşit Ağırlık": "Eşit Ağırlık",
   Sözel: "Sözel",
-  Dil: "Dil"
+  Dil: "Dil",
 };
 
 const getProfileMetaLine = (gradeLevel, studyField) => {
   const parts = [GRADE_LEVEL_LABELS[gradeLevel] || gradeLevel, STUDY_FIELD_LABELS[studyField] || studyField].filter(Boolean);
-  return parts.length ? parts.join(" • ") : null;
+  return parts.length ? parts.join(" • ") : "";
 };
+
+const getInitials = (name = "") =>
+  name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("") || "İ";
+
+const getRelativeTimeLabel = (isoString) => {
+  const diffMs = Date.now() - new Date(isoString).getTime();
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+
+  if (diffMs < hour) {
+    const minutes = Math.max(1, Math.round(diffMs / minute));
+    return `${minutes} dk`;
+  }
+
+  if (diffMs < day) {
+    const hours = Math.max(1, Math.round(diffMs / hour));
+    return `${hours} sa`;
+  }
+
+  const days = Math.max(1, Math.round(diffMs / day));
+  return `${days} g`;
+};
+
+const getDefaultProfileData = (currentUser) => ({
+  username: localStorage.getItem("userName") || currentUser?.displayName || "",
+  handle: "",
+  avatar_url: "",
+  grade_level: "",
+  study_field: "",
+});
+
+const mapProfileData = (profile, currentUser) => ({
+  username: profile?.username || profile?.name || localStorage.getItem("userName") || currentUser?.displayName || "",
+  handle: profile?.handle || "",
+  avatar_url: profile?.avatar_url || "",
+  grade_level: profile?.grade_level || "",
+  study_field: profile?.study_field || "",
+});
 
 export default function Profile() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { currentUser } = useAuth();
-  const [formData, setFormData] = useState(getDefaultFormData(currentUser));
+
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [profileExists, setProfileExists] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const profileMetaLine = getProfileMetaLine(formData.grade_level, formData.study_field);
+  const [profileData, setProfileData] = useState(getDefaultProfileData(currentUser));
+  const [listModalState, setListModalState] = useState({ open: false, type: "followers" });
+  const [, setFollowStoreVersion] = useState(0);
+
+  useEffect(() => {
+    const unsubscribe = subscribeForumFollowStore(() => {
+      setFollowStoreVersion((prev) => prev + 1);
+    });
+
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -79,23 +122,19 @@ export default function Profile() {
 
       try {
         const response = await axios.get(`${API}/profile`, {
-          params: { firebase_uid: currentUser.uid }
+          params: { firebase_uid: currentUser.uid },
         });
 
         const profile = response.data;
-
         if (profile?.id) {
-          setProfileExists(true);
-          setFormData(mapProfileToFormData(profile, currentUser));
-          saveProfile(profile.id, profile.username || profile.name || "");
+          setProfileData(mapProfileData(profile, currentUser));
         } else {
-          setProfileExists(false);
-          setFormData(getDefaultFormData(currentUser));
+          setProfileData(getDefaultProfileData(currentUser));
         }
       } catch (loadError) {
         console.error("Error loading profile:", loadError);
         setError("Profil bilgileri yüklenirken bir hata oluştu.");
-        setFormData(getDefaultFormData(currentUser));
+        setProfileData(getDefaultProfileData(currentUser));
       } finally {
         setLoading(false);
       }
@@ -104,359 +143,286 @@ export default function Profile() {
     loadProfile();
   }, [currentUser]);
 
-  const handleChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value
-    }));
-  };
+  const displayName = profileData.username || currentUser?.displayName || "İzlek Kullanıcısı";
+  const username = profileData.handle?.trim() || "sen";
+  const profileMetaLine = getProfileMetaLine(profileData.grade_level, profileData.study_field);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setError("");
-    setSuccess("");
+  const socialProfile = useMemo(() => getForumUserProfile("sen", displayName), [displayName]);
+  const profileStats = getForumUserStats("sen");
+  const ownPosts = useMemo(() => PUBLIC_PROFILE_POSTS.filter((post) => post.username === "sen"), []);
+  const activity = PUBLIC_PROFILE_ACTIVITY.sen || { comments: [], likes: [] };
 
-    if (!currentUser?.uid) {
-      setError("Giriş yapan kullanıcı bulunamadı.");
-      return;
-    }
+  const listUsers = useMemo(() => {
+    const sourceList = listModalState.type === "followers" ? socialProfile.followersList : socialProfile.followingList;
+    return getForumUsersByUsernames(sourceList);
+  }, [listModalState.type, socialProfile.followersList, socialProfile.followingList]);
 
-    if (!formData.username.trim()) {
-      setError("Kullanıcı adı zorunludur.");
-      return;
-    }
+  const navigationActions = [
+    { label: "Ana Sayfa", icon: Home, onClick: () => navigate("/") },
+    { label: "Net Takibi", icon: BarChart3, onClick: () => navigate("/net-tracking") },
+    { label: "Odalar", icon: Users, onClick: () => navigate("/rooms") },
+    { label: "Liderlik", icon: Trophy, onClick: () => navigate("/leaderboard") },
+    { label: "Forum", icon: MessageCircle, onClick: () => navigate("/forum") },
+    { label: "Profil", icon: User, onClick: () => navigate("/profile") },
+    { label: "DM Kutum", icon: MessageSquare, onClick: () => navigate("/messages") },
+    { label: "Arkadaşlar", icon: Users, onClick: () => navigate("/friends") },
+  ];
 
-    const normalizedHandle = formData.handle.trim().replace(/^@+/, "");
-    if (normalizedHandle && !HANDLE_PATTERN.test(normalizedHandle)) {
-      setError("Handle 3-20 karakter olmalı ve yalnızca küçük harf, rakam, underscore içermelidir.");
-      return;
-    }
-
-    const resolvedEmail = currentUser.email || formData.email;
-    if (!resolvedEmail) {
-      setError("Bu hesap için e-posta bilgisi bulunamadı.");
-      return;
-    }
-
-    const payload = {
-      firebase_uid: currentUser.uid,
-      username: formData.username.trim(),
-      handle: normalizedHandle,
-      email: resolvedEmail,
-      avatar_url: formData.avatar_url.trim() || null,
-      grade_level: formData.grade_level || null,
-      study_field: formData.study_field || null
-    };
-
-    try {
-      setSaving(true);
-
-      const response = profileExists
-        ? await axios.put(`${API}/profile`, payload)
-        : await axios.post(`${API}/profile`, payload);
-
-      const savedProfile = response.data;
-      const resolvedName = savedProfile.username || savedProfile.name || payload.username;
-
-      setProfileExists(true);
-      setFormData(mapProfileToFormData(savedProfile, currentUser));
-      saveProfile(savedProfile.id, resolvedName);
-      setSuccess(profileExists ? "Profil güncellendi." : "Profil oluşturuldu.");
-    } catch (saveError) {
-      console.error("Error saving profile:", saveError);
-      setError(saveError.response?.data?.detail || "Profil kaydedilirken bir hata oluştu.");
-    } finally {
-      setSaving(false);
-    }
+  const navActivePaths = {
+    "Ana Sayfa": ["/", "/dashboard"],
+    "Net Takibi": ["/net-tracking"],
+    Odalar: ["/rooms"],
+    Liderlik: ["/leaderboard"],
+    Forum: ["/forum"],
+    Profil: ["/profile", "/profile/edit"],
+    "DM Kutum": ["/messages"],
+    Arkadaşlar: ["/friends"],
   };
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-gray-900 " data-testid="profile-loading-state">
+      <div className="flex min-h-screen items-center justify-center text-gray-900" data-testid="profile-loading-state">
         Profil yükleniyor...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background px-4 py-6 sm:px-6 lg:px-10 lg:py-8" data-testid="profile-page">
-      <div className="mx-auto w-full max-w-6xl space-y-5" data-testid="profile-page-container">
-        <Card className="rounded-2xl border border-transparent bg-transparent shadow-none" data-testid="profile-header-card">
-          <CardContent className="px-0 py-2 sm:py-3">
-            <div className="flex flex-wrap items-start justify-between gap-3" data-testid="profile-header-content">
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl" data-testid="profile-title">
-                  Profil
-                </h1>
-                <p className="mt-1 text-sm text-gray-500" data-testid="profile-subtitle">
-                  Hesap bilgilerini görüntüle ve profil detaylarını güncelle.
-                </p>
-              </div>
+    <div className="min-h-screen bg-background text-foreground" data-testid="profile-page">
+      <div className="px-4 pb-10 pt-4 sm:px-6 sm:pb-12 lg:px-10 xl:px-12">
+        <div className="space-y-8 sm:space-y-10">
+          <header className="flex flex-col gap-3 border-b border-indigo-200 bg-indigo-50/35 pb-4 xl:flex-row xl:items-center xl:gap-4">
+            <button
+              type="button"
+              onClick={() => navigate("/dashboard")}
+              className="inline-flex h-12 w-fit shrink-0 items-center px-1"
+              data-testid="profile-header-brand"
+              aria-label="Dashboard"
+            >
+              <span className="font-display text-4xl font-extrabold leading-none tracking-[-0.03em] text-gray-900">izlek</span>
+            </button>
 
-              <div className="flex flex-wrap items-center gap-2" data-testid="profile-header-actions">
-                <Button
-                  variant="outline"
-                  onClick={() => navigate("/dashboard")}
-                  className="h-10 rounded-lg border-gray-200 bg-white text-slate-700 hover:bg-indigo-50 hover:text-indigo-700"
-                  data-testid="profile-dashboard-button"
-                >
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Dashboard
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => navigate("/")}
-                  className="h-10 rounded-lg border-gray-200 bg-white text-slate-700 hover:bg-indigo-50 hover:text-indigo-700"
-                  data-testid="profile-home-button"
-                >
-                  <Home className="mr-2 h-4 w-4" />
-                  Ana Sayfa
-                </Button>
+            <div className="w-full max-w-full flex-1 overflow-x-auto pb-1 xl:pb-0">
+              <div className="flex items-center gap-2.5 lg:gap-3 xl:justify-center xl:gap-3.5">
+                {navigationActions.map((action) => {
+                  const Icon = action.icon;
+                  const isActive = (navActivePaths[action.label] || []).includes(location.pathname);
+
+                  return (
+                    <Button
+                      key={action.label}
+                      variant="ghost"
+                      size="sm"
+                      onClick={action.onClick}
+                      className={`h-11 shrink-0 rounded-[15px] border px-5 text-sm font-semibold tracking-[0.01em] shadow-none transition-colors duration-200 [&_svg]:size-4 ${
+                        isActive
+                          ? "border-indigo-200 bg-indigo-100/75 text-indigo-700"
+                          : "border-transparent text-slate-600 hover:border-indigo-200/90 hover:bg-indigo-100/70 hover:text-indigo-700 active:bg-indigo-100/80"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span>{action.label}</span>
+                    </Button>
+                  );
+                })}
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </header>
 
-        {(error || success) && (
-          <div
-            className={`rounded-2xl border px-4 py-3 text-sm font-medium ${
-              error
-                ? "border-red-200 bg-red-50 text-red-700   "
-                : "border-green-200 bg-green-50 text-green-700   "
-            }`}
-            data-testid={error ? "profile-error-message" : "profile-success-message"}
-          >
-            {error || success}
-          </div>
-        )}
+          {error && (
+            <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700" data-testid="profile-error-message">
+              {error}
+            </div>
+          )}
 
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)] lg:items-start" data-testid="profile-content-grid">
-          <Card className="rounded-2xl border border-gray-200 bg-white shadow-sm" data-testid="profile-form-card">
-            <CardHeader className="border-b border-gray-100 pb-3">
-              <CardTitle className="text-lg font-semibold text-slate-900" data-testid="profile-form-title">
-                {profileExists ? "Profil Bilgileri" : "Profil Oluştur"}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-5 sm:p-6">
-              <form className="space-y-4" onSubmit={handleSubmit} data-testid="profile-form">
-                <div className="space-y-1.5">
-                  <Label htmlFor="profile-username" className="text-sm font-medium text-gray-700" data-testid="profile-username-label">
-                    Kullanıcı Adı
-                  </Label>
-                  <Input
-                    id="profile-username"
-                    value={formData.username}
-                    onChange={(event) => handleChange("username", event.target.value)}
-                    placeholder="Örn: Ayşe"
-                    className="h-11 rounded-lg border-gray-200 bg-white focus-visible:border-indigo-500 focus-visible:ring-indigo-500"
-                    data-testid="profile-username-input"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="profile-handle" className="text-sm font-medium text-gray-700" data-testid="profile-handle-label">
-                    Handle
-                  </Label>
-                  <div className="relative" data-testid="profile-handle-input-wrap">
-                    <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400" data-testid="profile-handle-prefix">
-                      @
-                    </span>
-                    <Input
-                      id="profile-handle"
-                      value={formData.handle}
-                      onChange={(event) => handleChange("handle", event.target.value.replace(/^@+/, "").toLowerCase())}
-                      placeholder="ornek_handle"
-                      className="h-11 rounded-lg border-gray-200 bg-white pl-8 focus-visible:border-indigo-500 focus-visible:ring-indigo-500"
-                      data-testid="profile-handle-input"
-                    />
-                  </div>
-                  <p className="text-xs text-slate-500" data-testid="profile-handle-helper-text">
-                    3-20 karakter, sadece küçük harf, rakam ve underscore.
-                  </p>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="profile-email" className="text-sm font-medium text-gray-700" data-testid="profile-email-label">
-                    E-posta
-                  </Label>
-                  <Input
-                    id="profile-email"
-                    value={currentUser?.email || formData.email}
-                    readOnly
-                    className="h-11 rounded-lg border-gray-200 bg-gray-100 text-slate-500 focus-visible:border-indigo-500 focus-visible:ring-indigo-500"
-                    data-testid="profile-email-input"
-                  />
-                  <p className="text-xs text-slate-500" data-testid="profile-email-helper-text">
-                    Bu alan giriş yaptığın hesapla eşleşir ve düzenlenemez.
-                  </p>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="profile-grade-level" className="text-sm font-medium text-gray-700" data-testid="profile-grade-level-label">
-                    Sınıf Durumu
-                  </Label>
-                  <select
-                    id="profile-grade-level"
-                    value={formData.grade_level}
-                    onChange={(event) => handleChange("grade_level", event.target.value)}
-                    className="h-11 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm text-slate-900 outline-none ring-offset-background transition-[border-color,box-shadow] focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-0"
-                    data-testid="profile-grade-level-select"
-                  >
-                    <option value="">Seçiniz</option>
-                    {GRADE_LEVEL_OPTIONS.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="profile-study-field" className="text-sm font-medium text-gray-700" data-testid="profile-study-field-label">
-                    Alan
-                  </Label>
-                  <select
-                    id="profile-study-field"
-                    value={formData.study_field}
-                    onChange={(event) => handleChange("study_field", event.target.value)}
-                    className="h-11 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm text-slate-900 outline-none ring-offset-background transition-[border-color,box-shadow] focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-0"
-                    data-testid="profile-study-field-select"
-                  >
-                    <option value="">Seçiniz</option>
-                    {STUDY_FIELD_OPTIONS.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="profile-avatar-url" className="text-sm font-medium text-gray-700" data-testid="profile-avatar-url-label">
-                    Avatar URL
-                  </Label>
-                  <Input
-                    id="profile-avatar-url"
-                    value={formData.avatar_url}
-                    onChange={(event) => handleChange("avatar_url", event.target.value)}
-                    placeholder="https://..."
-                    className="h-11 rounded-lg border-gray-200 bg-white focus-visible:border-indigo-500 focus-visible:ring-indigo-500"
-                    data-testid="profile-avatar-url-input"
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={saving}
-                  className="h-12 w-full rounded-lg bg-indigo-600 text-white shadow-sm hover:bg-indigo-700 disabled:opacity-70"
-                  data-testid="profile-form-submit-button"
-                >
-                  <Save className="mr-2 h-4 w-4" />
-                  {saving ? "Kaydediliyor..." : profileExists ? "Profili Güncelle" : "Profili Oluştur"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-
-          <Card className="rounded-2xl border border-gray-200 bg-white shadow-sm" data-testid="profile-preview-card">
-            <CardHeader className="border-b border-gray-100 pb-3">
-              <CardTitle className="text-lg font-semibold text-slate-900" data-testid="profile-preview-title">
-                Önizleme
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-5 p-5 sm:p-6">
-              <div className="rounded-xl border border-gray-100 bg-gradient-to-b from-indigo-50/60 to-white p-4">
-                <div className="flex flex-col items-center text-center" data-testid="profile-avatar-preview-wrap">
-                  {formData.avatar_url.trim() ? (
-                    <img
-                      src={formData.avatar_url}
-                      alt="Avatar önizleme"
-                      className="h-20 w-20 rounded-2xl border border-gray-200 object-cover shadow-sm"
-                      data-testid="profile-avatar-preview-image"
-                    />
-                  ) : (
-                    <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-white text-xs text-slate-500" data-testid="profile-avatar-preview-placeholder">
-                      Avatar yok
+          <main className="mx-auto w-full max-w-4xl space-y-5">
+            <Card className="overflow-hidden border-border/70 bg-card/95">
+              <div className="h-28 w-full bg-gradient-to-r from-indigo-600/85 via-purple-600/75 to-indigo-500/85" />
+              <CardContent className="space-y-5 p-5 pt-0 sm:p-6 sm:pt-0">
+                <div className="-mt-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                  <div className="flex items-end gap-4">
+                    {profileData.avatar_url.trim() ? (
+                      <img
+                        src={profileData.avatar_url}
+                        alt="Profil avatarı"
+                        className="h-24 w-24 rounded-full border-4 border-white object-cover shadow-sm"
+                      />
+                    ) : (
+                      <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br from-slate-700 to-slate-900 text-2xl font-semibold text-white shadow-sm">
+                        {getInitials(displayName)}
+                      </div>
+                    )}
+                    <div className="pb-1">
+                      <p className="text-2xl font-bold tracking-tight text-foreground">{displayName}</p>
+                      <p className="text-sm text-muted-foreground">@{username}</p>
                     </div>
-                  )}
-
-                  <p className="mt-3 text-lg font-semibold text-slate-900" data-testid="profile-preview-handle-value">
-                    {formData.handle ? `@${formData.handle}` : "@handle"}
-                  </p>
-                  <p className="text-sm text-slate-500" data-testid="profile-preview-username-value">
-                    {formData.username || "Kullanıcı adı"}
-                  </p>
-
-                  {formData.streak_count > 0 && (
-                    <span className="mt-3 inline-flex items-center rounded-full bg-orange-50 px-2 py-1 text-xs font-semibold text-orange-600" data-testid="profile-streak-value">
-                      🔥 {formData.streak_count} Günlük Seri
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className="space-y-3" data-testid="profile-preview-details">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.18em] text-slate-500" data-testid="profile-preview-handle-label">
-                    Handle
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-slate-900">
-                    {formData.handle ? `@${formData.handle}` : "Belirtilmedi"}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-xs uppercase tracking-[0.18em] text-slate-500" data-testid="profile-preview-username-label">
-                    Kullanıcı Adı
-                  </p>
-                  <p className="mt-1 text-sm text-slate-600">
-                    {formData.username || "Belirtilmedi"}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-xs uppercase tracking-[0.18em] text-slate-500" data-testid="profile-preview-email-label">
-                    E-posta
-                  </p>
-                  <p className="mt-1 text-sm text-slate-700 break-all" data-testid="profile-preview-email-value">
-                    {currentUser?.email || formData.email || "Bulunamadı"}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500" data-testid="profile-preview-grade-label">
-                      Sınıf
-                    </p>
-                    <p className="mt-1 text-sm text-slate-700" data-testid="profile-preview-grade-value">
-                      {GRADE_LEVEL_LABELS[formData.grade_level] || "Belirtilmedi"}
-                    </p>
                   </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500" data-testid="profile-preview-field-label">
-                      Alan
-                    </p>
-                    <p className="mt-1 text-sm text-slate-700" data-testid="profile-preview-field-value">
-                      {STUDY_FIELD_LABELS[formData.study_field] || formData.study_field || "Belirtilmedi"}
-                    </p>
+
+                  <Button
+                    type="button"
+                    onClick={() => navigate("/profile/edit")}
+                    className="h-10 rounded-lg bg-indigo-600 px-4 text-sm font-semibold text-white hover:bg-indigo-700"
+                    data-testid="profile-edit-button"
+                  >
+                    Profili düzenle
+                  </Button>
+                </div>
+
+                <div className="space-y-1">
+                  <p className="text-sm leading-6 text-slate-700">{socialProfile.bio}</p>
+                  <p className="text-sm font-medium text-indigo-700">Odak: {profileMetaLine || socialProfile.studyFocus}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
+                  <div className="rounded-xl border border-border/70 bg-background/80 px-3 py-2.5 text-center">
+                    <p className="text-base font-semibold text-foreground">{profileStats.posts}</p>
+                    <p className="text-xs text-muted-foreground">Gönderi</p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setListModalState({ open: true, type: "followers" })}
+                    className="rounded-xl border border-border/70 bg-background/80 px-3 py-2.5 text-center transition-colors duration-200 hover:border-indigo-200 hover:bg-indigo-50"
+                  >
+                    <p className="text-base font-semibold text-foreground">{profileStats.followers}</p>
+                    <p className="text-xs text-muted-foreground">Takipçi</p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setListModalState({ open: true, type: "following" })}
+                    className="rounded-xl border border-border/70 bg-background/80 px-3 py-2.5 text-center transition-colors duration-200 hover:border-indigo-200 hover:bg-indigo-50"
+                  >
+                    <p className="text-base font-semibold text-foreground">{profileStats.following}</p>
+                    <p className="text-xs text-muted-foreground">Takip edilen</p>
+                  </button>
+
+                  <div className="rounded-xl border border-border/70 bg-background/80 px-3 py-2.5 text-center">
+                    <p className="text-base font-semibold text-foreground">{profileStats.studyHours}s</p>
+                    <p className="text-xs text-muted-foreground">Çalışma saati</p>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
 
-                {profileMetaLine && (
-                  <div data-testid="profile-preview-meta-wrap">
-                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500" data-testid="profile-preview-meta-label">
-                      Profil Özeti
-                    </p>
-                    <p className="mt-1 text-sm text-slate-600" data-testid="profile-preview-meta-value">
-                      {profileMetaLine}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+            <Card className="border-border/70 bg-card/95">
+              <CardContent className="p-4 sm:p-5">
+                <Tabs defaultValue="posts" className="w-full">
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="posts">Paylaşımlar</TabsTrigger>
+                    <TabsTrigger value="comments">Yorumlar</TabsTrigger>
+                    <TabsTrigger value="likes">Beğeniler</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="posts" className="mt-4 space-y-3">
+                    {ownPosts.length > 0 ? (
+                      ownPosts.map((post) => (
+                        <div key={post.id} className="rounded-xl border border-border/70 bg-background/85 p-4">
+                          <p className="text-sm leading-6 text-slate-700">{post.content}</p>
+                          <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
+                            <span>{getRelativeTimeLabel(post.createdAt)}</span>
+                            <span>•</span>
+                            <span>{post.likeCount} beğeni</span>
+                            <span>•</span>
+                            <span>{post.commentCount} yorum</span>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="rounded-xl border border-dashed border-border/80 bg-background/70 px-4 py-8 text-center text-sm text-muted-foreground">
+                        Henüz paylaşım yok.
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="comments" className="mt-4 space-y-3">
+                    {activity.comments.length > 0 ? (
+                      activity.comments.map((comment) => (
+                        <div key={comment.id} className="rounded-xl border border-border/70 bg-background/85 p-4">
+                          <p className="text-sm text-slate-700">{comment.text}</p>
+                          <p className="mt-1 text-xs text-muted-foreground">{getRelativeTimeLabel(comment.createdAt)}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="rounded-xl border border-dashed border-border/80 bg-background/70 px-4 py-8 text-center text-sm text-muted-foreground">
+                        Henüz yorum yok.
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="likes" className="mt-4 space-y-3">
+                    {activity.likes.length > 0 ? (
+                      activity.likes.map((like) => (
+                        <div key={like.id} className="rounded-xl border border-border/70 bg-background/85 p-4 text-sm text-slate-700">
+                          {like.text}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="rounded-xl border border-dashed border-border/80 bg-background/70 px-4 py-8 text-center text-sm text-muted-foreground">
+                        Henüz beğeni etkinliği yok.
+                      </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+          </main>
         </div>
       </div>
+
+      <Dialog open={listModalState.open} onOpenChange={(open) => setListModalState((prev) => ({ ...prev, open }))}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{listModalState.type === "followers" ? "Takipçiler" : "Takip edilenler"}</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-2.5">
+            {listUsers.length > 0 ? (
+              listUsers.map((listUser) => {
+                const listUserFollowing = isForumFollowing(listUser.username);
+                return (
+                  <div key={listUser.username} className="flex items-center justify-between rounded-lg border border-border/70 bg-background/85 p-2.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate(`/user/${listUser.username}`);
+                        setListModalState({ open: false, type: "followers" });
+                      }}
+                      className="flex min-w-0 items-center gap-2 text-left"
+                    >
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-700 to-slate-900 text-xs font-semibold text-white">
+                        {getInitials(listUser.displayName)}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium text-foreground">{listUser.displayName}</p>
+                        <p className="truncate text-xs text-muted-foreground">@{listUser.username}</p>
+                      </div>
+                    </button>
+
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => toggleForumFollow(listUser.username)}
+                      disabled={listUser.username === "sen"}
+                      className={`h-8 rounded-lg px-3 text-xs ${
+                        listUserFollowing
+                          ? "border border-indigo-200 bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
+                          : "bg-indigo-600 text-white hover:bg-indigo-700"
+                      }`}
+                    >
+                      {listUser.username === "sen" ? "Sen" : listUserFollowing ? "Takipte" : "Takip et"}
+                    </Button>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="rounded-lg border border-dashed border-border/80 px-4 py-6 text-center text-sm text-muted-foreground">
+                Liste boş görünüyor.
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
