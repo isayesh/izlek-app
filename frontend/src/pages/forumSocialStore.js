@@ -469,8 +469,3 @@ export const PUBLIC_PROFILE_ACTIVITY = {
     ],
   },
 };
-?’ başlığını beğendi." },
-      { id: "l2", text: "‘AYT net artış rutini’ paylaşımını beğendi." },
-    ],
-  },
-};
