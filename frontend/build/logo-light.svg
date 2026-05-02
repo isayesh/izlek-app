@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 930 340" fill="none">
+  <title>Izlek logo light</title>
+  <g>
+    <path fill="#6D5EF7" d="M78 22C57.5655 22 41 38.5655 41 59c0 27.1552 31.0567 59.4607 35.1266 63.6013a2.7225 2.7225 0 0 0 3.7468 0C83.9433 118.4607 115 86.1552 115 59 115 38.5655 98.4345 22 78 22Zm0 52c-10.4934 0-19-8.5066-19-19s8.5066-19 19-19 19 8.5066 19 19-8.5066 19-19 19Z"/>
+    <text x="47" y="276" fill="#090D25" font-family="Inter, Avenir Next, Arial, sans-serif" font-size="246" font-weight="500" letter-spacing="-8">izlek</text>
+  </g>
+</svg>
