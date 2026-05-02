@@ -106,6 +106,7 @@ export default function PostDetail() {
   const [commentDraft, setCommentDraft] = useState("");
   const [shareDraft, setShareDraft] = useState("");
   const [shareExpanded, setShareExpanded] = useState(false);
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
 
   useEffect(() => {
     const unsubscribeFeed = subscribeForumFeedStore(() => {
@@ -122,6 +123,7 @@ export default function PostDetail() {
 
   const post = postMap[id] || null;
   const sourcePost = post?.sharedFromPostId ? postMap[post.sharedFromPostId] : null;
+  const isPureRepost = Boolean(post?.sharedFromPostId) && !(post?.content || "").trim();
 
   useEffect(() => {
     if (!post?.id) return;
@@ -171,6 +173,27 @@ export default function PostDetail() {
     setCommentDraft("");
   };
 
+  const handleRepost = () => {
+    if (!post?.id) return;
+
+    createForumSharePost({
+      postId: post.id,
+      quoteText: "",
+      displayName: "Sen",
+      username: "sen",
+    });
+
+    setShareMenuOpen(false);
+    setShareExpanded(false);
+    setShareDraft("");
+    navigate("/forum");
+  };
+
+  const handleOpenQuote = () => {
+    setShareMenuOpen(false);
+    setShareExpanded(true);
+  };
+
   const handleShareSubmit = () => {
     if (!post?.id) return;
 
@@ -183,6 +206,7 @@ export default function PostDetail() {
 
     setShareDraft("");
     setShareExpanded(false);
+    setShareMenuOpen(false);
     navigate("/forum");
   };
 
@@ -285,6 +309,12 @@ export default function PostDetail() {
               </CardHeader>
 
               <CardContent className="space-y-4 p-4 pt-1 sm:p-5 sm:pt-1">
+                {isPureRepost && (
+                  <p className="text-xs font-semibold text-muted-foreground">
+                    {post.username === "sen" ? "Sen yeniden paylaştın" : `${post.displayName} yeniden paylaştı`}
+                  </p>
+                )}
+
                 {post.content && (
                   <p className="whitespace-pre-wrap text-sm leading-6 text-slate-700 sm:text-[15px]">
                     {renderTextWithMentions(post.content, (username) => navigate(`/user/${username}`), `detail-${post.id}`)}
@@ -333,16 +363,37 @@ export default function PostDetail() {
                     <span>{post.commentCount}</span>
                   </div>
 
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShareExpanded((prev) => !prev)}
-                    className="h-9 rounded-lg border border-transparent px-3 text-xs text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 sm:text-sm"
-                  >
-                    <Repeat2 className="h-4 w-4" />
-                    <span>{post.shareCount || 0}</span>
-                  </Button>
+                  <div className="relative">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShareMenuOpen((prev) => !prev)}
+                      className="h-9 rounded-lg border border-transparent px-3 text-xs text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 sm:text-sm"
+                    >
+                      <Repeat2 className="h-4 w-4" />
+                      <span>{post.shareCount || 0}</span>
+                    </Button>
+
+                    {shareMenuOpen && (
+                      <div className="absolute left-0 top-10 z-20 w-44 overflow-hidden rounded-lg border border-border/80 bg-white shadow-lg">
+                        <button
+                          type="button"
+                          className="flex w-full items-center px-3 py-2 text-left text-sm text-slate-700 hover:bg-indigo-50"
+                          onClick={handleRepost}
+                        >
+                          Yeniden paylaş
+                        </button>
+                        <button
+                          type="button"
+                          className="flex w-full items-center border-t border-border/70 px-3 py-2 text-left text-sm text-slate-700 hover:bg-indigo-50"
+                          onClick={handleOpenQuote}
+                        >
+                          Alıntıla
+                        </button>
+                      </div>
+                    )}
+                  </div>
 
                   <div className="inline-flex h-9 items-center gap-2 rounded-lg border border-transparent px-3 text-xs text-slate-500 sm:text-sm">
                     <Eye className="h-4 w-4" />

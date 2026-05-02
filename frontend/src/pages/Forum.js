@@ -140,6 +140,7 @@ export default function Forum() {
   const [commentDrafts, setCommentDrafts] = useState({});
   const [expandedCommentsByPost, setExpandedCommentsByPost] = useState({});
   const [expandedShareByPost, setExpandedShareByPost] = useState({});
+  const [shareMenuByPost, setShareMenuByPost] = useState({});
   const [shareDraftsByPost, setShareDraftsByPost] = useState({});
   const [activeProfileUsername, setActiveProfileUsername] = useState("");
   const [, setFollowStoreVersion] = useState(0);
@@ -307,10 +308,45 @@ export default function Forum() {
     }));
   };
 
-  const toggleShareComposer = (postId) => {
-    setExpandedShareByPost((prev) => ({
+  const toggleShareMenu = (postId) => {
+    setShareMenuByPost((prev) => ({
       ...prev,
       [postId]: !prev[postId],
+    }));
+  };
+
+  const openQuoteComposer = (postId) => {
+    setExpandedShareByPost((prev) => ({
+      ...prev,
+      [postId]: true,
+    }));
+    setShareMenuByPost((prev) => ({
+      ...prev,
+      [postId]: false,
+    }));
+  };
+
+  const submitRepost = (postId) => {
+    createForumSharePost({
+      postId,
+      quoteText: "",
+      displayName: "Sen",
+      username: "sen",
+    });
+
+    setShareMenuByPost((prev) => ({
+      ...prev,
+      [postId]: false,
+    }));
+
+    setExpandedShareByPost((prev) => ({
+      ...prev,
+      [postId]: false,
+    }));
+
+    setShareDraftsByPost((prev) => ({
+      ...prev,
+      [postId]: "",
     }));
   };
 
@@ -323,6 +359,11 @@ export default function Forum() {
     });
 
     setExpandedShareByPost((prev) => ({
+      ...prev,
+      [postId]: false,
+    }));
+
+    setShareMenuByPost((prev) => ({
       ...prev,
       [postId]: false,
     }));
@@ -464,6 +505,8 @@ export default function Forum() {
                   const sourcePost = post.sharedFromPostId ? postMap[post.sharedFromPostId] : null;
                   const hasCommentsExpanded = Boolean(expandedCommentsByPost[post.id]);
                   const hasShareExpanded = Boolean(expandedShareByPost[post.id]);
+                  const hasShareMenuOpen = Boolean(shareMenuByPost[post.id]);
+                  const isPureRepost = Boolean(post.sharedFromPostId) && !(post.content || "").trim();
 
                   return (
                     <Card
@@ -507,6 +550,12 @@ export default function Forum() {
                           className="w-full space-y-3 text-left"
                           data-testid={`forum-post-open-${post.id}`}
                         >
+                          {isPureRepost && (
+                            <p className="text-xs font-semibold text-muted-foreground">
+                              {post.username === "sen" ? "Sen yeniden paylaştın" : `${post.displayName} yeniden paylaştı`}
+                            </p>
+                          )}
+
                           {post.content && (
                             <p className="whitespace-pre-wrap text-sm leading-6 text-slate-700 sm:text-[15px]">
                               {renderTextWithMentions(post.content, handleMentionNavigation, `post-${post.id}`)}
@@ -570,17 +619,38 @@ export default function Forum() {
                             <span>{post.commentCount}</span>
                           </Button>
 
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => toggleShareComposer(post.id)}
-                            className="h-9 rounded-lg border border-transparent px-3 text-xs text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 sm:text-sm"
-                            data-testid={`forum-share-button-${post.id}`}
-                          >
-                            <Repeat2 className="h-4 w-4" />
-                            <span>{post.shareCount || 0}</span>
-                          </Button>
+                          <div className="relative">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleShareMenu(post.id)}
+                              className="h-9 rounded-lg border border-transparent px-3 text-xs text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 sm:text-sm"
+                              data-testid={`forum-share-button-${post.id}`}
+                            >
+                              <Repeat2 className="h-4 w-4" />
+                              <span>{post.shareCount || 0}</span>
+                            </Button>
+
+                            {hasShareMenuOpen && (
+                              <div className="absolute left-0 top-10 z-20 w-44 overflow-hidden rounded-lg border border-border/80 bg-white shadow-lg">
+                                <button
+                                  type="button"
+                                  className="flex w-full items-center px-3 py-2 text-left text-sm text-slate-700 hover:bg-indigo-50"
+                                  onClick={() => submitRepost(post.id)}
+                                >
+                                  Yeniden paylaş
+                                </button>
+                                <button
+                                  type="button"
+                                  className="flex w-full items-center border-t border-border/70 px-3 py-2 text-left text-sm text-slate-700 hover:bg-indigo-50"
+                                  onClick={() => openQuoteComposer(post.id)}
+                                >
+                                  Alıntıla
+                                </button>
+                              </div>
+                            )}
+                          </div>
 
                           <div className="inline-flex h-9 items-center gap-2 rounded-lg border border-transparent px-3 text-xs text-slate-500 sm:text-sm">
                             <Eye className="h-4 w-4" />
