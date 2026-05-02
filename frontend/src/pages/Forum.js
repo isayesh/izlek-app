@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   BarChart3,
@@ -17,6 +17,14 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  getForumUserProfile,
+  getForumUserStats,
+  isForumFollowing,
+  subscribeForumFollowStore,
+  toggleForumFollow,
+} from "@/pages/forumSocialStore";
 
 const minutesAgo = (minutes) => new Date(Date.now() - minutes * 60 * 1000).toISOString();
 
@@ -179,6 +187,20 @@ export default function Forum() {
   const [composerImage, setComposerImage] = useState(null);
   const [commentDrafts, setCommentDrafts] = useState({});
   const [shareFeedbackByPost, setShareFeedbackByPost] = useState({});
+  const [activeProfileUsername, setActiveProfileUsername] = useState("");
+  const [, setFollowStoreVersion] = useState(0);
+
+  useEffect(() => {
+    const unsubscribe = subscribeForumFollowStore(() => {
+      setFollowStoreVersion((prev) => prev + 1);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const activeProfile = activeProfileUsername ? getForumUserProfile(activeProfileUsername) : null;
+  const activeProfileStats = activeProfile ? getForumUserStats(activeProfile.username) : null;
+  const isActiveProfileFollowing = activeProfile ? isForumFollowing(activeProfile.username) : false;
 
   const canSubmitPost = composerText.trim().length > 0;
 
@@ -492,30 +514,37 @@ export default function Forum() {
               <div className="space-y-4" data-testid="forum-feed-list">
                 {posts.map((post) => {
                   const inferredTopic = inferMainTopicFromText(post.content || "");
+                  const authorProfile = getForumUserProfile(post.username, post.displayName);
                   return (
-                  <Card
+                    <Card
                     key={post.id}
                     className="overflow-hidden border-border/70 bg-card/95 transition-all duration-200 hover:border-indigo-200/90 hover:shadow-[0_18px_38px_-28px_rgba(79,70,229,0.4)]"
                     data-testid={`forum-post-${post.id}`}
                   >
                     <CardHeader className="space-y-3 p-4 pb-2 sm:p-5 sm:pb-2">
                       <div className="flex items-start gap-3">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-700 to-slate-900 text-sm font-semibold text-white">
-                          {getInitials(post.displayName)}
-                        </div>
-
-                        <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-                            <span className="font-semibold text-foreground">{post.displayName}</span>
-                            <span className="text-muted-foreground">@{post.username}</span>
-                            <span className="text-muted-foreground">· {getRelativeTimeLabel(post.createdAt)}</span>
+                        <button
+                          type="button"
+                          onClick={() => setActiveProfileUsername(authorProfile.username)}
+                          className="group flex min-w-0 flex-1 items-start gap-3 text-left"
+                        >
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-700 to-slate-900 text-sm font-semibold text-white transition-transform duration-200 group-hover:scale-[1.03]">
+                            {getInitials(authorProfile.displayName)}
                           </div>
 
-                          <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full border border-indigo-200/80 bg-indigo-50 px-2.5 py-1 text-[11px] font-semibold text-indigo-700">
-                            <Hash className="h-3 w-3" />
-                            #{inferredTopic}
-                          </span>
-                        </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+                              <span className="font-semibold text-foreground transition-colors duration-200 group-hover:text-indigo-700">{authorProfile.displayName}</span>
+                              <span className="text-muted-foreground">@{authorProfile.username}</span>
+                              <span className="text-muted-foreground">· {getRelativeTimeLabel(post.createdAt)}</span>
+                            </div>
+
+                            <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full border border-indigo-200/80 bg-indigo-50 px-2.5 py-1 text-[11px] font-semibold text-indigo-700">
+                              <Hash className="h-3 w-3" />
+                              #{inferredTopic}
+                            </span>
+                          </div>
+                        </button>
                       </div>
                     </CardHeader>
 
@@ -620,6 +649,86 @@ export default function Forum() {
                   );
                 })}
               </div>
+
+              <Dialog
+                open={Boolean(activeProfileUsername)}
+                onOpenChange={(open) => {
+                  if (!open) {
+                    setActiveProfileUsername("");
+                  }
+                }}
+              >
+                <DialogContent className="max-w-md">
+                  {activeProfile && activeProfileStats && (
+                    <div className="space-y-4">
+                      <DialogHeader>
+                        <DialogTitle>Profil Önizleme</DialogTitle>
+                      </DialogHeader>
+
+                      <div className="flex items-start gap-3">
+                        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-700 to-slate-900 text-lg font-semibold text-white">
+                          {getInitials(activeProfile.displayName)}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-lg font-semibold text-foreground">{activeProfile.displayName}</p>
+                          <p className="text-sm text-muted-foreground">@{activeProfile.username}</p>
+                          <p className="mt-1 text-sm leading-6 text-slate-700">{activeProfile.bio}</p>
+                          <p className="text-sm font-medium text-indigo-700">Odak: {activeProfile.studyFocus}</p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                        <div className="rounded-lg border border-border/70 bg-background/80 px-2.5 py-2 text-center">
+                          <p className="text-sm font-semibold text-foreground">{activeProfileStats.posts}</p>
+                          <p className="text-[11px] text-muted-foreground">Gönderi</p>
+                        </div>
+                        <div className="rounded-lg border border-border/70 bg-background/80 px-2.5 py-2 text-center">
+                          <p className="text-sm font-semibold text-foreground">{activeProfileStats.followers}</p>
+                          <p className="text-[11px] text-muted-foreground">Takipçi</p>
+                        </div>
+                        <div className="rounded-lg border border-border/70 bg-background/80 px-2.5 py-2 text-center">
+                          <p className="text-sm font-semibold text-foreground">{activeProfileStats.following}</p>
+                          <p className="text-[11px] text-muted-foreground">Takip edilen</p>
+                        </div>
+                        <div className="rounded-lg border border-border/70 bg-background/80 px-2.5 py-2 text-center">
+                          <p className="text-sm font-semibold text-foreground">{activeProfileStats.studyHours}s</p>
+                          <p className="text-[11px] text-muted-foreground">Çalışma saati</p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap justify-end gap-2">
+                        <Button
+                          type="button"
+                          onClick={() => toggleForumFollow(activeProfile.username)}
+                          disabled={activeProfile.username === "sen"}
+                          className={`h-9 rounded-lg px-4 text-sm ${
+                            isActiveProfileFollowing
+                              ? "border border-indigo-200 bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
+                              : "bg-indigo-600 text-white hover:bg-indigo-700"
+                          }`}
+                        >
+                          {activeProfile.username === "sen"
+                            ? "Bu sensin"
+                            : isActiveProfileFollowing
+                              ? "Takip ediliyor"
+                              : "Takip et"}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="h-9 rounded-lg px-4 text-sm"
+                          onClick={() => {
+                            navigate(`/user/${activeProfile.username}`);
+                            setActiveProfileUsername("");
+                          }}
+                        >
+                          Profili görüntüle
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </DialogContent>
+              </Dialog>
             </main>
 
             <aside className="w-full min-w-0 space-y-4 xl:sticky xl:top-4 xl:max-w-[340px] xl:self-start" data-testid="forum-sidebar">

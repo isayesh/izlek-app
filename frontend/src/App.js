@@ -19,6 +19,7 @@ import Friends from "@/pages/Friends";
 import Notifications from "@/pages/Notifications";
 import Messages from "@/pages/Messages";
 import Forum from "@/pages/Forum";
+import UserProfile from "@/pages/UserProfile";
 
 // Use REACT_APP_BACKEND_URL when available, but allow the landing page to render without it.
 const backendUrl = process.env.REACT_APP_BACKEND_URL || "";
@@ -131,6 +132,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Forum />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/user/:username"
+              element={
+                <ProtectedRoute>
+                  <UserProfile />
                 </ProtectedRoute>
               }
             />
