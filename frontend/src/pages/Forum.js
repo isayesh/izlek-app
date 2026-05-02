@@ -24,6 +24,7 @@ import {
   addForumPostComment,
   createForumPost,
   createForumSharePost,
+  getForumDisplayHandle,
   getForumFeedPosts,
   getForumPostById,
   getForumUserProfile,
@@ -175,6 +176,7 @@ export default function Forum() {
   }, [posts]);
 
   const activeProfile = activeProfileUsername ? getForumUserProfile(activeProfileUsername) : null;
+  const currentUserProfile = getForumUserProfile("sen");
   const activeProfileStats = activeProfile ? getForumUserStats(activeProfile.username) : null;
   const isActiveProfileFollowing = activeProfile ? isForumFollowing(activeProfile.username) : false;
 
@@ -258,7 +260,7 @@ export default function Forum() {
     if (!canSubmitPost) return;
 
     createForumPost({
-      displayName: "Sen",
+      displayName: currentUserProfile.displayName,
       username: "sen",
       content: composerText,
       imageName: composerImage?.name || "",
@@ -329,7 +331,7 @@ export default function Forum() {
     createForumSharePost({
       postId,
       quoteText: "",
-      displayName: "Sen",
+      displayName: currentUserProfile.displayName,
       username: "sen",
     });
 
@@ -353,7 +355,7 @@ export default function Forum() {
     createForumSharePost({
       postId,
       quoteText: shareDraftsByPost[postId] || "",
-      displayName: "Sen",
+      displayName: currentUserProfile.displayName,
       username: "sen",
     });
 
@@ -444,7 +446,7 @@ export default function Forum() {
                   <form onSubmit={handleComposerSubmit} className="space-y-4">
                     <div className="flex items-start gap-3">
                       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-sm font-bold text-white">
-                        SN
+                        {getInitials(currentUserProfile.displayName)}
                       </div>
 
                       <div className="w-full min-w-0 space-y-3">
@@ -518,7 +520,9 @@ export default function Forum() {
                   const sourceAuthorProfile = sourcePost
                     ? getForumUserProfile(sourcePost.username, sourcePost.displayName)
                     : null;
-                  const visibleAuthorProfile = isPureRepost && sourceAuthorProfile ? sourceAuthorProfile : authorProfile;
+                  const shouldUseSourceIdentity = isPureRepost && sourceAuthorProfile && post.username !== "sen";
+                  const visibleAuthorProfile = shouldUseSourceIdentity ? sourceAuthorProfile : authorProfile;
+                  const visibleTimestamp = shouldUseSourceIdentity ? visiblePost.createdAt : post.createdAt;
                   const hasCommentsExpanded = Boolean(expandedCommentsByPost[post.id]);
                   const hasShareExpanded = Boolean(expandedShareByPost[post.id]);
                   const hasShareMenuOpen = Boolean(shareMenuByPost[post.id]);
@@ -546,8 +550,8 @@ export default function Forum() {
                                 <span className="font-semibold text-foreground transition-colors duration-200 group-hover:text-indigo-700">
                                   {visibleAuthorProfile.displayName}
                                 </span>
-                                <span className="text-muted-foreground">@{visibleAuthorProfile.username}</span>
-                                <span className="text-muted-foreground">· {getRelativeTimeLabel(visiblePost.createdAt)}</span>
+                                <span className="text-muted-foreground">@{getForumDisplayHandle(visibleAuthorProfile.username)}</span>
+                                <span className="text-muted-foreground">· {getRelativeTimeLabel(visibleTimestamp)}</span>
                               </div>
 
                               <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full border border-indigo-200/80 bg-indigo-50 px-2.5 py-1 text-[11px] font-semibold text-indigo-700">
@@ -623,7 +627,7 @@ export default function Forum() {
                                     <span className="font-semibold text-foreground">
                                       {sourceAuthorProfile?.displayName || sourcePost.displayName}
                                     </span>
-                                    <span className="text-muted-foreground">@{sourcePost.username}</span>
+                                    <span className="text-muted-foreground">@{getForumDisplayHandle(sourcePost.username)}</span>
                                     <span className="text-muted-foreground">· {getRelativeTimeLabel(sourcePost.createdAt)}</span>
                                   </div>
 
@@ -809,7 +813,7 @@ export default function Forum() {
                                         className="font-semibold text-foreground hover:text-indigo-700"
                                         onClick={() => navigate(`/user/${comment.author}`)}
                                       >
-                                        @{comment.author}
+                                          @{getForumDisplayHandle(comment.author)}
                                       </button>
                                       <span>· {getRelativeTimeLabel(comment.createdAt)}</span>
                                     </div>
@@ -877,7 +881,7 @@ export default function Forum() {
                         </div>
                         <div className="min-w-0">
                           <p className="text-lg font-semibold text-foreground">{activeProfile.displayName}</p>
-                          <p className="text-sm text-muted-foreground">@{activeProfile.username}</p>
+                          <p className="text-sm text-muted-foreground">@{getForumDisplayHandle(activeProfile.username)}</p>
                           <p className="mt-1 text-sm leading-6 text-slate-700">{activeProfile.bio}</p>
                           <p className="text-sm font-medium text-indigo-700">Odak: {activeProfile.studyFocus}</p>
                         </div>

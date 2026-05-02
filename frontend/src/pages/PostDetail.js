@@ -21,8 +21,10 @@ import {
   addForumPostComment,
   createForumSharePost,
   extractForumMentions,
+  getForumDisplayHandle,
   getForumFeedPosts,
   getForumPostById,
+  getForumUserProfile,
   incrementForumPostView,
   subscribeForumFeedStore,
   toggleForumPostLike,
@@ -110,6 +112,7 @@ export default function PostDetail() {
   const [shareExpanded, setShareExpanded] = useState(false);
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const [imageLoadErrorByPost, setImageLoadErrorByPost] = useState({});
+  const currentUserProfile = getForumUserProfile("sen");
 
   useEffect(() => {
     const unsubscribeFeed = subscribeForumFeedStore(() => {
@@ -128,6 +131,7 @@ export default function PostDetail() {
   const sourcePost = post?.sharedFromPostId ? getForumPostById(post.sharedFromPostId) : null;
   const isPureRepost = Boolean(post?.sharedFromPostId) && !(post?.content || "").trim();
   const visiblePost = isPureRepost && sourcePost ? sourcePost : post;
+  const visibleIdentityPost = isPureRepost && sourcePost && post?.username !== "sen" ? sourcePost : post;
   const hasImageError = Boolean(imageLoadErrorByPost[visiblePost?.id || ""]);
 
   useEffect(() => {
@@ -184,7 +188,7 @@ export default function PostDetail() {
     createForumSharePost({
       postId: post.id,
       quoteText: "",
-      displayName: "Sen",
+      displayName: currentUserProfile.displayName,
       username: "sen",
     });
 
@@ -205,7 +209,7 @@ export default function PostDetail() {
     createForumSharePost({
       postId: post.id,
       quoteText: shareDraft,
-      displayName: "Sen",
+      displayName: currentUserProfile.displayName,
       username: "sen",
     });
 
@@ -293,20 +297,20 @@ export default function PostDetail() {
                 <div className="flex items-start gap-3">
                   <button
                     type="button"
-                    onClick={() => navigate(`/user/${visiblePost.username}`)}
+                    onClick={() => navigate(`/user/${visibleIdentityPost.username}`)}
                     className="group flex min-w-0 flex-1 items-start gap-3 text-left"
                   >
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-700 to-slate-900 text-sm font-semibold text-white transition-transform duration-200 group-hover:scale-[1.03]">
-                      {getInitials(visiblePost.displayName)}
+                      {getInitials(visibleIdentityPost.displayName)}
                     </div>
 
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
                         <span className="font-semibold text-foreground transition-colors duration-200 group-hover:text-indigo-700">
-                          {visiblePost.displayName}
+                          {visibleIdentityPost.displayName}
                         </span>
-                        <span className="text-muted-foreground">@{visiblePost.username}</span>
-                        <span className="text-muted-foreground">· {getRelativeTimeLabel(visiblePost.createdAt)}</span>
+                        <span className="text-muted-foreground">@{getForumDisplayHandle(visibleIdentityPost.username)}</span>
+                        <span className="text-muted-foreground">· {getRelativeTimeLabel(visibleIdentityPost.createdAt)}</span>
                       </div>
                     </div>
                   </button>
@@ -359,7 +363,7 @@ export default function PostDetail() {
                       <div className="min-w-0 flex-1 space-y-2">
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm">
                           <span className="font-semibold text-foreground">{sourcePost.displayName}</span>
-                          <span className="text-muted-foreground">@{sourcePost.username}</span>
+                          <span className="text-muted-foreground">@{getForumDisplayHandle(sourcePost.username)}</span>
                           <span className="text-muted-foreground">· {getRelativeTimeLabel(sourcePost.createdAt)}</span>
                         </div>
 
@@ -523,7 +527,7 @@ export default function PostDetail() {
                           className="font-semibold text-foreground hover:text-indigo-700"
                           onClick={() => navigate(`/user/${comment.author}`)}
                         >
-                          @{comment.author}
+                          @{getForumDisplayHandle(comment.author)}
                         </button>
                         <span>· {getRelativeTimeLabel(comment.createdAt)}</span>
                       </div>

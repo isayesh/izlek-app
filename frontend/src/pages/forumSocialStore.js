@@ -4,7 +4,7 @@ const FORUM_MENTION_REGEX = /@([a-zA-Z0-9_]+)/g;
 
 const FORUM_USERS = {
   sen: {
-    displayName: "Sen",
+    displayName: "isa demo",
     username: "sen",
     bio: "Düzenli çalışıp netlerini istikrarlı artırmaya odaklanıyorsun.",
     studyFocus: "AYT Matematik",
@@ -323,7 +323,7 @@ export const getForumPostById = (postId = "") =>
   getForumFeedPosts().find((post) => post.id === postId) || null;
 
 export const createForumPost = ({
-  displayName = "Sen",
+  displayName = "isa demo",
   username = "sen",
   content = "",
   imageName = "",
@@ -359,7 +359,7 @@ export const createForumPost = ({
 export const createForumSharePost = ({
   postId = "",
   quoteText = "",
-  displayName = "Sen",
+  displayName = "isa demo",
   username = "sen",
 }) => {
   const sourcePost = forumFeedPosts.find((post) => post.id === postId);
@@ -477,6 +477,12 @@ export const getForumUserProfile = (username = "", fallbackDisplayName = "") => 
   const knownProfile = FORUM_USERS[username];
   if (knownProfile) return knownProfile;
   return defaultProfile(username || "kullanici", fallbackDisplayName || "İzlek Kullanıcısı");
+};
+
+export const getForumDisplayHandle = (username = "") => {
+  if (!username) return "";
+  if (username === "sen") return "demo";
+  return getForumUserProfile(username).username || username;
 };
 
 export const getForumUserStats = (username = "") => {
