@@ -565,12 +565,12 @@ export default function Forum() {
                           )}
 
                           {post.imagePreviewUrl && (
-                            <div className="overflow-hidden rounded-xl border border-border/70 bg-muted/20">
+                            <div className="h-[300px] overflow-hidden rounded-xl border border-border/70 bg-muted/20 sm:h-[380px] md:h-[440px]">
                               {!hasImageError ? (
                                 <img
                                   src={post.imagePreviewUrl}
                                   alt="Paylaşım görseli"
-                                  className="max-h-[500px] h-auto w-full object-contain"
+                                  className="h-full w-full object-cover"
                                   onError={() =>
                                     setImageLoadErrorByPost((prev) => ({
                                       ...prev,
@@ -579,7 +579,7 @@ export default function Forum() {
                                   }
                                 />
                               ) : (
-                                <div className="flex h-52 w-full items-center justify-center gap-2 text-sm text-muted-foreground">
+                                <div className="flex h-full w-full items-center justify-center gap-2 text-sm text-muted-foreground">
                                   <ImageOff className="h-4 w-4" />
                                   <span>Görsel önizlemesi yüklenemedi</span>
                                 </div>
