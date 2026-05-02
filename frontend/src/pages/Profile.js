@@ -4,6 +4,7 @@ import axios from "axios";
 import {
   BarChart3,
   Home,
+  ImageOff,
   MessageCircle,
   MessageSquare,
   Trophy,
@@ -101,6 +102,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [profileData, setProfileData] = useState(getDefaultProfileData(currentUser));
+  const [imageLoadErrorByPost, setImageLoadErrorByPost] = useState({});
   const [listModalState, setListModalState] = useState({ open: false, type: "followers" });
   const [, setFollowStoreVersion] = useState(0);
   const [feedStoreVersion, setFeedStoreVersion] = useState(0);
@@ -329,6 +331,30 @@ export default function Profile() {
                       ownPosts.map((post) => (
                         <div key={post.id} className="rounded-xl border border-border/70 bg-background/85 p-4">
                           <p className="text-sm leading-6 text-slate-700">{post.content}</p>
+
+                          {post.imagePreviewUrl && (
+                            <div className="mt-2 overflow-hidden rounded-lg border border-border/70 bg-muted/20">
+                              {!imageLoadErrorByPost[post.id] ? (
+                                <img
+                                  src={post.imagePreviewUrl}
+                                  alt="Paylaşım görseli"
+                                  className="max-h-72 w-full object-contain"
+                                  onError={() =>
+                                    setImageLoadErrorByPost((prev) => ({
+                                      ...prev,
+                                      [post.id]: true,
+                                    }))
+                                  }
+                                />
+                              ) : (
+                                <div className="flex h-40 w-full items-center justify-center gap-2 text-sm text-muted-foreground">
+                                  <ImageOff className="h-4 w-4" />
+                                  <span>Görsel önizlemesi yüklenemedi</span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
                           <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
                             <span>{getRelativeTimeLabel(post.createdAt)}</span>
                             <span>•</span>

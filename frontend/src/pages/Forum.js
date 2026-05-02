@@ -137,6 +137,7 @@ export default function Forum() {
   const [posts, setPosts] = useState(() => getForumFeedPosts());
   const [composerText, setComposerText] = useState("");
   const [composerImage, setComposerImage] = useState(null);
+  const [imageLoadErrorByPost, setImageLoadErrorByPost] = useState({});
   const [commentDrafts, setCommentDrafts] = useState({});
   const [expandedCommentsByPost, setExpandedCommentsByPost] = useState({});
   const [expandedShareByPost, setExpandedShareByPost] = useState({});
@@ -227,10 +228,10 @@ export default function Forum() {
     "DM Kutum": ["/messages"],
   };
 
-  const resetComposer = () => {
+  const resetComposer = ({ revokePreview = true } = {}) => {
     setComposerText("");
     setComposerImage((prevImage) => {
-      if (prevImage?.previewUrl) {
+      if (revokePreview && prevImage?.previewUrl) {
         URL.revokeObjectURL(prevImage.previewUrl);
       }
       return null;
@@ -266,7 +267,7 @@ export default function Forum() {
       imagePreviewUrl: composerImage?.previewUrl || "",
     });
 
-    resetComposer();
+    resetComposer({ revokePreview: false });
   };
 
   const handleImageSelected = (event) => {
@@ -506,6 +507,7 @@ export default function Forum() {
                   const hasCommentsExpanded = Boolean(expandedCommentsByPost[post.id]);
                   const hasShareExpanded = Boolean(expandedShareByPost[post.id]);
                   const hasShareMenuOpen = Boolean(shareMenuByPost[post.id]);
+                  const hasImageError = Boolean(imageLoadErrorByPost[post.id]);
                   const isPureRepost = Boolean(post.sharedFromPostId) && !(post.content || "").trim();
 
                   return (
@@ -563,12 +565,25 @@ export default function Forum() {
                           )}
 
                           {post.imagePreviewUrl && (
-                            <div className="overflow-hidden rounded-xl border border-border/70 bg-muted/30">
-                              <img
-                                src={post.imagePreviewUrl}
-                                alt={post.imageName || "paylaşım görseli"}
-                                className="h-auto w-full object-cover"
-                              />
+                            <div className="overflow-hidden rounded-xl border border-border/70 bg-muted/20">
+                              {!hasImageError ? (
+                                <img
+                                  src={post.imagePreviewUrl}
+                                  alt="Paylaşım görseli"
+                                  className="max-h-[420px] w-full object-contain"
+                                  onError={() =>
+                                    setImageLoadErrorByPost((prev) => ({
+                                      ...prev,
+                                      [post.id]: true,
+                                    }))
+                                  }
+                                />
+                              ) : (
+                                <div className="flex h-52 w-full items-center justify-center gap-2 text-sm text-muted-foreground">
+                                  <ImageOff className="h-4 w-4" />
+                                  <span>Görsel önizlemesi yüklenemedi</span>
+                                </div>
+                              )}
                             </div>
                           )}
 

@@ -6,6 +6,7 @@ import {
   Eye,
   Heart,
   Home,
+  ImageOff,
   MessageCircle,
   MessageSquare,
   Repeat2,
@@ -107,6 +108,7 @@ export default function PostDetail() {
   const [shareDraft, setShareDraft] = useState("");
   const [shareExpanded, setShareExpanded] = useState(false);
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  const [imageLoadErrorByPost, setImageLoadErrorByPost] = useState({});
 
   useEffect(() => {
     const unsubscribeFeed = subscribeForumFeedStore(() => {
@@ -124,6 +126,7 @@ export default function PostDetail() {
   const post = postMap[id] || null;
   const sourcePost = post?.sharedFromPostId ? postMap[post.sharedFromPostId] : null;
   const isPureRepost = Boolean(post?.sharedFromPostId) && !(post?.content || "").trim();
+  const hasImageError = Boolean(imageLoadErrorByPost[post?.id || ""]);
 
   useEffect(() => {
     if (!post?.id) return;
@@ -322,8 +325,25 @@ export default function PostDetail() {
                 )}
 
                 {post.imagePreviewUrl && (
-                  <div className="overflow-hidden rounded-xl border border-border/70 bg-muted/30">
-                    <img src={post.imagePreviewUrl} alt={post.imageName || "paylaşım görseli"} className="h-auto w-full object-cover" />
+                  <div className="overflow-hidden rounded-xl border border-border/70 bg-muted/20">
+                    {!hasImageError ? (
+                      <img
+                        src={post.imagePreviewUrl}
+                        alt="Paylaşım görseli"
+                        className="max-h-[420px] w-full object-contain"
+                        onError={() =>
+                          setImageLoadErrorByPost((prev) => ({
+                            ...prev,
+                            [post.id]: true,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <div className="flex h-52 w-full items-center justify-center gap-2 text-sm text-muted-foreground">
+                        <ImageOff className="h-4 w-4" />
+                        <span>Görsel önizlemesi yüklenemedi</span>
+                      </div>
+                    )}
                   </div>
                 )}
 
