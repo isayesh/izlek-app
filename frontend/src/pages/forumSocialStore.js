@@ -147,6 +147,7 @@ const defaultProfile = (username = "kullanici", displayName = "İzlek Kullanıc�
 const followStateByUsername = {};
 const followerDeltaByUsername = {};
 const followListeners = new Set();
+const initialCurrentUserFollowing = new Set(FORUM_USERS.sen?.followingList || []);
 
 const initialForumFeedPosts = [
   {
@@ -260,7 +261,17 @@ export const subscribeForumFollowStore = (listener) => {
   };
 };
 
-export const isForumFollowing = (username = "") => Boolean(followStateByUsername[username]);
+export const isForumFollowing = (username = "") => {
+  if (!username || username === "sen") {
+    return false;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(followStateByUsername, username)) {
+    return Boolean(followStateByUsername[username]);
+  }
+
+  return initialCurrentUserFollowing.has(username);
+};
 
 export const toggleForumFollow = (username = "") => {
   if (!username || username === "sen") {
@@ -396,6 +407,18 @@ export const getForumUserStats = (username = "") => {
   };
 };
 
+export const doesForumUserFollowCurrentUser = (username = "") => {
+  if (!username || username === "sen") {
+    return false;
+  }
+
+  const profile = getForumUserProfile(username);
+  return (profile.followingList || []).includes("sen");
+};
+
+export const isForumMutualFollow = (username = "") =>
+  isForumFollowing(username) && doesForumUserFollowCurrentUser(username);
+
 export const getForumUsersByUsernames = (usernames = []) =>
   usernames.map((username) => getForumUserProfile(username));
 
@@ -442,6 +465,11 @@ export const PUBLIC_PROFILE_ACTIVITY = {
     ],
     likes: [
       { id: "l1", text: "‘Pomodoro 50/10 mu 40/10 mu?’ başlığını beğendi." },
+      { id: "l2", text: "‘AYT net artış rutini’ paylaşımını beğendi." },
+    ],
+  },
+};
+?’ başlığını beğendi." },
       { id: "l2", text: "‘AYT net artış rutini’ paylaşımını beğendi." },
     ],
   },

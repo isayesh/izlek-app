@@ -150,7 +150,6 @@ export default function Forum() {
       { label: "Forum", icon: MessageCircle, onClick: () => navigate("/forum") },
       { label: "Profil", icon: User, onClick: () => navigate("/profile") },
       { label: "DM Kutum", icon: MessageSquare, onClick: () => navigate("/messages") },
-      { label: "Arkadaşlar", icon: Users, onClick: () => navigate("/friends") },
     ],
     [navigate]
   );
@@ -163,7 +162,6 @@ export default function Forum() {
     Forum: ["/forum"],
     Profil: ["/profile"],
     "DM Kutum": ["/messages"],
-    Arkadaşlar: ["/friends"],
   };
 
   const resetComposer = () => {

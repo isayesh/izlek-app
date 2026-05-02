@@ -642,7 +642,6 @@ export default function Dashboard() {
     { label: "Forum", icon: MessageCircle, onClick: () => navigate("/forum"), testId: "btn-forum" },
     { label: "Profil", icon: User, onClick: () => navigate("/profile"), testId: "dashboard-btn-profile" },
     { label: "DM Kutum", icon: MessageSquare, onClick: () => navigate("/messages"), testId: "dashboard-btn-messages", badgeCount: unreadDmCount },
-    { label: "Arkadaşlar", icon: Users, onClick: () => navigate("/friends"), testId: "dashboard-btn-friends", badgeCount: pendingFriendRequestCount },
   ];
 
   const navActivePaths = {
@@ -653,7 +652,6 @@ export default function Dashboard() {
     Forum: ["/forum"],
     Profil: ["/profile"],
     "DM Kutum": ["/messages"],
-    Arkadaşlar: ["/friends"],
   };
 
   const quickActions = [

@@ -20,6 +20,7 @@ import {
   getForumUserStats,
   getForumUsersByUsernames,
   isForumFollowing,
+  isForumMutualFollow,
   PUBLIC_PROFILE_ACTIVITY,
   PUBLIC_PROFILE_POSTS,
   subscribeForumFollowStore,
@@ -73,6 +74,7 @@ export default function UserProfile() {
   const profile = useMemo(() => getForumUserProfile(username), [username]);
   const profileStats = getForumUserStats(profile.username);
   const isFollowing = isForumFollowing(profile.username);
+  const isMutualFollow = isForumMutualFollow(profile.username);
 
   const profilePosts = useMemo(
     () => PUBLIC_PROFILE_POSTS.filter((post) => post.username === profile.username),
@@ -94,7 +96,6 @@ export default function UserProfile() {
     { label: "Forum", icon: MessageCircle, onClick: () => navigate("/forum") },
     { label: "Profil", icon: User, onClick: () => navigate("/profile") },
     { label: "DM Kutum", icon: MessageSquare, onClick: () => navigate("/messages") },
-    { label: "Arkadaşlar", icon: Users, onClick: () => navigate("/friends") },
   ];
 
   const navActivePaths = {
@@ -105,7 +106,6 @@ export default function UserProfile() {
     Forum: ["/forum"],
     Profil: ["/profile", "/profile/edit"],
     "DM Kutum": ["/messages"],
-    Arkadaşlar: ["/friends"],
   };
 
   return (
@@ -181,9 +181,22 @@ export default function UserProfile() {
                     >
                       {profile.username === "sen" ? "Bu sensin" : isFollowing ? "Takip ediliyor" : "Takip et"}
                     </Button>
-                    <Button type="button" variant="outline" className="h-10 rounded-lg px-4 text-sm">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="h-10 rounded-lg px-4 text-sm"
+                      disabled={!isMutualFollow}
+                      onClick={() => {
+                        if (isMutualFollow) {
+                          navigate("/messages");
+                        }
+                      }}
+                    >
                       Mesaj gönder
                     </Button>
+                    {!isMutualFollow && (
+                      <p className="w-full text-xs text-muted-foreground">Mesajlaşmak için karşılıklı takip gerekir.</p>
+                    )}
                   </div>
                 </div>
 

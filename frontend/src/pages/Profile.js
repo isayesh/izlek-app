@@ -177,7 +177,6 @@ export default function Profile() {
     { label: "Forum", icon: MessageCircle, onClick: () => navigate("/forum") },
     { label: "Profil", icon: User, onClick: () => navigate("/profile") },
     { label: "DM Kutum", icon: MessageSquare, onClick: () => navigate("/messages") },
-    { label: "Arkadaşlar", icon: Users, onClick: () => navigate("/friends") },
   ];
 
   const navActivePaths = {
@@ -188,7 +187,6 @@ export default function Profile() {
     Forum: ["/forum"],
     Profil: ["/profile", "/profile/edit"],
     "DM Kutum": ["/messages"],
-    Arkadaşlar: ["/friends"],
   };
 
   if (loading) {

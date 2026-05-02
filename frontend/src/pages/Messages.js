@@ -10,6 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/contexts/AuthContext";
 import { API } from "@/App";
 import { formatPublicHandle, getAvatarFallback, getPublicUsername } from "@/lib/publicProfile";
+import { isForumMutualFollow } from "@/pages/forumSocialStore";
 
 const ROOM_INVITE_MESSAGE_TYPE = "room_invite";
 
@@ -105,7 +106,7 @@ export default function Messages() {
       setFriends(Array.isArray(response.data) ? response.data : []);
     } catch (loadError) {
       console.error("Error loading friends for messages:", loadError);
-      setError("Arkadaş listesi yüklenirken bir hata oluştu.");
+      setError("Karşılıklı takip listesi yüklenirken bir hata oluştu.");
     } finally {
       setFriendsLoading(false);
     }
@@ -221,11 +222,28 @@ export default function Messages() {
     return formatPublicHandle(selectedFriend.handle_display || selectedFriend.handle);
   }, [selectedFriend]);
 
+  const resolveMessagingUsername = (profile) => {
+    const rawValue = (profile?.handle || profile?.handle_display || profile?.username || "").trim();
+    if (!rawValue) return "";
+    return rawValue.startsWith("@") ? rawValue.slice(1) : rawValue;
+  };
+
+  const selectedFriendUsername = useMemo(() => resolveMessagingUsername(selectedFriend), [selectedFriend]);
+  const selectedFriendHasMutualFollow = useMemo(
+    () => (selectedFriendUsername ? isForumMutualFollow(selectedFriendUsername) : false),
+    [selectedFriendUsername]
+  );
+
   const handleSendMessage = async (event) => {
     event.preventDefault();
 
     const trimmedMessage = draftMessage.trim();
     if (!selectedFriendId || !trimmedMessage) {
+      return;
+    }
+
+    if (!selectedFriendHasMutualFollow) {
+      setError("Mesajlaşmak için karşılıklı takip gerekir.");
       return;
     }
 
@@ -262,6 +280,11 @@ export default function Messages() {
 
   const handleSendRoomInvite = async () => {
     if (!selectedFriendId) {
+      return;
+    }
+
+    if (!selectedFriendHasMutualFollow) {
+      setError("Davet göndermek için karşılıklı takip gerekir.");
       return;
     }
 
@@ -313,13 +336,13 @@ export default function Messages() {
               <div>
                 <h1 className="text-4xl font-bold tracking-tight text-slate-900 " data-testid="messages-title">DM Kutum</h1>
                 <p className="mt-2 text-base text-slate-600 " data-testid="messages-subtitle">
-                  Arkadaşlarınla bire bir konuşmaları buradan başlatabilir ve sürdürebilirsin.
+                  Karşılıklı takip ettiklerinle bire bir konuşmaları buradan başlatabilir ve sürdürebilirsin.
                 </p>
               </div>
 
               <div className="flex flex-wrap items-center gap-2" data-testid="messages-header-actions">
                 <Button variant="outline" onClick={() => navigate("/friends")} className="h-10 rounded-xl border-border/70 bg-background hover:bg-secondary" data-testid="messages-go-friends-button">
-                  <Users className="mr-2 h-4 w-4" /> Arkadaşlar
+                  <Users className="mr-2 h-4 w-4" /> Karşılıklı Takipler
                 </Button>
                 <Button variant="outline" onClick={() => navigate("/dashboard")} className="h-10 rounded-xl border-border/70 bg-background hover:bg-secondary" data-testid="messages-go-dashboard-button">
                   <Home className="mr-2 h-4 w-4" /> Dashboard
@@ -340,7 +363,7 @@ export default function Messages() {
             <div className="border-b border-border/60 lg:border-b-0 lg:border-r" data-testid="messages-sidebar">
               <div className="border-b border-border/60 px-5 py-4">
                 <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground" data-testid="messages-sidebar-title">
-                  Arkadaşların
+                  Karşılıklı Takiplerin
                 </h2>
               </div>
 
@@ -348,12 +371,12 @@ export default function Messages() {
                 <div className="space-y-2 p-3" data-testid="messages-friends-list">
                   {friendsLoading ? (
                     <p className="rounded-2xl px-3 py-8 text-center text-sm text-slate-600 " data-testid="messages-friends-loading">
-                      Arkadaşlar yükleniyor...
+                      Karşılıklı takipler yükleniyor...
                     </p>
                   ) : friends.length === 0 ? (
                     <div className="rounded-2xl border border-dashed border-border/70 bg-background/60 px-4 py-8 text-center" data-testid="messages-friends-empty-state">
-                      <p className="text-sm font-medium text-slate-700 ">Henüz arkadaşın bulunmuyor.</p>
-                      <p className="mt-1 text-xs text-slate-500 ">Mesajlaşmak için önce arkadaş eklemelisin.</p>
+                      <p className="text-sm font-medium text-slate-700 ">Henüz karşılıklı takipte olduğun biri yok.</p>
+                      <p className="mt-1 text-xs text-slate-500 ">Mesajlaşmak için karşılıklı takipte olmalısın.</p>
                     </div>
                   ) : (
                     friends.map((friend) => {
@@ -434,18 +457,20 @@ export default function Messages() {
                           size="sm"
                           variant="outline"
                           onClick={handleSendRoomInvite}
-                          disabled={!activeRoomInviteTarget?.room_id || sendingInvite || roomInviteLoading}
+                          disabled={!selectedFriendHasMutualFollow || !activeRoomInviteTarget?.room_id || sendingInvite || roomInviteLoading}
                           className="rounded-xl border-border/70 bg-background hover:bg-secondary"
                           data-testid="messages-invite-room-button"
                         >
                           <Users className="h-4 w-4" /> {sendingInvite ? "Gönderiliyor..." : "Odaya Davet Et"}
                         </Button>
                         <p className="text-[11px] text-slate-500 " data-testid="messages-active-room-hint">
-                          {roomInviteLoading
-                            ? "Aktif room kontrol ediliyor..."
-                            : activeRoomInviteTarget?.room_name
-                              ? `Aktif room: ${activeRoomInviteTarget.room_name}`
-                              : "Davet göndermek için önce aktif bir room içinde olmalısın."}
+                          {!selectedFriendHasMutualFollow
+                            ? "Davet göndermek için karşılıklı takip gerekir."
+                            : roomInviteLoading
+                              ? "Aktif room kontrol ediliyor..."
+                              : activeRoomInviteTarget?.room_name
+                                ? `Aktif room: ${activeRoomInviteTarget.room_name}`
+                                : "Davet göndermek için önce aktif bir room içinde olmalısın."}
                         </p>
                       </div>
                     </div>
@@ -511,15 +536,19 @@ export default function Messages() {
                   </ScrollArea>
 
                   <form onSubmit={handleSendMessage} className="border-t border-gray-200/70 bg-white/75 px-5 py-5" data-testid="messages-composer-form">
+                    {!selectedFriendHasMutualFollow && (
+                      <p className="mb-3 text-xs text-muted-foreground">Mesajlaşmak için karşılıklı takip gerekir.</p>
+                    )}
                     <div className="flex flex-col gap-3 sm:flex-row">
                       <Input
                         value={draftMessage}
                         onChange={(event) => setDraftMessage(event.target.value)}
-                        placeholder="Mesajını yaz..."
+                        placeholder={selectedFriendHasMutualFollow ? "Mesajını yaz..." : "Mesajlaşmak için karşılıklı takip gerekir."}
+                        disabled={!selectedFriendHasMutualFollow}
                         className="h-11 rounded-xl border border-gray-200 bg-[#F9FAFB] focus-visible:border-indigo-400 focus-visible:ring-2 focus-visible:ring-indigo-100 focus-visible:ring-offset-0"
                         data-testid="messages-composer-input"
                       />
-                      <Button type="submit" className="h-11 rounded-xl bg-[#4F46E5] px-5 text-white shadow-md transition-colors duration-200 hover:bg-[#4338CA]" disabled={!draftMessage.trim() || sendingMessage} data-testid="messages-composer-send-button">
+                      <Button type="submit" className="h-11 rounded-xl bg-[#4F46E5] px-5 text-white shadow-md transition-colors duration-200 hover:bg-[#4338CA]" disabled={!selectedFriendHasMutualFollow || !draftMessage.trim() || sendingMessage} data-testid="messages-composer-send-button">
                         <Send className="mr-2 h-4 w-4" /> {sendingMessage ? "Gönderiliyor..." : "Gönder"}
                       </Button>
                     </div>
@@ -529,7 +558,7 @@ export default function Messages() {
                 <div className="flex flex-1 items-center justify-center px-6 py-10" data-testid="messages-no-selection-state">
                   <div className="max-w-sm rounded-2xl border border-dashed border-border/70 bg-background/60 px-6 py-10 text-center">
                     <MessageSquare className="mx-auto h-10 w-10 text-indigo-600" />
-                    <p className="mt-4 text-base font-semibold text-slate-900 ">Mesajlaşmak için soldan bir arkadaş seç</p>
+                    <p className="mt-4 text-base font-semibold text-slate-900 ">Mesajlaşmak için soldan bir kişi seç</p>
                     <p className="mt-2 text-sm text-slate-600 ">
                       Bir kişiyi seçtiğinde konuşma alanı ve mesaj yazma bölümü burada açılacak.
                     </p>
