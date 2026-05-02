@@ -155,20 +155,20 @@ export default function UserProfile() {
 
           <main className="mx-auto w-full max-w-5xl space-y-6">
             <Card className="overflow-hidden border-border/70 bg-card/95">
-              <div className="h-28 w-full bg-gradient-to-r from-indigo-600/85 via-purple-600/75 to-indigo-500/85" />
-              <CardContent className="space-y-6 p-6 pt-4 sm:p-7 sm:pt-5">
-                <div className="-mt-12 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+              <div className="h-36 w-full bg-gradient-to-r from-indigo-600/85 via-purple-600/75 to-indigo-500/85" />
+              <CardContent className="space-y-7 p-6 pt-6 sm:p-7 sm:pt-7">
+                <div className="-mt-12 flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
                   <div className="flex items-start gap-4 sm:gap-5">
                     <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br from-slate-700 to-slate-900 text-2xl font-semibold text-white shadow-sm">
                       {getInitials(profile.displayName)}
                     </div>
-                    <div className="pt-9 sm:pt-10">
+                    <div className="pt-10 sm:pt-11">
                       <p className="text-2xl font-bold tracking-tight text-foreground">{profile.displayName}</p>
                       <p className="text-sm text-muted-foreground">@{profile.username}</p>
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap gap-2 sm:mt-10">
+                  <div className="flex flex-wrap gap-2 sm:mt-11">
                     <Button
                       type="button"
                       onClick={() => toggleForumFollow(profile.username)}
