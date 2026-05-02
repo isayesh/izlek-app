@@ -100,6 +100,20 @@ const renderTextWithMentions = (text = "", onMentionClick, keyPrefix = "mention"
   return elements;
 };
 
+const getSeedNumber = (id = "") =>
+  id.split("").reduce((total, char) => total + char.charCodeAt(0), 0);
+
+const buildDefaultCommentMetrics = (commentId = "") => {
+  const seed = getSeedNumber(commentId);
+  return {
+    likeCount: seed % 4,
+    likedByCurrentUser: false,
+    replyCount: seed % 3,
+    repostCount: seed % 2,
+    viewCount: 24 + (seed % 160),
+  };
+};
+
 export default function PostDetail() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -112,6 +126,7 @@ export default function PostDetail() {
   const [shareExpanded, setShareExpanded] = useState(false);
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const [imageLoadErrorByPost, setImageLoadErrorByPost] = useState({});
+  const [commentMetricsById, setCommentMetricsById] = useState({});
   const currentUserProfile = getForumUserProfile("sen");
   const currentViewerUsername = currentUserProfile.username;
 
@@ -219,6 +234,24 @@ export default function PostDetail() {
     setShareMenuOpen(false);
     navigate("/forum");
   };
+
+  const handleCommentLikeToggle = (commentId) => {
+    setCommentMetricsById((prevMetrics) => {
+      const currentMetrics = prevMetrics[commentId] || buildDefaultCommentMetrics(commentId);
+      const nextLiked = !currentMetrics.likedByCurrentUser;
+
+      return {
+        ...prevMetrics,
+        [commentId]: {
+          ...currentMetrics,
+          likedByCurrentUser: nextLiked,
+          likeCount: Math.max(0, currentMetrics.likeCount + (nextLiked ? 1 : -1)),
+        },
+      };
+    });
+  };
+
+  const getCommentMetrics = (commentId) => commentMetricsById[commentId] || buildDefaultCommentMetrics(commentId);
 
   if (!post) {
     return (
@@ -520,23 +553,72 @@ export default function PostDetail() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {post.comments.length > 0 ? (
-                  post.comments.map((comment) => (
-                    <div key={comment.id} className="rounded-lg border border-border/60 bg-background/90 px-3 py-2">
-                      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                  post.comments.map((comment) => {
+                    const commentAuthorProfile = getForumUserProfile(comment.author);
+                    const commentMetrics = getCommentMetrics(comment.id);
+
+                    return (
+                      <div key={comment.id} className="flex items-start gap-3 border-b border-border/50 py-3 last:border-b-0">
                         <button
                           type="button"
-                          className="font-semibold text-foreground hover:text-indigo-700"
                           onClick={() => navigate(`/user/${comment.author}`)}
+                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-700 to-slate-900 text-[10px] font-semibold text-white"
                         >
-                          @{getForumDisplayHandle(comment.author)}
+                          {getInitials(commentAuthorProfile.displayName)}
                         </button>
-                        <span>· {getRelativeTimeLabel(comment.createdAt)}</span>
+
+                        <div className="min-w-0 flex-1 space-y-1.5">
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+                            <button
+                              type="button"
+                              className="font-semibold text-foreground hover:text-indigo-700"
+                              onClick={() => navigate(`/user/${comment.author}`)}
+                            >
+                              {commentAuthorProfile.displayName}
+                            </button>
+                            <span>@{getForumDisplayHandle(comment.author)}</span>
+                            <span>· {getRelativeTimeLabel(comment.createdAt)}</span>
+                          </div>
+
+                          <p className="whitespace-pre-wrap text-sm text-slate-700">
+                            {renderTextWithMentions(comment.text, (username) => navigate(`/user/${username}`), `detail-comment-${comment.id}`)}
+                          </p>
+
+                          <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleCommentLikeToggle(comment.id)}
+                              className={`h-7 rounded-md px-2.5 ${
+                                commentMetrics.likedByCurrentUser
+                                  ? "text-rose-600 hover:bg-rose-50"
+                                  : "text-muted-foreground hover:bg-indigo-50 hover:text-indigo-700"
+                              }`}
+                            >
+                              <Heart className={`h-3.5 w-3.5 ${commentMetrics.likedByCurrentUser ? "fill-current" : ""}`} />
+                              <span>{commentMetrics.likeCount}</span>
+                            </Button>
+
+                            <span className="inline-flex h-7 items-center gap-1 rounded-md px-2.5">
+                              <MessageCircle className="h-3.5 w-3.5" />
+                              {commentMetrics.replyCount}
+                            </span>
+
+                            <span className="inline-flex h-7 items-center gap-1 rounded-md px-2.5">
+                              <Repeat2 className="h-3.5 w-3.5" />
+                              {commentMetrics.repostCount}
+                            </span>
+
+                            <span className="inline-flex h-7 items-center gap-1 rounded-md px-2.5">
+                              <Eye className="h-3.5 w-3.5" />
+                              {commentMetrics.viewCount}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">
-                        {renderTextWithMentions(comment.text, (username) => navigate(`/user/${username}`), `detail-comment-${comment.id}`)}
-                      </p>
-                    </div>
-                  ))
+                    );
+                  })
                 ) : (
                   <p className="text-sm text-muted-foreground">Henüz yorum yapılmadı.</p>
                 )}
