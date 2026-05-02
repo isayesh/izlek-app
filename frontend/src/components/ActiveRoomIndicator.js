@@ -51,6 +51,7 @@ export default function ActiveRoomIndicator() {
       "/leaderboard",
       "/net-tracking",
       "/rooms",
+      "/forum",
     ].includes(location.pathname),
     [location.pathname]
   );
