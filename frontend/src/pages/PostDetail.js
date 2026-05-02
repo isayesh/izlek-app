@@ -325,12 +325,12 @@ export default function PostDetail() {
                 )}
 
                 {post.imagePreviewUrl && (
-                  <div className="overflow-hidden rounded-xl border border-border/70 bg-muted/20">
+                  <div className="overflow-hidden rounded-xl border border-border/70 bg-muted/20 p-2">
                     {!hasImageError ? (
                       <img
                         src={post.imagePreviewUrl}
                         alt="Paylaşım görseli"
-                        className="max-h-[500px] h-auto w-full object-contain"
+                        className="mx-auto max-h-[70vh] h-auto w-auto max-w-full object-contain"
                         onError={() =>
                           setImageLoadErrorByPost((prev) => ({
                             ...prev,

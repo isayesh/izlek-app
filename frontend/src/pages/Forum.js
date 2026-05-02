@@ -14,6 +14,7 @@ import {
   Trophy,
   User,
   Users,
+  X,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -138,6 +139,7 @@ export default function Forum() {
   const [composerText, setComposerText] = useState("");
   const [composerImage, setComposerImage] = useState(null);
   const [imageLoadErrorByPost, setImageLoadErrorByPost] = useState({});
+  const [previewImage, setPreviewImage] = useState(null);
   const [commentDrafts, setCommentDrafts] = useState({});
   const [expandedCommentsByPost, setExpandedCommentsByPost] = useState({});
   const [expandedShareByPost, setExpandedShareByPost] = useState({});
@@ -379,6 +381,17 @@ export default function Forum() {
     navigate(`/user/${username}`);
   };
 
+  const openImagePreview = (event, post) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!post?.imagePreviewUrl) return;
+
+    setPreviewImage({
+      src: post.imagePreviewUrl,
+      alt: "Paylaşım görseli",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground" data-testid="forum-page">
       <div className="px-4 pb-10 pt-4 sm:px-6 sm:pb-12 lg:px-10 xl:px-12">
@@ -565,7 +578,17 @@ export default function Forum() {
                           )}
 
                           {post.imagePreviewUrl && (
-                            <div className="h-[300px] overflow-hidden rounded-xl border border-border/70 bg-muted/20 sm:h-[380px] md:h-[440px]">
+                            <div
+                              role="button"
+                              tabIndex={0}
+                              onClick={(event) => openImagePreview(event, post)}
+                              onKeyDown={(event) => {
+                                if (event.key === "Enter" || event.key === " ") {
+                                  openImagePreview(event, post);
+                                }
+                              }}
+                              className="h-[300px] overflow-hidden rounded-xl border border-border/70 bg-muted/20 sm:h-[380px] md:h-[440px]"
+                            >
                               {!hasImageError ? (
                                 <img
                                   src={post.imagePreviewUrl}
@@ -847,6 +870,34 @@ export default function Forum() {
                         </Button>
                       </div>
                     </div>
+                  )}
+                </DialogContent>
+              </Dialog>
+
+              <Dialog
+                open={Boolean(previewImage)}
+                onOpenChange={(open) => {
+                  if (!open) {
+                    setPreviewImage(null);
+                  }
+                }}
+              >
+                <DialogContent className="w-auto max-w-none border-none bg-transparent p-0 shadow-none [&>button]:hidden">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewImage(null)}
+                    className="absolute right-3 top-3 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900/80 text-white hover:bg-slate-800"
+                    aria-label="Görsel önizlemesini kapat"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+
+                  {previewImage?.src && (
+                    <img
+                      src={previewImage.src}
+                      alt={previewImage.alt}
+                      className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
+                    />
                   )}
                 </DialogContent>
               </Dialog>
