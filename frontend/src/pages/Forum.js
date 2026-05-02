@@ -27,7 +27,6 @@ const FORUM_SEED_POSTS = [
     username: "merttaktik",
     content:
       "Derbide 4-2-3-1 yerine ikinci yarı 4-3-3'e dönüş kritik oldu. Orta sahada bir ekstra oyuncu kazanınca hem ikinci toplar hem de geçiş savunması toparlandı.",
-    topic: "Taktik",
     createdAt: minutesAgo(18),
     likeCount: 42,
     commentCount: 0,
@@ -54,7 +53,6 @@ const FORUM_SEED_POSTS = [
     username: "transferhatti",
     content:
       "Fenerbahçe'nin sol bek rotasyonu için iki isim daha gündeme girmiş. Biri tempolu çizgi oyuncusu, diğeri ise oyun kurulumunda daha güçlü bir profil.",
-    topic: "Transfer",
     createdAt: minutesAgo(54),
     likeCount: 65,
     commentCount: 0,
@@ -75,7 +73,6 @@ const FORUM_SEED_POSTS = [
     username: "kartaltribune",
     content:
       "Beşiktaş'ın genç oyunculara verdiği süre artarsa ligin ikinci yarısında çok daha atletik bir yapı görebiliriz. Rotasyon doğru yönetilirse tavan çok yüksek.",
-    topic: "Beşiktaş",
     createdAt: minutesAgo(96),
     likeCount: 38,
     commentCount: 0,
@@ -89,7 +86,6 @@ const FORUM_SEED_POSTS = [
     username: "aslan_gundem",
     content:
       "Galatasaray'da son haftalarda ön alan pres tetikleyicileri daha net. Forvetin gölge markajı ve 8 numaranın sıçraması rakibin çıkışını ciddi şekilde yavaşlattı.",
-    topic: "Galatasaray",
     createdAt: minutesAgo(140),
     likeCount: 71,
     commentCount: 0,
@@ -110,7 +106,6 @@ const FORUM_SEED_POSTS = [
     username: "anadolusc",
     content:
       "Bu hafta alt sıralar kadar Avrupa hattı da çok karışacak. İkili averaj hesapları devreye girince her puan altın değerinde.",
-    topic: null,
     createdAt: minutesAgo(215),
     likeCount: 24,
     commentCount: 0,
@@ -123,7 +118,16 @@ const FORUM_SEED_POSTS = [
   commentCount: post.comments.length,
 }));
 
-const TRENDING_TOPICS = ["#DerbiAnalizi", "#TransferGündemi", "#PresTetikleyicileri", "#GençOyuncu", "#LigYarışı"];
+const TOPIC_KEYWORDS = [
+  { topic: "TYT", keywords: ["tyt", "problem", "paragraf"] },
+  { topic: "AYT", keywords: ["ayt", "türev", "integral", "limit", "edebiyat"] },
+  { topic: "Deneme Analizi", keywords: ["deneme", "yanlış", "analiz", "net"] },
+  { topic: "Matematik", keywords: ["matematik", "geometri"] },
+  { topic: "Pomodoro", keywords: ["pomodoro", "mola", "odak"] },
+  { topic: "Çalışma Programı", keywords: ["program", "plan", "rutin"] },
+  { topic: "Motivasyon", keywords: ["motivasyon", "yoruldum", "bıktım", "stres"] },
+  { topic: "Soru Çözümü", keywords: ["soru", "çözüm", "test"] },
+];
 
 const SUGGESTED_DISCUSSIONS = [
   "Bu hafta en etkili orta saha kurgusu hangisiydi?",
@@ -177,6 +181,29 @@ export default function Forum() {
   const [shareFeedbackByPost, setShareFeedbackByPost] = useState({});
 
   const canSubmitPost = composerText.trim().length > 0;
+
+  const inferMainTopicFromText = (text = "") => {
+    const normalizedText = text.toLocaleLowerCase("tr-TR");
+    const matchedTopic = TOPIC_KEYWORDS.find(({ keywords }) =>
+      keywords.some((keyword) => normalizedText.includes(keyword))
+    );
+    return matchedTopic?.topic || "Genel";
+  };
+
+  const trendingTopics = useMemo(() => {
+    const topicCounts = posts.reduce((accumulator, post) => {
+      const topic = inferMainTopicFromText(post.content || "");
+      return {
+        ...accumulator,
+        [topic]: (accumulator[topic] || 0) + 1,
+      };
+    }, {});
+
+    return Object.entries(topicCounts)
+      .map(([topic, count]) => ({ topic, count }))
+      .sort((a, b) => b.count - a.count || a.topic.localeCompare(b.topic, "tr"))
+      .slice(0, 6);
+  }, [posts]);
 
   const navigationActions = useMemo(
     () => [
@@ -237,7 +264,6 @@ export default function Forum() {
       displayName: "Sen",
       username: "sen",
       content: composerText.trim(),
-      topic: null,
       createdAt: new Date().toISOString(),
       likeCount: 0,
       commentCount: 0,
@@ -464,7 +490,9 @@ export default function Forum() {
               </Card>
 
               <div className="space-y-4" data-testid="forum-feed-list">
-                {posts.map((post) => (
+                {posts.map((post) => {
+                  const inferredTopic = inferMainTopicFromText(post.content || "");
+                  return (
                   <Card
                     key={post.id}
                     className="overflow-hidden border-border/70 bg-card/95 transition-all duration-200 hover:border-indigo-200/90 hover:shadow-[0_18px_38px_-28px_rgba(79,70,229,0.4)]"
@@ -483,12 +511,10 @@ export default function Forum() {
                             <span className="text-muted-foreground">· {getRelativeTimeLabel(post.createdAt)}</span>
                           </div>
 
-                          {post.topic && (
-                            <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full border border-indigo-200/80 bg-indigo-50 px-2.5 py-1 text-[11px] font-semibold text-indigo-700">
-                              <Hash className="h-3 w-3" />
-                              {post.topic}
-                            </span>
-                          )}
+                          <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full border border-indigo-200/80 bg-indigo-50 px-2.5 py-1 text-[11px] font-semibold text-indigo-700">
+                            <Hash className="h-3 w-3" />
+                            #{inferredTopic}
+                          </span>
                         </div>
                       </div>
                     </CardHeader>
@@ -591,7 +617,8 @@ export default function Forum() {
                       )}
                     </CardContent>
                   </Card>
-                ))}
+                  );
+                })}
               </div>
             </main>
 
@@ -601,16 +628,19 @@ export default function Forum() {
                   <CardTitle className="text-base">Trend Konular</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2.5 pt-0">
-                  {TRENDING_TOPICS.map((topic) => (
-                    <button
-                      type="button"
-                      key={topic}
-                      className="flex w-full items-center justify-between rounded-lg border border-transparent bg-transparent px-2.5 py-2 text-left text-sm text-slate-700 transition-colors duration-200 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
-                    >
-                      <span>{topic}</span>
-                      <span className="text-xs text-muted-foreground">Trend</span>
-                    </button>
-                  ))}
+                  {trendingTopics.length > 0 ? (
+                    trendingTopics.map(({ topic, count }) => (
+                      <button
+                        type="button"
+                        key={`${topic}-${count}`}
+                        className="flex w-full items-center justify-between rounded-lg border border-transparent bg-transparent px-2.5 py-2 text-left text-sm text-slate-700 transition-colors duration-200 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
+                      >
+                        <span>{`#${topic} · ${count} gönderi`}</span>
+                      </button>
+                    ))
+                  ) : (
+                    <p className="px-2.5 py-2 text-sm text-muted-foreground">Henüz trend konusu oluşmadı.</p>
+                  )}
                 </CardContent>
               </Card>
 
