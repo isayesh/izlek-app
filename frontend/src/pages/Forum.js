@@ -180,7 +180,7 @@ export default function Forum() {
   const activeProfileStats = activeProfile ? getForumUserStats(activeProfile.username) : null;
   const isActiveProfileFollowing = activeProfile ? isForumFollowing(activeProfile.username) : false;
 
-  const canSubmitPost = composerText.trim().length > 0;
+  const canSubmitPost = composerText.trim().length > 0 || Boolean(composerImage?.previewUrl);
 
   const inferMainTopicFromText = (text = "") => {
     const normalizedText = text.toLocaleLowerCase("tr-TR");
@@ -570,7 +570,7 @@ export default function Forum() {
                                 <img
                                   src={post.imagePreviewUrl}
                                   alt="Paylaşım görseli"
-                                  className="max-h-[420px] w-full object-contain"
+                                  className="max-h-[500px] h-auto w-full object-contain"
                                   onError={() =>
                                     setImageLoadErrorByPost((prev) => ({
                                       ...prev,

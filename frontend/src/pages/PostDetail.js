@@ -330,7 +330,7 @@ export default function PostDetail() {
                       <img
                         src={post.imagePreviewUrl}
                         alt="Paylaşım görseli"
-                        className="max-h-[420px] w-full object-contain"
+                        className="max-h-[500px] h-auto w-full object-contain"
                         onError={() =>
                           setImageLoadErrorByPost((prev) => ({
                             ...prev,

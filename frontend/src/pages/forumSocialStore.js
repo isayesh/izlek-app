@@ -330,7 +330,9 @@ export const createForumPost = ({
   imagePreviewUrl = "",
 }) => {
   const trimmedContent = content.trim();
-  if (!trimmedContent) return null;
+  const hasImage = Boolean(imagePreviewUrl);
+
+  if (!trimmedContent && !hasImage) return null;
 
   const nextPost = {
     id: `post-${Date.now()}`,
