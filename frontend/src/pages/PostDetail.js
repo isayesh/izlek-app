@@ -113,6 +113,7 @@ export default function PostDetail() {
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const [imageLoadErrorByPost, setImageLoadErrorByPost] = useState({});
   const currentUserProfile = getForumUserProfile("sen");
+  const currentViewerUsername = currentUserProfile.username;
 
   useEffect(() => {
     const unsubscribeFeed = subscribeForumFeedStore(() => {
@@ -320,7 +321,7 @@ export default function PostDetail() {
               <CardContent className="space-y-4 p-4 pt-1 sm:p-5 sm:pt-1">
                 {isPureRepost && (
                   <p className="text-xs font-semibold text-muted-foreground">
-                    {post.username === "sen" ? "Sen yeniden paylaştın" : `${post.displayName} yeniden paylaştı`}
+                    {post.username === currentViewerUsername ? "Sen yeniden paylaştın" : `${post.displayName} yeniden paylaştı`}
                   </p>
                 )}
 

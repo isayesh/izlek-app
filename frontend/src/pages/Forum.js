@@ -177,6 +177,7 @@ export default function Forum() {
 
   const activeProfile = activeProfileUsername ? getForumUserProfile(activeProfileUsername) : null;
   const currentUserProfile = getForumUserProfile("sen");
+  const currentViewerUsername = currentUserProfile.username;
   const activeProfileStats = activeProfile ? getForumUserStats(activeProfile.username) : null;
   const isActiveProfileFollowing = activeProfile ? isForumFollowing(activeProfile.username) : false;
 
@@ -572,7 +573,7 @@ export default function Forum() {
                         >
                           {isPureRepost && (
                             <p className="text-xs font-semibold text-muted-foreground">
-                              {post.username === "sen" ? "Sen yeniden paylaştın" : `${post.displayName} yeniden paylaştı`}
+                              {post.username === currentViewerUsername ? "Sen yeniden paylaştın" : `${post.displayName} yeniden paylaştı`}
                             </p>
                           )}
 
