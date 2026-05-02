@@ -22,6 +22,7 @@ import {
   createForumSharePost,
   extractForumMentions,
   getForumFeedPosts,
+  getForumPostById,
   incrementForumPostView,
   subscribeForumFeedStore,
   toggleForumPostLike,
@@ -124,7 +125,7 @@ export default function PostDetail() {
   );
 
   const post = postMap[id] || null;
-  const sourcePost = post?.sharedFromPostId ? postMap[post.sharedFromPostId] : null;
+  const sourcePost = post?.sharedFromPostId ? getForumPostById(post.sharedFromPostId) : null;
   const isPureRepost = Boolean(post?.sharedFromPostId) && !(post?.content || "").trim();
   const hasImageError = Boolean(imageLoadErrorByPost[post?.id || ""]);
 
@@ -347,18 +348,73 @@ export default function PostDetail() {
                   </div>
                 )}
 
-                {post.sharedFromPostId && (
-                  <div className="rounded-xl border border-border/70 bg-background/80 p-3">
-                    {sourcePost ? (
-                      <>
-                        <p className="text-xs font-semibold text-muted-foreground">@{sourcePost.username} paylaşımından alıntı</p>
-                        <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">
-                          {renderTextWithMentions(sourcePost.content, (username) => navigate(`/user/${username}`), `detail-source-${sourcePost.id}`)}
-                        </p>
-                      </>
-                    ) : (
-                      <p className="text-xs text-muted-foreground">Orijinal paylaşım artık mevcut değil.</p>
-                    )}
+                {post.sharedFromPostId && sourcePost && (
+                  <div className="rounded-xl border border-border/70 bg-slate-50/70 p-3 dark:bg-slate-900/25">
+                    <div className="flex items-start gap-2.5">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-700 to-slate-900 text-xs font-semibold text-white">
+                        {getInitials(sourcePost.displayName)}
+                      </div>
+
+                      <div className="min-w-0 flex-1 space-y-2">
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm">
+                          <span className="font-semibold text-foreground">{sourcePost.displayName}</span>
+                          <span className="text-muted-foreground">@{sourcePost.username}</span>
+                          <span className="text-muted-foreground">· {getRelativeTimeLabel(sourcePost.createdAt)}</span>
+                        </div>
+
+                        {sourcePost.content && (
+                          <p className="whitespace-pre-wrap text-sm leading-6 text-slate-700">
+                            {renderTextWithMentions(
+                              sourcePost.content,
+                              (username) => navigate(`/user/${username}`),
+                              `detail-source-${sourcePost.id}`
+                            )}
+                          </p>
+                        )}
+
+                        {sourcePost.imagePreviewUrl && (
+                          <div className="overflow-hidden rounded-lg border border-border/70 bg-muted/20">
+                            {!imageLoadErrorByPost[sourcePost.id] ? (
+                              <img
+                                src={sourcePost.imagePreviewUrl}
+                                alt="Paylaşım görseli"
+                                className="mx-auto max-h-[65vh] h-auto w-auto max-w-full object-contain"
+                                onError={() =>
+                                  setImageLoadErrorByPost((prev) => ({
+                                    ...prev,
+                                    [sourcePost.id]: true,
+                                  }))
+                                }
+                              />
+                            ) : (
+                              <div className="flex h-52 w-full items-center justify-center gap-2 text-sm text-muted-foreground">
+                                <ImageOff className="h-4 w-4" />
+                                <span>Görsel önizlemesi yüklenemedi</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                          <span className="inline-flex items-center gap-1">
+                            <Heart className="h-3.5 w-3.5" />
+                            {sourcePost.likeCount || 0}
+                          </span>
+                          <span className="inline-flex items-center gap-1">
+                            <MessageCircle className="h-3.5 w-3.5" />
+                            {sourcePost.commentCount || 0}
+                          </span>
+                          <span className="inline-flex items-center gap-1">
+                            <Repeat2 className="h-3.5 w-3.5" />
+                            {sourcePost.shareCount || 0}
+                          </span>
+                          <span className="inline-flex items-center gap-1">
+                            <Eye className="h-3.5 w-3.5" />
+                            {sourcePost.viewCount || 0}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
 
