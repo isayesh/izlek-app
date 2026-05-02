@@ -43,14 +43,15 @@ const TOPIC_KEYWORDS = [
 ];
 
 const SUGGESTED_DISCUSSIONS = [
-  "Bu hafta en etkili orta saha kurgusu hangisiydi?",
-  "3'lü savunma mı 4'lü savunma mı: Süper Lig'e hangisi daha uygun?",
-  "Yaz transfer döneminde en kritik ihtiyaç hangi bölge?",
+  "TYT matematikte problem hızını nasıl artırıyorsunuz?",
+  "Denemeden sonra yanlış analizi nasıl yapılmalı?",
+  "Günde kaç saat çalışmak sürdürülebilir?",
+  "Paragraf netlerini artırmak için ne yapıyorsunuz?",
 ];
 
 const COMMUNITY_RULES = [
   "Saygılı dil kullan, kişisel saldırıdan kaçın.",
-  "Kaynaklı haber paylaş, manipülatif başlık açma.",
+  "Deneme ve kaynak önerilerinde yapıcı ve açıklayıcı ol.",
   "Spam ve aynı içeriği tekrarlamaktan kaçın.",
 ];
 
@@ -312,7 +313,7 @@ export default function Forum() {
               <section className="space-y-2 px-1">
                 <h1 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Forum</h1>
                 <p className="max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-                  İzlek topluluğunun futbol sohbetleri, maç analizleri ve gündem başlıkları burada.
+                  İzlek topluluğunun ders çalışma, net takibi ve sınav hazırlığı paylaşımları burada.
                 </p>
               </section>
 
