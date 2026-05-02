@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   BarChart3,
+  Eye,
   Hash,
   Heart,
   Home,
@@ -21,9 +22,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import {
   addForumPostComment,
   createForumPost,
+  createForumSharePost,
   getForumFeedPosts,
   getForumUserProfile,
   getForumUserStats,
+  incrementForumPostView,
   isForumFollowing,
   subscribeForumFeedStore,
   subscribeForumFollowStore,
@@ -55,6 +58,8 @@ const COMMUNITY_RULES = [
   "Spam ve aynı içeriği tekrarlamaktan kaçın.",
 ];
 
+const MENTION_REGEX = /@([a-zA-Z0-9_]+)/g;
+
 const getInitials = (name = "") =>
   name
     .split(" ")
@@ -83,17 +88,59 @@ const getRelativeTimeLabel = (isoString) => {
   return `${days} g`;
 };
 
+const renderTextWithMentions = (text = "", onMentionClick, keyPrefix = "mention") => {
+  const elements = [];
+  let cursor = 0;
+  let mentionIndex = 0;
+  let match;
+
+  while ((match = MENTION_REGEX.exec(text)) !== null) {
+    const [fullMatch, username] = match;
+    const matchStart = match.index;
+
+    if (matchStart > cursor) {
+      elements.push(text.slice(cursor, matchStart));
+    }
+
+    elements.push(
+      <button
+        key={`${keyPrefix}-${username}-${mentionIndex}`}
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+          onMentionClick(username);
+        }}
+        className="font-semibold text-indigo-600 hover:text-indigo-700"
+      >
+        {fullMatch}
+      </button>
+    );
+
+    cursor = matchStart + fullMatch.length;
+    mentionIndex += 1;
+  }
+
+  if (cursor < text.length) {
+    elements.push(text.slice(cursor));
+  }
+
+  MENTION_REGEX.lastIndex = 0;
+  return elements;
+};
+
 export default function Forum() {
   const navigate = useNavigate();
   const location = useLocation();
   const imageInputRef = useRef(null);
+  const renderedPostIdsRef = useRef(new Set());
 
   const [posts, setPosts] = useState(() => getForumFeedPosts());
   const [composerText, setComposerText] = useState("");
   const [composerImage, setComposerImage] = useState(null);
   const [commentDrafts, setCommentDrafts] = useState({});
   const [expandedCommentsByPost, setExpandedCommentsByPost] = useState({});
-  const [shareFeedbackByPost, setShareFeedbackByPost] = useState({});
+  const [expandedShareByPost, setExpandedShareByPost] = useState({});
+  const [shareDraftsByPost, setShareDraftsByPost] = useState({});
   const [activeProfileUsername, setActiveProfileUsername] = useState("");
   const [, setFollowStoreVersion] = useState(0);
 
@@ -112,6 +159,20 @@ export default function Forum() {
 
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    posts.forEach((post) => {
+      if (!renderedPostIdsRef.current.has(post.id)) {
+        renderedPostIdsRef.current.add(post.id);
+        incrementForumPostView(post.id);
+      }
+    });
+  }, [posts]);
+
+  const postMap = useMemo(
+    () => Object.fromEntries(posts.map((post) => [post.id, post])),
+    [posts]
+  );
 
   const activeProfile = activeProfileUsername ? getForumUserProfile(activeProfileUsername) : null;
   const activeProfileStats = activeProfile ? getForumUserStats(activeProfile.username) : null;
@@ -173,6 +234,7 @@ export default function Forum() {
       }
       return null;
     });
+
     if (imageInputRef.current) {
       imageInputRef.current.value = "";
     }
@@ -185,6 +247,7 @@ export default function Forum() {
       }
       return null;
     });
+
     if (imageInputRef.current) {
       imageInputRef.current.value = "";
     }
@@ -221,10 +284,6 @@ export default function Forum() {
     });
   };
 
-  const toggleLike = (postId) => {
-    toggleForumPostLike(postId);
-  };
-
   const toggleCommentArea = (postId) => {
     setExpandedCommentsByPost((prevState) => ({
       ...prevState,
@@ -248,23 +307,34 @@ export default function Forum() {
     }));
   };
 
-  const handleShare = async (postId) => {
-    const targetPost = posts.find((post) => post.id === postId);
-    if (!targetPost) return;
+  const toggleShareComposer = (postId) => {
+    setExpandedShareByPost((prev) => ({
+      ...prev,
+      [postId]: !prev[postId],
+    }));
+  };
 
-    try {
-      if (navigator?.clipboard?.writeText) {
-        await navigator.clipboard.writeText(`@${targetPost.username}: ${targetPost.content}`);
-      }
-    } catch {
-      // no-op: visual feedback below still works even if clipboard is blocked
-    }
+  const submitShare = (postId) => {
+    createForumSharePost({
+      postId,
+      quoteText: shareDraftsByPost[postId] || "",
+      displayName: "Sen",
+      username: "sen",
+    });
 
-    setShareFeedbackByPost((prev) => ({ ...prev, [postId]: true }));
+    setExpandedShareByPost((prev) => ({
+      ...prev,
+      [postId]: false,
+    }));
 
-    window.setTimeout(() => {
-      setShareFeedbackByPost((prev) => ({ ...prev, [postId]: false }));
-    }, 1300);
+    setShareDraftsByPost((prev) => ({
+      ...prev,
+      [postId]: "",
+    }));
+  };
+
+  const handleMentionNavigation = (username) => {
+    navigate(`/user/${username}`);
   };
 
   return (
@@ -287,6 +357,7 @@ export default function Forum() {
                 {navigationActions.map((action) => {
                   const Icon = action.icon;
                   const isActive = (navActivePaths[action.label] || []).includes(location.pathname);
+
                   return (
                     <Button
                       key={action.label}
@@ -390,137 +461,227 @@ export default function Forum() {
                 {posts.map((post) => {
                   const inferredTopic = inferMainTopicFromText(post.content || "");
                   const authorProfile = getForumUserProfile(post.username, post.displayName);
+                  const sourcePost = post.sharedFromPostId ? postMap[post.sharedFromPostId] : null;
+                  const hasCommentsExpanded = Boolean(expandedCommentsByPost[post.id]);
+                  const hasShareExpanded = Boolean(expandedShareByPost[post.id]);
+
                   return (
                     <Card
-                    key={post.id}
-                    className="overflow-hidden border-border/70 bg-card/95 transition-all duration-200 hover:border-indigo-200/90 hover:shadow-[0_18px_38px_-28px_rgba(79,70,229,0.4)]"
-                    data-testid={`forum-post-${post.id}`}
-                  >
-                    <CardHeader className="space-y-3 p-4 pb-2 sm:p-5 sm:pb-2">
-                      <div className="flex items-start gap-3">
+                      key={post.id}
+                      className="overflow-hidden border-border/70 bg-card/95 transition-all duration-200 hover:border-indigo-200/90 hover:shadow-[0_18px_38px_-28px_rgba(79,70,229,0.4)]"
+                      data-testid={`forum-post-${post.id}`}
+                    >
+                      <CardHeader className="space-y-3 p-4 pb-2 sm:p-5 sm:pb-2">
+                        <div className="flex items-start gap-3">
+                          <button
+                            type="button"
+                            onClick={() => setActiveProfileUsername(authorProfile.username)}
+                            className="group flex min-w-0 flex-1 items-start gap-3 text-left"
+                          >
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-700 to-slate-900 text-sm font-semibold text-white transition-transform duration-200 group-hover:scale-[1.03]">
+                              {getInitials(authorProfile.displayName)}
+                            </div>
+
+                            <div className="min-w-0 flex-1">
+                              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+                                <span className="font-semibold text-foreground transition-colors duration-200 group-hover:text-indigo-700">
+                                  {authorProfile.displayName}
+                                </span>
+                                <span className="text-muted-foreground">@{authorProfile.username}</span>
+                                <span className="text-muted-foreground">· {getRelativeTimeLabel(post.createdAt)}</span>
+                              </div>
+
+                              <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full border border-indigo-200/80 bg-indigo-50 px-2.5 py-1 text-[11px] font-semibold text-indigo-700">
+                                <Hash className="h-3 w-3" />
+                                #{inferredTopic}
+                              </span>
+                            </div>
+                          </button>
+                        </div>
+                      </CardHeader>
+
+                      <CardContent className="space-y-4 p-4 pt-1 sm:p-5 sm:pt-1">
                         <button
                           type="button"
-                          onClick={() => setActiveProfileUsername(authorProfile.username)}
-                          className="group flex min-w-0 flex-1 items-start gap-3 text-left"
+                          onClick={() => navigate(`/post/${post.id}`)}
+                          className="w-full space-y-3 text-left"
+                          data-testid={`forum-post-open-${post.id}`}
                         >
-                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-700 to-slate-900 text-sm font-semibold text-white transition-transform duration-200 group-hover:scale-[1.03]">
-                            {getInitials(authorProfile.displayName)}
-                          </div>
-
-                          <div className="min-w-0 flex-1">
-                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-                              <span className="font-semibold text-foreground transition-colors duration-200 group-hover:text-indigo-700">{authorProfile.displayName}</span>
-                              <span className="text-muted-foreground">@{authorProfile.username}</span>
-                              <span className="text-muted-foreground">· {getRelativeTimeLabel(post.createdAt)}</span>
-                            </div>
-
-                            <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full border border-indigo-200/80 bg-indigo-50 px-2.5 py-1 text-[11px] font-semibold text-indigo-700">
-                              <Hash className="h-3 w-3" />
-                              #{inferredTopic}
-                            </span>
-                          </div>
-                        </button>
-                      </div>
-                    </CardHeader>
-
-                    <CardContent className="space-y-4 p-4 pt-1 sm:p-5 sm:pt-1">
-                      <p className="whitespace-pre-wrap text-sm leading-6 text-slate-700 sm:text-[15px]">{post.content}</p>
-
-                      {post.imagePreviewUrl && (
-                        <div className="overflow-hidden rounded-xl border border-border/70 bg-muted/30">
-                          <img src={post.imagePreviewUrl} alt={post.imageName || "paylaşım görseli"} className="h-auto w-full object-cover" />
-                        </div>
-                      )}
-
-                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => toggleLike(post.id)}
-                          className={`h-9 rounded-lg border px-3 text-xs sm:text-sm ${
-                            post.liked
-                              ? "border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100"
-                              : "border-transparent text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
-                          }`}
-                          data-testid={`forum-like-button-${post.id}`}
-                        >
-                          <Heart className={`h-4 w-4 ${post.liked ? "fill-current" : ""}`} />
-                          {post.likeCount}
-                        </Button>
-
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => toggleCommentArea(post.id)}
-                          className="h-9 rounded-lg border border-transparent px-3 text-xs text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 sm:text-sm"
-                          data-testid={`forum-comment-button-${post.id}`}
-                        >
-                          <MessageCircle className="h-4 w-4" />
-                          {post.commentCount}
-                        </Button>
-
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleShare(post.id)}
-                          className="h-9 rounded-lg border border-transparent px-3 text-xs text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 sm:text-sm"
-                          data-testid={`forum-share-button-${post.id}`}
-                        >
-                          <Repeat2 className="h-4 w-4" />
-                          {shareFeedbackByPost[post.id] ? "Paylaşıldı" : "Paylaş"}
-                        </Button>
-                      </div>
-
-                      {expandedCommentsByPost[post.id] && (
-                        <div className="space-y-3 rounded-xl border border-border/70 bg-muted/20 p-3 sm:p-4">
-                          {post.comments.length > 0 ? (
-                            <div className="space-y-2.5">
-                              {post.comments.map((comment) => (
-                                <div key={comment.id} className="rounded-lg border border-border/60 bg-background/90 px-3 py-2">
-                                  <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                                    <span className="font-semibold text-foreground">@{comment.author}</span>
-                                    <span>· {getRelativeTimeLabel(comment.createdAt)}</span>
-                                  </div>
-                                  <p className="mt-1 text-sm text-slate-700">{comment.text}</p>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <p className="text-xs text-muted-foreground">Henüz yorum yok. İlk yorumu sen yap.</p>
+                          {post.content && (
+                            <p className="whitespace-pre-wrap text-sm leading-6 text-slate-700 sm:text-[15px]">
+                              {renderTextWithMentions(post.content, handleMentionNavigation, `post-${post.id}`)}
+                            </p>
                           )}
 
-                          <div className="flex flex-col gap-2 sm:flex-row">
-                            <input
-                              type="text"
-                              value={commentDrafts[post.id] || ""}
+                          {post.imagePreviewUrl && (
+                            <div className="overflow-hidden rounded-xl border border-border/70 bg-muted/30">
+                              <img
+                                src={post.imagePreviewUrl}
+                                alt={post.imageName || "paylaşım görseli"}
+                                className="h-auto w-full object-cover"
+                              />
+                            </div>
+                          )}
+
+                          {post.sharedFromPostId && (
+                            <div className="rounded-xl border border-border/70 bg-background/80 p-3">
+                              {sourcePost ? (
+                                <>
+                                  <p className="text-xs font-semibold text-muted-foreground">
+                                    @{sourcePost.username} paylaşımından alıntı
+                                  </p>
+                                  <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">
+                                    {renderTextWithMentions(sourcePost.content, handleMentionNavigation, `shared-${post.id}`)}
+                                  </p>
+                                </>
+                              ) : (
+                                <p className="text-xs text-muted-foreground">Orijinal paylaşım artık mevcut değil.</p>
+                              )}
+                            </div>
+                          )}
+                        </button>
+
+                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleForumPostLike(post.id)}
+                            className={`h-9 rounded-lg border px-3 text-xs sm:text-sm ${
+                              post.liked
+                                ? "border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100"
+                                : "border-transparent text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
+                            }`}
+                            data-testid={`forum-like-button-${post.id}`}
+                          >
+                            <Heart className={`h-4 w-4 ${post.liked ? "fill-current" : ""}`} />
+                            <span>{post.likeCount}</span>
+                          </Button>
+
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleCommentArea(post.id)}
+                            className="h-9 rounded-lg border border-transparent px-3 text-xs text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 sm:text-sm"
+                            data-testid={`forum-comment-button-${post.id}`}
+                          >
+                            <MessageCircle className="h-4 w-4" />
+                            <span>{post.commentCount}</span>
+                          </Button>
+
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleShareComposer(post.id)}
+                            className="h-9 rounded-lg border border-transparent px-3 text-xs text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 sm:text-sm"
+                            data-testid={`forum-share-button-${post.id}`}
+                          >
+                            <Repeat2 className="h-4 w-4" />
+                            <span>{post.shareCount || 0}</span>
+                          </Button>
+
+                          <div className="inline-flex h-9 items-center gap-2 rounded-lg border border-transparent px-3 text-xs text-slate-500 sm:text-sm">
+                            <Eye className="h-4 w-4" />
+                            <span>{post.viewCount || 0}</span>
+                          </div>
+                        </div>
+
+                        {hasShareExpanded && (
+                          <div className="space-y-2 rounded-xl border border-border/70 bg-muted/20 p-3 sm:p-4">
+                            <textarea
+                              value={shareDraftsByPost[post.id] || ""}
                               onChange={(event) =>
-                                setCommentDrafts((prev) => ({
+                                setShareDraftsByPost((prev) => ({
                                   ...prev,
                                   [post.id]: event.target.value,
                                 }))
                               }
-                              placeholder="Yorumunu yaz..."
-                              className="h-10 flex-1 rounded-lg border border-border/80 bg-background px-3 text-sm outline-none transition-colors duration-200 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200/70"
-                              data-testid={`forum-comment-input-${post.id}`}
+                              placeholder="Paylaşımına not ekle (opsiyonel)"
+                              rows={2}
+                              className="w-full resize-none rounded-lg border border-border/80 bg-background px-3 py-2 text-sm outline-none transition-colors duration-200 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200/70"
                             />
-                            <Button
-                              type="button"
-                              size="sm"
-                              onClick={() => submitComment(post.id)}
-                              disabled={!(commentDrafts[post.id] || "").trim()}
-                              className="h-10 rounded-lg bg-indigo-600 px-4 text-white hover:bg-indigo-700"
-                              data-testid={`forum-comment-submit-${post.id}`}
-                            >
-                              Gönder
-                            </Button>
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                className="h-9 rounded-lg px-3"
+                                onClick={() =>
+                                  setExpandedShareByPost((prev) => ({
+                                    ...prev,
+                                    [post.id]: false,
+                                  }))
+                                }
+                              >
+                                Vazgeç
+                              </Button>
+                              <Button
+                                type="button"
+                                className="h-9 rounded-lg bg-indigo-600 px-4 text-white hover:bg-indigo-700"
+                                onClick={() => submitShare(post.id)}
+                              >
+                                Paylaşımı alıntıla
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                        )}
+
+                        {hasCommentsExpanded && (
+                          <div className="space-y-3 rounded-xl border border-border/70 bg-muted/20 p-3 sm:p-4">
+                            {post.comments.length > 0 ? (
+                              <div className="space-y-2.5">
+                                {post.comments.map((comment) => (
+                                  <div key={comment.id} className="rounded-lg border border-border/60 bg-background/90 px-3 py-2">
+                                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                                      <button
+                                        type="button"
+                                        className="font-semibold text-foreground hover:text-indigo-700"
+                                        onClick={() => navigate(`/user/${comment.author}`)}
+                                      >
+                                        @{comment.author}
+                                      </button>
+                                      <span>· {getRelativeTimeLabel(comment.createdAt)}</span>
+                                    </div>
+                                    <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">
+                                      {renderTextWithMentions(comment.text, handleMentionNavigation, `comment-${comment.id}`)}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-xs text-muted-foreground">Henüz yorum yok. İlk yorumu sen yap.</p>
+                            )}
+
+                            <div className="flex flex-col gap-2 sm:flex-row">
+                              <input
+                                type="text"
+                                value={commentDrafts[post.id] || ""}
+                                onChange={(event) =>
+                                  setCommentDrafts((prev) => ({
+                                    ...prev,
+                                    [post.id]: event.target.value,
+                                  }))
+                                }
+                                placeholder="Yorumunu yaz..."
+                                className="h-10 flex-1 rounded-lg border border-border/80 bg-background px-3 text-sm outline-none transition-colors duration-200 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200/70"
+                                data-testid={`forum-comment-input-${post.id}`}
+                              />
+                              <Button
+                                type="button"
+                                size="sm"
+                                onClick={() => submitComment(post.id)}
+                                disabled={!(commentDrafts[post.id] || "").trim()}
+                                className="h-10 rounded-lg bg-indigo-600 px-4 text-white hover:bg-indigo-700"
+                                data-testid={`forum-comment-submit-${post.id}`}
+                              >
+                                Gönder
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
                   );
                 })}
               </div>

@@ -1,5 +1,7 @@
 const minutesAgo = (minutes) => new Date(Date.now() - minutes * 60 * 1000).toISOString();
 
+const FORUM_MENTION_REGEX = /@([a-zA-Z0-9_]+)/g;
+
 const FORUM_USERS = {
   sen: {
     displayName: "Sen",
@@ -155,92 +157,107 @@ const initialForumFeedPosts = [
     displayName: "Mert Analiz",
     username: "merttaktik",
     content:
-      "Derbide 4-2-3-1 yerine ikinci yarı 4-3-3'e dönüş kritik oldu. Orta sahada bir ekstra oyuncu kazanınca hem ikinci toplar hem de geçiş savunması toparlandı.",
+      "Bugün TYT problem setinde süreyi 52 dakikadan 43 dakikaya indirdim. Önce kolay soruları temizlemek gerçekten işe yarıyor.",
     createdAt: minutesAgo(18),
     likeCount: 42,
+    shareCount: 6,
+    viewCount: 183,
     liked: false,
     comments: [
       {
         id: "seed-1-comment-1",
-        author: "oyunkurucu10",
-        text: "Kesinlikle, özellikle 60'tan sonra merkezde üstünlük netti.",
+        author: "denemeperisi",
+        text: "Aynı yöntemi denedim, özellikle son 10 soruda hız çok fark ediyor.",
         createdAt: minutesAgo(11),
       },
       {
         id: "seed-1-comment-2",
-        author: "savunmaci5",
-        text: "Beklerin içe kat etmesi de pas açılarını çok artırdı.",
+        author: "sen",
+        text: "@merttaktik bunu yarın denememde uygulayacağım, teşekkürler.",
         createdAt: minutesAgo(7),
       },
     ],
     imageName: "",
     imagePreviewUrl: "",
+    sharedFromPostId: null,
   },
   {
     id: "seed-2",
-    displayName: "Transfer Radarı",
-    username: "transferhatti",
+    displayName: "Aslan Gündem",
+    username: "aslan_gundem",
     content:
-      "Fenerbahçe'nin sol bek rotasyonu için iki isim daha gündeme girmiş. Biri tempolu çizgi oyuncusu, diğeri ise oyun kurulumunda daha güçlü bir profil.",
+      "Denemeden sonra yanlış analizi için 3 sütunlu tablo yapıyorum: konu, hata nedeni, tekrar planı. En verimli yöntem bu oldu.",
     createdAt: minutesAgo(54),
     likeCount: 65,
+    shareCount: 8,
+    viewCount: 229,
     liked: false,
     comments: [
       {
         id: "seed-2-comment-1",
-        author: "sari_lacivertli",
-        text: "Top ayağında sakin bir bek daha mantıklı olur gibi.",
+        author: "paragrafci",
+        text: "Hata nedeni sütunu çok kritik, ben de benzer format kullanıyorum.",
         createdAt: minutesAgo(42),
       },
     ],
     imageName: "",
     imagePreviewUrl: "",
+    sharedFromPostId: null,
   },
   {
     id: "seed-3",
-    displayName: "Kartal Tribune",
-    username: "kartaltribune",
+    displayName: "Paragrafçı",
+    username: "paragrafci",
     content:
-      "Beşiktaş'ın genç oyunculara verdiği süre artarsa ligin ikinci yarısında çok daha atletik bir yapı görebiliriz. Rotasyon doğru yönetilirse tavan çok yüksek.",
+      "Paragraf netini artırmak isteyenlere: her gün 40 soru + 20 dakikalık süre tutma. 2 haftada farkı net görüyorsun.",
     createdAt: minutesAgo(96),
     likeCount: 38,
+    shareCount: 4,
+    viewCount: 164,
     liked: false,
     comments: [],
     imageName: "",
     imagePreviewUrl: "",
+    sharedFromPostId: null,
   },
   {
     id: "seed-4",
-    displayName: "Aslan Gündem",
-    username: "aslan_gundem",
+    displayName: "Anadolu Scout",
+    username: "anadolusc",
     content:
-      "Galatasaray'da son haftalarda ön alan pres tetikleyicileri daha net. Forvetin gölge markajı ve 8 numaranın sıçraması rakibin çıkışını ciddi şekilde yavaşlattı.",
+      "Haftalık çalışma planını pazar akşamı hazırlayıp her gün sadece o günün görevlerine odaklanıyorum. Dikkat dağınıklığı ciddi azalıyor.",
     createdAt: minutesAgo(140),
     likeCount: 71,
+    shareCount: 10,
+    viewCount: 261,
     liked: false,
     comments: [
       {
         id: "seed-4-comment-1",
-        author: "pas_oyunu",
-        text: "Özellikle iç sahada rakipler rahat çıkamıyor, çok doğru tespit.",
+        author: "sen",
+        text: "@anadolusc görevleri saat bazlı mı yazıyorsun, yoksa konu bazlı mı?",
         createdAt: minutesAgo(112),
       },
     ],
     imageName: "",
     imagePreviewUrl: "",
+    sharedFromPostId: null,
   },
   {
     id: "seed-5",
-    displayName: "Anadolu Scout",
-    username: "anadolusc",
+    displayName: "Transfer Radarı",
+    username: "transferhatti",
     content:
-      "Bu hafta alt sıralar kadar Avrupa hattı da çok karışacak. İkili averaj hesapları devreye girince her puan altın değerinde.",
+      "AYT edebiyat tekrarında konu kartı + mini test kombinasyonu bende çok iyi çalıştı. Unuttuğum başlıklar daha hızlı geri geliyor.",
     createdAt: minutesAgo(215),
     likeCount: 24,
+    shareCount: 2,
+    viewCount: 119,
     liked: false,
     comments: [],
     imageName: "",
     imagePreviewUrl: "",
+    sharedFromPostId: null,
   },
 ].map((post) => ({
   ...post,
@@ -254,10 +271,21 @@ const notifyFollowListeners = () => {
   followListeners.forEach((listener) => listener());
 };
 
+const notifyForumFeedListeners = () => {
+  forumFeedListeners.forEach((listener) => listener());
+};
+
 export const subscribeForumFollowStore = (listener) => {
   followListeners.add(listener);
   return () => {
     followListeners.delete(listener);
+  };
+};
+
+export const subscribeForumFeedStore = (listener) => {
+  forumFeedListeners.add(listener);
+  return () => {
+    forumFeedListeners.delete(listener);
   };
 };
 
@@ -285,22 +313,14 @@ export const toggleForumFollow = (username = "") => {
   return nextFollowing;
 };
 
-const notifyForumFeedListeners = () => {
-  forumFeedListeners.forEach((listener) => listener());
-};
-
-export const subscribeForumFeedStore = (listener) => {
-  forumFeedListeners.add(listener);
-  return () => {
-    forumFeedListeners.delete(listener);
-  };
-};
-
 export const getForumFeedPosts = () =>
   forumFeedPosts.map((post) => ({
     ...post,
     comments: [...(post.comments || [])],
   }));
+
+export const getForumPostById = (postId = "") =>
+  getForumFeedPosts().find((post) => post.id === postId) || null;
 
 export const createForumPost = ({
   displayName = "Sen",
@@ -319,16 +339,74 @@ export const createForumPost = ({
     content: trimmedContent,
     createdAt: new Date().toISOString(),
     likeCount: 0,
+    shareCount: 0,
+    viewCount: 0,
     liked: false,
     comments: [],
     commentCount: 0,
     imageName,
     imagePreviewUrl,
+    sharedFromPostId: null,
   };
 
   forumFeedPosts = [nextPost, ...forumFeedPosts];
   notifyForumFeedListeners();
   return nextPost;
+};
+
+export const createForumSharePost = ({
+  postId = "",
+  quoteText = "",
+  displayName = "Sen",
+  username = "sen",
+}) => {
+  const sourcePost = forumFeedPosts.find((post) => post.id === postId);
+  if (!sourcePost) return null;
+
+  forumFeedPosts = forumFeedPosts.map((post) =>
+    post.id === postId
+      ? {
+          ...post,
+          shareCount: (post.shareCount || 0) + 1,
+        }
+      : post
+  );
+
+  const nextPost = {
+    id: `share-${Date.now()}`,
+    displayName,
+    username,
+    content: quoteText.trim(),
+    createdAt: new Date().toISOString(),
+    likeCount: 0,
+    shareCount: 0,
+    viewCount: 0,
+    liked: false,
+    comments: [],
+    commentCount: 0,
+    imageName: "",
+    imagePreviewUrl: "",
+    sharedFromPostId: postId,
+  };
+
+  forumFeedPosts = [nextPost, ...forumFeedPosts];
+  notifyForumFeedListeners();
+  return nextPost;
+};
+
+export const incrementForumPostView = (postId = "") => {
+  if (!postId) return;
+
+  forumFeedPosts = forumFeedPosts.map((post) =>
+    post.id === postId
+      ? {
+          ...post,
+          viewCount: (post.viewCount || 0) + 1,
+        }
+      : post
+  );
+
+  notifyForumFeedListeners();
 };
 
 export const toggleForumPostLike = (postId = "") => {
@@ -370,6 +448,11 @@ export const addForumPostComment = (postId = "", text = "", author = "sen") => {
 
   notifyForumFeedListeners();
   return nextComment;
+};
+
+export const extractForumMentions = (text = "") => {
+  const matches = Array.from(text.matchAll(FORUM_MENTION_REGEX));
+  return [...new Set(matches.map((match) => match[1]))];
 };
 
 export const getForumCurrentUserComments = (username = "sen") =>
